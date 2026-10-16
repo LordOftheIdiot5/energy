@@ -77,6 +77,14 @@ def main() -> int:
     check("every commodity has a sparkline",
           all(len(c.get("spark") or []) >= 2 for c in com))
 
+    # Gas storage is optional - it needs a GIE key - but must be coherent
+    # when present. A silently empty panel would read as "storage is zero".
+    gas = (d.get("gasStorage") or {}).get("countries") or []
+    if gas:
+        check("gas storage percentages are percentages",
+              all(0 <= (c.get("fullPct") or 0) <= 100 for c in gas),
+              f"{len(gas)} countries")
+
     fuel = d.get("fuel") or {}
     fuels = fuel.get("fuels") or []
     check("has fuel breakdown", len(fuels) >= 1, f"{len(fuels)} fuels")

@@ -33,6 +33,11 @@ jobs:
           python-version: "3.12"
 
       - name: Fetch
+        env:
+          # Only source here that needs a credential. GIE require a free
+          # registration at agsi.gie.eu/account. Absent, the gas storage
+          # panel is skipped and everything else runs unchanged.
+          GIE_API_KEY: ${{ secrets.GIE_API_KEY }}
         run: python scripts/fetch.py
 
       - name: Sanity check

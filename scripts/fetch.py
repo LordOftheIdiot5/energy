@@ -17,6 +17,7 @@ page like this is still working in a year.
 from __future__ import annotations
 
 import json
+import os
 import statistics
 import time
 import urllib.parse
@@ -447,6 +448,86 @@ def collect_market(zones: list[dict]) -> dict:
 
 
 
+
+# ------------------------------------------------------- EU gas storage
+# The gas equivalent of the hydro reservoir chart, and the best single
+# predictor of what gas will cost this winter.
+#
+# GIE require a free registration (https://agsi.gie.eu/account) because they
+# want to know who is calling, so this is the one source here that needs a
+# credential. Without GIE_API_KEY the page simply goes without: no key is a
+# reason to skip a panel, never a reason to fail a fetch that is otherwise
+# fine.
+GAS_COUNTRIES = [("eu", "Europe"), ("de", "Germany"), ("nl", "Netherlands"),
+                 ("fr", "France"), ("it", "Italy"), ("at", "Austria")]
+
+
+def _gas_rows(key: str, country: str):
+    """AGSI, tried both ways it documents accepting a key."""
+    url = f"https://agsi.gie.eu/api?country={country}&size=2"
+    attempts = (
+        {"x-key": key},                      # the documented header
+        None,                                # and as a query parameter
+    )
+    for headers in attempts:
+        try:
+            if headers is None:
+                req = urllib.request.Request(
+                    url + f"&apikey={urllib.parse.quote(key)}",
+                    headers={"User-Agent": UA})
+            else:
+                req = urllib.request.Request(
+                    url, headers={"User-Agent": UA, **headers})
+            with urllib.request.urlopen(req, timeout=25) as r:
+                payload = json.loads(r.read())
+        except Exception:
+            continue
+        if payload.get("error"):
+            continue
+        rows = payload.get("data") or []
+        if rows:
+            return rows
+    return []
+
+
+def collect_gas_storage() -> dict:
+    key = os.environ.get("GIE_API_KEY", "").strip()
+    if not key:
+        print("  (no GIE_API_KEY, skipping - register at agsi.gie.eu/account)")
+        return {}
+
+    out = {"countries": []}
+    for code, name in GAS_COUNTRIES:
+        rows = _gas_rows(key, code)
+        if not rows:
+            print(f"  ! {name}: no data")
+            continue
+        now = rows[0]
+
+        def num(field):
+            try:
+                return float(str(now.get(field)).replace(",", ""))
+            except (TypeError, ValueError):
+                return None
+
+        full = num("full")
+        prev = None
+        if len(rows) > 1:
+            try:
+                prev = float(str(rows[1].get("full")).replace(",", ""))
+            except (TypeError, ValueError):
+                prev = None
+        out["countries"].append({
+            "code": code.upper(), "name": name,
+            "fullPct": round(full, 1) if full is not None else None,
+            "changePct": round(full - prev, 2) if (full is not None and prev is not None) else None,
+            "twh": num("gasInStorage"),
+            "date": now.get("gasDayStart"),
+        })
+        print(f"  {name:<14}{full}% full" if full is not None else f"  {name}: ?")
+    return out
+
+
 # --------------------------------------------------------- fuel at the pump
 # Norwegian fuel duty, NOK per litre. These are rates, not measurements: they
 # change in the national budget, and are stated here so the page can show what
@@ -695,6 +776,8 @@ def main() -> int:
     europe = collect_europe()
     print("\nmargins and equities")
     market = collect_market(zones)
+    print("\ngas storage")
+    gas = collect_gas_storage()
     print("\nfuel at the pump")
     fuel = collect_fuel()
     print("\nthe French fleet")
@@ -722,6 +805,7 @@ def main() -> int:
         "europe": europe,
         "market": market,
         "grid": grid,
+        "gasStorage": gas,
         "fuel": fuel,
         "france": france,
         "weather": weather,

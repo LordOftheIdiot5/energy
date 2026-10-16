@@ -30,6 +30,7 @@
     <a href="#weather">Weather</a>
     <a href="#hydro">Hydro</a>
     <a href="#fuels">Fuels</a>
+    <a href="#gas" id="gasNav" hidden>Gas store</a>
     <a href="#pump">At the pump</a>
     <a href="#market">Companies</a>
     <a href="#news">Being built</a>
@@ -82,6 +83,14 @@
     <h2>Fuels, carbon and currency</h2>
         <p class="sub">What the marginal plant burns, what it pays to emit, and the rates between the price that is set and the bill that is paid. <span class="hint" tabindex="0" data-tip="The thin bar under each card. A price can fall on the day and still sit near the top of where it has been for six months, which the daily change alone will not tell you.">Range position</span> is the bar beneath each.</p>
     <div id="commodities"></div>
+  </section>
+
+  <section class="panel" id="gas" hidden>
+    <h2>Gas in store</h2>
+    <p class="sub">The gas answer to the hydro chart, and the best single tell
+       for what this winter costs. <span class="hint" tabindex="0" data-tip="Storage fills over summer and draws down over winter. Going into the cold season full is the difference between a dear winter and a frightening one, which is why the market watches it more closely than the spot price.">Percentage full</span>,
+       and which way it moved yesterday.</p>
+    <div id="gasRows"></div>
   </section>
 
   <section class="panel" id="pump">
@@ -449,6 +458,29 @@ function renderCommodities(d) {
   }).join("");
 }
 
+/* ---------------------------------------------------- EU gas storage */
+function renderGas(d) {
+  const rows = ((d.gasStorage || {}).countries) || [];
+  // The panel and its nav entry stay hidden until there is a key and data.
+  // An empty section headed "Gas in store" would read as "storage is zero".
+  const panel = document.getElementById("gas");
+  const nav = $("gasNav");
+  if (!rows.length) { panel.hidden = true; if (nav) nav.hidden = true; return; }
+  panel.hidden = false; if (nav) nav.hidden = false;
+
+  $("gasRows").innerHTML = rows.map(r => {
+    const pct = r.fullPct;
+    const tone = pct == null ? "" : pct >= 80 ? "ok" : pct >= 60 ? "" : "bad";
+    const chg = r.changePct;
+    return `<div class="gas">
+      <div class="zone-name">${esc(r.name)}<small>${r.twh ? Math.round(r.twh).toLocaleString("en-US") + " TWh" : ""}</small></div>
+      <div class="gas-bar"><i style="width:${Math.max(0, Math.min(100, pct || 0))}%"></i></div>
+      <div class="gas-fig ${tone}">${pct == null ? "—" : pct.toFixed(1) + "%"}
+        <small>${chg == null ? "" : (chg >= 0 ? "+" : "") + chg.toFixed(2) + " pts"}</small></div>
+    </div>`;
+  }).join("");
+}
+
 /* ---------------------------------------------- France, inside the grid */
 function renderFrance(d) {
   const f = d.france || {};
@@ -659,7 +691,7 @@ fetch("data/energy.json?cb=" + Date.now())
     renderPills(d); renderCurves(d);
     renderGrid(d); renderWeather(d);
     renderReservoirs(d); renderCommodities(d);
-    renderFrance(d); renderPump(d);
+    renderFrance(d); renderGas(d); renderPump(d);
     renderMarket(d); renderNews(d);
     placeHints();
   })
