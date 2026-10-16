@@ -1,0 +1,5 @@
+# data/energy.json is regenerated every hour by the fetch, so a conflict on it
+# is never a disagreement worth resolving by hand - two runs simply wrote
+# different snapshots. Treating it as binary stops git producing a line-level
+# conflict that has to be hand-merged every time work overlaps a fetch.
+data/energy.json -diff -merge
