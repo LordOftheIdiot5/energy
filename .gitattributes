@@ -1,5 +1,13 @@
-# data/energy.json is regenerated every hour by the fetch, so a conflict on it
-# is never a disagreement worth resolving by hand - two runs simply wrote
-# different snapshots. Treating it as binary stops git producing a line-level
-# conflict that has to be hand-merged every time work overlaps a fetch.
-data/energy.json -diff -merge
+# data/energy.json is regenerated hourly by the fetch, so a conflict on it is
+# never a disagreement worth resolving - it is two snapshots written an hour
+# apart, and the next run overwrites whichever survives.
+#
+# "-merge" was the wrong tool: it marks the file binary and makes git REFUSE
+# to merge, which produces the hand-resolved conflict it was meant to avoid.
+# "merge=ours" keeps the version already on the branch and needs the driver
+# below, which git will not invent for itself:
+#
+#   git config merge.ours.driver true
+#
+# That is a local setting, so deploy/install-git.sh sets it too.
+data/energy.json merge=ours -diff
