@@ -458,18 +458,24 @@ def collect_market(zones: list[dict]) -> dict:
 # credential. Without GIE_API_KEY the page simply goes without: no key is a
 # reason to skip a panel, never a reason to fail a fetch that is otherwise
 # fine.
-GAS_COUNTRIES = [("eu", "Europe"), ("de", "Germany"), ("nl", "Netherlands"),
-                 ("fr", "France"), ("it", "Italy"), ("at", "Austria")]
+# GIE's documentation is explicit that the aggregate and a single country
+# are different parameters, which is why "country=eu" returned nothing:
+#   /api?type=eu          the EU total
+#   /api?country=de       one country
+# (GIE_API_documentation_v013, section 7.1)
+GAS_AREAS = [("type", "eu", "Europe"), ("country", "de", "Germany"),
+             ("country", "nl", "Netherlands"), ("country", "fr", "France"),
+             ("country", "it", "Italy"), ("country", "at", "Austria")]
 
 
-def _gas_rows(key: str, country: str) -> tuple[list, str]:
+def _gas_rows(key: str, param: str, value: str) -> tuple[list, str]:
     """AGSI for one country. Returns (rows, why-it-failed).
 
     The reason matters: the first run got Germany and nothing else, and a
     bare "no data" cannot distinguish a wrong country code from a throttle
     from an expired key. Guessing between those wastes a deploy each time.
     """
-    url = f"https://agsi.gie.eu/api?country={country}&size=2"
+    url = f"https://agsi.gie.eu/api?{param}={value}&size=2"
     last = "no attempt"
     for use_header in (True, False):
         try:
@@ -503,12 +509,12 @@ def collect_gas_storage() -> dict:
         return {}
 
     out = {"countries": []}
-    for i, (code, name) in enumerate(GAS_COUNTRIES):
+    for i, (param, code, name) in enumerate(GAS_AREAS):
         if i:
             time.sleep(1.5)        # AGSI is not energy-charts, but be polite
-        rows, why = _gas_rows(key, code)
+        rows, why = _gas_rows(key, param, code)
         if not rows:
-            print(f"  ! {name} ({code}): {why}")
+            print(f"  ! {name} ({param}={code}): {why}")
             continue
         now = rows[0]
 
