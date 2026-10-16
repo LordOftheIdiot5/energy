@@ -1,0 +1,71 @@
+name: Fetch
+
+on:
+  # Hourly, every day. Unlike the stock scanner there is no weekend to skip:
+  # power is priced on Saturdays too, and tomorrow's day-ahead prices land
+  # around 13:00 CET, which is the one moment of the day the page gains a
+  # whole new chart.
+  schedule:
+    - cron: "20 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: fetch
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch
+        run: python scripts/fetch.py
+
+      - name: Sanity check
+        run: python tests/test_payload.py
+
+      - name: Commit results
+        run: |
+          git config user.name "energy"
+          git config user.email "actions@github.com"
+          git add data/
+          git diff --staged --quiet || git commit -m "fetch: $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git push
+
+  # A push made with the built-in GITHUB_TOKEN deliberately does not start
+  # another workflow, so a Deploy job listening for pushes would never hear
+  # the commit above. stockwatch spent a week serving stale data for exactly
+  # this reason, so the fetch publishes its own results instead of waiting to
+  # be noticed.
+  deploy:
+    needs: fetch
+    runs-on: ubuntu-latest
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      # Explicitly main, not this run's own SHA: that commit predates the one
+      # the fetch just pushed, so checking it out would republish the data
+      # this run has already replaced.
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - id: deployment
+        uses: actions/deploy-pages@v4

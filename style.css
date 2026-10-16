@@ -1,0 +1,204 @@
+/* energy.nordl.dev — what sets the price, and why.
+   Charts are hand-rolled SVG: no library, nothing to go stale, and the page
+   stays a single fast request. */
+
+:root {
+  --bg: #06090f;
+  --ink: #eef3fb;
+  --muted: #8a9ab8;
+  --faint: #65748f;
+  --line: rgba(255, 255, 255, .08);
+  --panel: rgba(13, 19, 32, .72);
+  --panel-lit: rgba(20, 28, 46, .9);
+
+  /* Price scale: cheap is calm, dear is hot. Used for zones and hours alike
+     so the same colour always means the same thing. */
+  --p0: #35d6a4;
+  --p1: #8ad66a;
+  --p2: #e8c54a;
+  --p3: #f09243;
+  --p4: #ef5a6a;
+
+  --up: #35d6a4;
+  --down: #ef5a6a;
+  --accent: #58b9ff;
+  --sans: "Sora", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", monospace;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(1100px 620px at 12% -8%, rgba(88, 185, 255, .10), transparent 60%),
+    radial-gradient(900px 500px at 92% 4%, rgba(53, 214, 164, .07), transparent 62%),
+    var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page { max-width: 1180px; margin: 0 auto; padding: 0 16px 72px; }
+
+/* ---------------------------------------------------------- masthead */
+.masthead {
+  display: flex; align-items: baseline; gap: 14px;
+  padding: 26px 0 18px; flex-wrap: wrap;
+}
+.wordmark {
+  font-size: 1.12rem; font-weight: 700; letter-spacing: .02em;
+}
+.wordmark span { color: var(--accent); }
+.stamp { margin-left: auto; color: var(--faint); font-size: .76rem; }
+.stamp.stale { color: var(--down); }
+
+/* The staleness bar, carried over from stockwatch: a feed that stops looks
+   exactly like a feed with nothing to say, and that has cost us twice. */
+.stale-bar {
+  display: none;
+  margin: 0 0 20px; padding: 13px 16px;
+  border: 1px solid color-mix(in srgb, var(--down) 45%, transparent);
+  border-left: 3px solid var(--down);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--down) 9%, transparent);
+  color: var(--down); font-size: .88rem; line-height: 1.5;
+}
+.stale-bar.show { display: block; }
+.stale-bar b { color: var(--ink); }
+
+/* ------------------------------------------------------------- lede */
+.lede { margin: 2px 0 30px; max-width: 70ch; }
+.lede h1 {
+  font-size: clamp(1.9rem, 4.4vw, 2.9rem); line-height: 1.08;
+  margin: 0 0 12px; letter-spacing: -.02em;
+}
+.lede p { margin: 0; color: var(--muted); line-height: 1.6; font-size: .95rem; }
+.lede .read { color: var(--ink); }
+
+/* ------------------------------------------------------------ panels */
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 18px 20px 20px;
+  margin-bottom: 20px;
+  backdrop-filter: blur(6px);
+}
+.panel > h2 {
+  margin: 0 0 4px; font-size: .74rem; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--muted);
+}
+.panel > .sub {
+  margin: 0 0 16px; color: var(--faint); font-size: .8rem; line-height: 1.5;
+  max-width: 76ch;
+}
+
+/* -------------------------------------------------- zone price strip */
+/* Every zone on ONE shared axis. The Nordic split is not a statistic you
+   read, it is a shape you see the moment the bars line up. */
+.zone { display: grid; grid-template-columns: 112px 1fr 92px; gap: 12px;
+        align-items: center; padding: 7px 0; border-bottom: 1px solid var(--line); }
+.zone:last-child { border-bottom: 0; }
+.zone .who { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.zone .code { font-weight: 650; font-size: .92rem; }
+.zone .place { color: var(--faint); font-size: .68rem; white-space: nowrap;
+               overflow: hidden; text-overflow: ellipsis; }
+.zone .track { position: relative; height: 22px; }
+.zone .range {
+  position: absolute; top: 6px; height: 10px; border-radius: 5px;
+  background: linear-gradient(90deg, var(--a), var(--b));
+}
+.zone .now {
+  position: absolute; top: 2px; width: 2px; height: 18px;
+  background: var(--ink); border-radius: 1px; opacity: .85;
+}
+.zone .val { text-align: right; font-family: var(--mono); font-size: .82rem; }
+.zone .val small { display: block; color: var(--faint); font-size: .66rem;
+                   font-family: var(--sans); }
+.axis { display: flex; justify-content: space-between; color: var(--faint);
+        font-size: .64rem; padding: 8px 0 0; font-family: var(--mono); }
+
+/* ------------------------------------------------------- hour charts */
+.curve-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+              margin-bottom: 12px; }
+.pills { display: flex; gap: 5px; flex-wrap: wrap; }
+.pill {
+  background: transparent; color: var(--muted);
+  border: 1px solid var(--line); border-radius: 999px;
+  padding: 4px 11px; font: inherit; font-size: .72rem; cursor: pointer;
+}
+.pill:hover { border-color: color-mix(in srgb, var(--accent) 45%, transparent); }
+.pill[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+  color: var(--ink);
+}
+.curve-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+@media (max-width: 760px) { .curve-wrap { grid-template-columns: 1fr; } }
+.curve h3 { margin: 0 0 2px; font-size: .78rem; color: var(--ink); font-weight: 600; }
+.curve .note { margin: 0 0 8px; color: var(--faint); font-size: .7rem; }
+.curve svg { width: 100%; height: auto; display: block; }
+.cheap-tag { color: var(--p0); } .peak-tag { color: var(--p4); }
+
+/* ------------------------------------------------------- reservoirs */
+.res { display: grid; grid-template-columns: 74px 1fr 128px; gap: 12px;
+       align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.res:last-child { border-bottom: 0; }
+.res .zone-name { font-weight: 650; font-size: .88rem; }
+.res .zone-name small { display: block; color: var(--faint); font-weight: 400;
+                        font-size: .66rem; }
+.res .dev { position: relative; height: 20px; }
+.res .dev .mid { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px;
+                 background: var(--line); }
+.res .dev i { position: absolute; top: 5px; height: 10px; border-radius: 5px; }
+.res .fig { text-align: right; font-family: var(--mono); font-size: .8rem; }
+.res .fig small { display: block; font-family: var(--sans); font-size: .66rem;
+                  color: var(--faint); }
+
+/* ------------------------------------------------------- commodities */
+.grid { display: grid; gap: 10px;
+        grid-template-columns: repeat(auto-fill, minmax(188px, 1fr)); }
+.card {
+  background: var(--panel-lit); border: 1px solid var(--line);
+  border-radius: 11px; padding: 12px 13px;
+}
+.card .nm { font-size: .72rem; color: var(--muted); margin-bottom: 3px; }
+.card .px { font-size: 1.22rem; font-weight: 640; letter-spacing: -.01em; }
+.card .px u { text-decoration: none; font-size: .64rem; color: var(--faint);
+              margin-left: 4px; }
+.card .meta { display: flex; justify-content: space-between; align-items: center;
+              margin-top: 5px; font-size: .7rem; }
+.card .spark { margin-top: 8px; display: block; width: 100%; height: 26px; }
+.card .band { margin-top: 7px; height: 3px; border-radius: 2px;
+              background: var(--line); position: relative; }
+.card .band i { position: absolute; top: -2px; width: 2px; height: 7px;
+                background: var(--ink); border-radius: 1px; }
+.ok { color: var(--up); } .bad { color: var(--down); } .dim { color: var(--faint); }
+
+.group-title {
+  margin: 20px 0 9px; font-size: .68rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--faint);
+}
+.group-title:first-of-type { margin-top: 4px; }
+
+footer {
+  margin-top: 34px; padding-top: 18px; border-top: 1px solid var(--line);
+  color: var(--faint); font-size: .74rem; line-height: 1.6;
+}
+footer a { color: var(--muted); }
+
+/* ------------------------------------------------------------- news */
+.stories { list-style: none; margin: 0 0 4px; padding: 0; }
+.stories li {
+  padding: 8px 0; border-bottom: 1px solid var(--line);
+  display: flex; flex-direction: column; gap: 3px;
+}
+.stories li:last-child { border-bottom: 0; }
+.stories a {
+  color: var(--ink); text-decoration: none; font-size: .88rem;
+  line-height: 1.4; max-width: 86ch;
+}
+.stories a:hover { color: var(--accent); }
+.stories .by { color: var(--faint); font-size: .68rem; }

@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>energy — what sets the price</title>
+<meta name="description" content="Nordic power prices by zone, hydro reservoirs against their thirty-year normal, and the fuels and currencies behind them."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<main class="page">
+  <header class="masthead">
+    <span class="wordmark">energy<span>.nordl</span></span>
+    <span class="stamp" id="stamp">loading…</span>
+  </header>
+
+  <div class="stale-bar" id="staleBar"></div>
+
+  <section class="lede">
+    <h1>What sets the price, and why.</h1>
+    <p id="lede">Nordic day-ahead power by zone, the hydro storage behind it, and the
+       fuels and currencies that move both.</p>
+  </section>
+
+  <section class="panel">
+    <h2>Day-ahead power by zone</h2>
+    <p class="sub">Today's range for every Nordic bidding zone, on one shared axis.
+       The axis is <b>euro cents per kWh</b> — the currency the power actually clears
+       in — because a Norwegian krone and a Swedish krona are not the same ruler and
+       laying them side by side would invent a difference that is not there. Each
+       zone's own currency is on the right. The tick marks today's average.</p>
+    <div id="zones"></div>
+    <div class="axis" id="zoneAxis"></div>
+  </section>
+
+  <section class="panel">
+    <h2>The day, hour by hour</h2>
+    <p class="sub">Day-ahead prices are published the afternoon before, so tomorrow
+       is usually known by about 13:00 CET. The cheapest three-hour run is marked:
+       that is the window worth moving a car charge or a wash into.</p>
+    <div class="curve-head">
+      <div class="pills" id="zonePills"></div>
+    </div>
+    <div class="curve-wrap" id="curves"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Hydro storage, against normal</h2>
+    <p class="sub">Nordic power is mostly water, so this is the closest thing to a
+       forecast on the page. A fill percentage alone says nothing — 52% could be a
+       normal autumn or a hard winter coming. What matters is the gap from the median
+       for this same week across every year since 1995, which is what the bars show.</p>
+    <div id="reservoirs"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Fuels, carbon and currency</h2>
+    <p class="sub">What the marginal power plant burns, what it pays to emit, and the
+       exchange rates between the price that is set and the bill that is paid. The
+       thin bar under each is where the price sits in its own six-month range: a
+       number can fall on the day and still be near the top of where it has been.</p>
+    <div id="commodities"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Being built, laid and switched on</h2>
+    <p class="sub">Projects and machines rather than share prices: cables between
+       countries, reactors being licensed, factories for electrolysers. Searched by
+       topic across twenty terms, filtered to outlets that report rather than
+       recycle, and de-duplicated — one cable factory opening reached four
+       publications under four headlines.</p>
+    <div id="news"></div>
+  </section>
+
+  <footer>
+    <p>Spot prices via <a href="https://www.hvakosterstrommen.no">hvakosterstrommen.no</a>
+       and <a href="https://www.elprisetjustnu.se">elprisetjustnu.se</a>, both over Nord
+       Pool day-ahead. Reservoirs from <a href="https://www.nve.no">NVE</a>. Fuels,
+       carbon and FX from Yahoo Finance. Prices exclude grid rent, taxes and VAT, so
+       your bill is higher than the number here — what moves is what matters.</p>
+  </footer>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c =>
+  ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+/* One price scale, used by the zone strip and the hour bars alike, so the
+   same colour always carries the same meaning across the page. */
+const SCALE = ["--p0", "--p1", "--p2", "--p3", "--p4"];
+function priceColor(v, lo, hi) {
+  if (!isFinite(v) || hi <= lo) return "var(--p2)";
+  const i = Math.min(SCALE.length - 1,
+                     Math.floor((v - lo) / (hi - lo) * SCALE.length));
+  return `var(${SCALE[i]})`;
+}
+
+const cents = v => (v * 100).toFixed(1);           // EUR/kWh -> euro cents
+const money = (v, cur) => v.toFixed(2) + " " + cur;
+const avgOf = a => a.reduce((s, x) => s + x, 0) / a.length;
+
+function ago(iso) {
+  const mins = Math.round((Date.now() - new Date(iso)) / 60000);
+  if (!isFinite(mins)) return "";
+  if (mins < 2) return "just now";
+  if (mins < 60) return mins + "m ago";
+  const h = Math.round(mins / 60);
+  return h < 24 ? h + "h ago" : Math.round(h / 24) + "d ago";
+}
+
+let DATA = null, activeZone = null;
+
+/* ------------------------------------------------------- zone strip */
+function renderZones(d) {
+  const zs = d.zones.filter(z => z.today && z.today.eur && z.today.eur.length);
+  if (!zs.length) { $("zones").innerHTML = "<p class='sub'>No prices yet.</p>"; return; }
+
+  // Shared axis across every zone, in EUR.
+  const all = zs.flatMap(z => z.today.eur);
+  const lo = Math.min(...all), hi = Math.max(...all);
+  const span = (hi - lo) || 1;
+  const pct = v => ((v - lo) / span) * 100;
+
+  $("zones").innerHTML = zs
+    .slice()
+    // By average, not by cheapest hour: a zone with one wild cheap hour would
+    // otherwise sort above a zone that is cheaper all day, which is backwards.
+    .sort((a, b) => avgOf(a.today.eur) - avgOf(b.today.eur))
+    .map(z => {
+      const e = z.today.eur;
+      const zlo = Math.min(...e), zhi = Math.max(...e);
+      const avg = e.reduce((s, x) => s + x, 0) / e.length;
+      const left = pct(zlo), width = Math.max(pct(zhi) - pct(zlo), 1.2);
+      return `<div class="zone">
+        <div class="who">
+          <span class="code">${esc(z.zone)}</span>
+          <span class="place">${esc(z.label)}</span>
+        </div>
+        <div class="track">
+          <span class="range" style="left:${left}%;width:${width}%;
+            --a:${priceColor(zlo, lo, hi)};--b:${priceColor(zhi, lo, hi)}"></span>
+          <span class="now" style="left:${pct(avg)}%"></span>
+        </div>
+        <div class="val">${cents(avg)}<small>${money(z.today.mean, z.currency)}/kWh</small></div>
+      </div>`;
+    }).join("");
+
+  $("zoneAxis").innerHTML =
+    `<span>${cents(lo)}c</span><span>${cents((lo + hi) / 2)}c</span><span>${cents(hi)}c</span>`;
+}
+
+/* ------------------------------------------------------- hour curve */
+function curveSvg(day, cheapest, currency) {
+  const v = day.local, n = v.length;
+  const lo = Math.min(...v), hi = Math.max(...v);
+  const W = 360, H = 118, pad = 16, bw = (W - pad * 2) / n;
+  const y = x => H - 22 - ((x - lo) / ((hi - lo) || 1)) * (H - 40);
+
+  let bars = "";
+  for (let i = 0; i < n; i++) {
+    const inCheap = cheapest && i >= cheapest.start && i < cheapest.end;
+    const top = y(v[i]);
+    bars += `<rect x="${(pad + i * bw).toFixed(1)}" y="${top.toFixed(1)}"
+      width="${(bw - 1.4).toFixed(1)}" height="${(H - 22 - top).toFixed(1)}"
+      rx="1.5" fill="${priceColor(v[i], lo, hi)}"
+      opacity="${inCheap ? 1 : .62}"></rect>`;
+  }
+  // Shade the cheapest run so it reads before any of the numbers do.
+  let shade = "";
+  if (cheapest) {
+    shade = `<rect x="${(pad + cheapest.start * bw - 1).toFixed(1)}" y="8"
+      width="${(bw * (cheapest.end - cheapest.start)).toFixed(1)}"
+      height="${H - 30}" rx="4" fill="var(--p0)" opacity=".10"></rect>`;
+  }
+  let ticks = "";
+  for (let h = 0; h < n; h += 6) {
+    ticks += `<text x="${(pad + h * bw + bw / 2).toFixed(1)}" y="${H - 7}"
+      font-size="8" fill="var(--faint)" text-anchor="middle"
+      font-family="var(--mono)">${String(h).padStart(2, "0")}</text>`;
+  }
+  return `<svg viewBox="0 0 ${W} ${H}" role="img"
+     aria-label="Hourly price, ${lo.toFixed(2)} to ${hi.toFixed(2)} ${currency} per kWh">
+     ${shade}${bars}${ticks}</svg>`;
+}
+
+function renderCurves(d) {
+  const z = d.zones.find(x => x.zone === activeZone) || d.zones[0];
+  if (!z) return;
+  const panels = [];
+  const mk = (day, cheap, title) => {
+    if (!day) return "";
+    const peak = day.local.indexOf(day.max);
+    return `<div class="curve">
+      <h3>${esc(title)}</h3>
+      <p class="note">
+        <span class="cheap-tag">cheapest ${cheap
+          ? String(cheap.start).padStart(2, "0") + ":00–" +
+            String(cheap.end).padStart(2, "0") + ":00 at " + cheap.mean.toFixed(2)
+          : "—"}</span>
+        &nbsp;·&nbsp;
+        <span class="peak-tag">peak ${String(peak).padStart(2, "0")}:00 at ${day.max.toFixed(2)}</span>
+        &nbsp;·&nbsp;${esc(z.currency)}/kWh
+      </p>
+      ${curveSvg(day, cheap, z.currency)}
+    </div>`;
+  };
+  panels.push(mk(z.today, z.cheapest3, "Today"));
+  if (z.tomorrow) {
+    panels.push(mk(z.tomorrow, bestWindow(z.tomorrow.local, 3), "Tomorrow"));
+  } else {
+    panels.push(`<div class="curve"><h3>Tomorrow</h3>
+      <p class="note">Not published yet — day-ahead prices land about 13:00 CET.</p></div>`);
+  }
+  $("curves").innerHTML = panels.join("");
+}
+
+function bestWindow(v, size) {
+  if (!v || v.length < size) return null;
+  let at = 0, best = v.slice(0, size).reduce((s, x) => s + x, 0);
+  for (let i = 1; i <= v.length - size; i++) {
+    const run = v.slice(i, i + size).reduce((s, x) => s + x, 0);
+    if (run < best) { at = i; best = run; }
+  }
+  return { start: at, end: at + size, mean: best / size };
+}
+
+function renderPills(d) {
+  $("zonePills").innerHTML = d.zones.map(z =>
+    `<button class="pill" data-zone="${esc(z.zone)}"
+       aria-pressed="${z.zone === activeZone}">${esc(z.zone)}</button>`).join("");
+  $("zonePills").querySelectorAll(".pill").forEach(b =>
+    b.addEventListener("click", () => {
+      activeZone = b.dataset.zone;
+      renderPills(DATA); renderCurves(DATA);
+    }));
+}
+
+/* ------------------------------------------------------- reservoirs */
+function renderReservoirs(d) {
+  const r = d.reservoirs || {};
+  const zones = r.zones || {};
+  const keys = Object.keys(zones);
+  if (!keys.length) { $("reservoirs").innerHTML = "<p class='sub'>No reservoir data.</p>"; return; }
+
+  // Symmetric scale so "below normal" and "above normal" are the same size.
+  const devs = keys.map(k => Math.abs(zones[k].vsNormal ?? 0));
+  const scale = Math.max(0.1, Math.max(...devs) * 1.12);
+
+  $("reservoirs").innerHTML = keys.sort().map(k => {
+    const z = zones[k], dev = z.vsNormal;
+    const half = dev == null ? 0 : (Math.abs(dev) / scale) * 50;
+    const bar = dev == null ? "" : dev < 0
+      ? `<i style="right:50%;width:${half}%;background:var(--down)"></i>`
+      : `<i style="left:50%;width:${half}%;background:var(--up)"></i>`;
+    const cls = dev == null ? "dim" : dev < 0 ? "bad" : "ok";
+    return `<div class="res">
+      <div class="zone-name">${esc(k)}<small>${z.twh} TWh</small></div>
+      <div class="dev"><span class="mid"></span>${bar}</div>
+      <div class="fig ${cls}">${dev == null ? "—" : (dev * 100 >= 0 ? "+" : "") + (dev * 100).toFixed(1) + " pts"}
+        <small>${(z.fill * 100).toFixed(1)}% full${z.normal
+          ? ", normal " + (z.normal * 100).toFixed(0) + "%" : ""}</small></div>
+    </div>`;
+  }).join("");
+}
+
+/* ------------------------------------------------------ commodities */
+/* Fuels are one group rather than three. Split into oil / gas / refined each
+   heading carried only two cards, leaving a five-column grid three-fifths
+   empty — and every card already names what it is. */
+const GROUPS = [
+  ["Fuels", ["oil", "gas", "refined"]],
+  ["Currency", ["fx"]],
+  ["Carbon & the transition", ["transition"]],
+];
+
+function sparkSvg(v) {
+  if (!v || v.length < 2) return "";
+  const lo = Math.min(...v), hi = Math.max(...v), W = 160, H = 26;
+  const pts = v.map((x, i) =>
+    `${(i / (v.length - 1) * W).toFixed(1)},${(H - 2 - ((x - lo) / ((hi - lo) || 1)) * (H - 4)).toFixed(1)}`
+  ).join(" ");
+  const rising = v[v.length - 1] >= v[0];
+  return `<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">
+    <polyline points="${pts}" fill="none" stroke="${rising ? "var(--up)" : "var(--down)"}"
+      stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" opacity=".9"/></svg>`;
+}
+
+function renderCommodities(d) {
+  const byGroup = {};
+  (d.commodities || []).forEach(c => (byGroup[c.group] ||= []).push(c));
+  $("commodities").innerHTML = GROUPS.map(([title, keys]) => {
+    const items = keys.flatMap(k => byGroup[k] || []);
+    if (!items.length) return "";
+    return `<div class="group-title">${esc(title)}</div>
+     <div class="grid">${items.map(c => `
+       <div class="card">
+         <div class="nm">${esc(c.name)}</div>
+         <div class="px">${c.last.toLocaleString("en-US", {
+            minimumFractionDigits: c.last < 20 ? 2 : 1,
+            maximumFractionDigits: c.last < 20 ? 2 : 1 })}<u>${esc(c.unit || "")}</u></div>
+         <div class="meta">
+           <span class="${c.changePct >= 0 ? "ok" : "bad"}">${c.changePct >= 0 ? "+" : ""}${c.changePct.toFixed(2)}%</span>
+           <span class="dim">6m ${c.changeSixMonthPct >= 0 ? "+" : ""}${c.changeSixMonthPct.toFixed(0)}%</span>
+         </div>
+         ${sparkSvg(c.spark)}
+         <div class="band"><i style="left:${Math.max(0, Math.min(100, c.rangePos))}%"></i></div>
+       </div>`).join("")}</div>`;
+  }).join("");
+}
+
+/* -------------------------------------------------------------- news */
+function renderNews(d) {
+  const items = d.news || [];
+  if (!items.length) {
+    $("news").innerHTML = `<p class="sub">No stories this round.</p>`;
+    return;
+  }
+  const byCat = {};
+  items.forEach(n => (byCat[n.category] ||= []).push(n));
+  $("news").innerHTML = Object.keys(byCat).sort().map(cat =>
+    `<div class="group-title">${esc(cat)}</div>
+     <ul class="stories">${byCat[cat].map(n => `
+       <li>
+         <a href="${esc(n.url)}" target="_blank" rel="noopener noreferrer">${esc(n.title)}</a>
+         <span class="by">${esc(n.publisher)} · ${fmtAge(n.ageHours)}</span>
+       </li>`).join("")}</ul>`).join("");
+}
+
+function fmtAge(h) {
+  if (h == null) return "";
+  if (h < 1) return "just now";
+  if (h < 24) return Math.round(h) + "h ago";
+  const d = Math.round(h / 24);
+  return d + (d === 1 ? " day ago" : " days ago");
+}
+
+/* -------------------------------------------------------------- lede */
+function renderLede(d) {
+  const zs = d.zones.filter(z => z.today && z.today.eur.length);
+  if (!zs.length) return;
+  const means = zs.map(z => ({ z, m: z.today.eur.reduce((s, x) => s + x, 0) / z.today.eur.length }));
+  means.sort((a, b) => a.m - b.m);
+  const cheap = means[0], dear = means[means.length - 1];
+  const ratio = cheap.m > 0 ? dear.m / cheap.m : 0;
+
+  const res = (d.reservoirs || {}).zones || {};
+  const below = Object.entries(res)
+    .filter(([, v]) => v.vsNormal != null)
+    .sort((a, b) => a[1].vsNormal - b[1].vsNormal)[0];
+
+  let txt = `Power costs <span class="read">${cents(dear.m)} euro cents</span> per kWh in
+    ${esc(dear.z.zone)} today and <span class="read">${cents(cheap.m)}</span> in
+    ${esc(cheap.z.zone)}`;
+  // Phrased as "a spread of N" rather than "a N× difference" so the article
+  // is never wrong: 8, 11 and 18 all want "an".
+  txt += ratio > 2 ? ` — a spread of <span class="read">${Math.round(ratio)}×</span> across one synchronous grid.`
+                   : ` — unusually close together for the Nordics.`;
+  if (below) {
+    const [zn, v] = below;
+    txt += ` Hydro storage in ${esc(zn)} sits <span class="read">${(v.vsNormal * 100).toFixed(0)} points
+      ${v.vsNormal < 0 ? "below" : "above"}</span> its median for this week since 1995`;
+    txt += v.vsNormal < -0.1 ? `, which is the kind of gap that is still being paid for in February.`
+                             : `.`;
+  }
+  $("lede").innerHTML = txt;
+}
+
+/* --------------------------------------------------------- staleness */
+function renderStamp(d) {
+  const stamp = $("stamp");
+  stamp.textContent = "updated " + ago(d.generated);
+  // Scans run hourly, every day — spot prices are published at weekends too,
+  // so unlike stockwatch there is no weekend gap to forgive. Three hours of
+  // silence means something has stopped.
+  const hours = (Date.now() - new Date(d.generated)) / 3.6e6;
+  if (hours > 3) {
+    stamp.classList.add("stale");
+    $("staleBar").innerHTML =
+      `<b>These numbers are stale.</b> The last fetch finished ${ago(d.generated)},
+       and this page refreshes hourly. Spot prices and reservoirs below may no longer
+       describe today.`;
+    $("staleBar").classList.add("show");
+  }
+}
+
+fetch("data/energy.json?cb=" + Date.now())
+  .then(r => r.ok ? r.json() : Promise.reject(r.status))
+  .then(d => {
+    DATA = d;
+    activeZone = (d.zones[0] || {}).zone;
+    renderStamp(d); renderLede(d); renderZones(d);
+    renderPills(d); renderCurves(d);
+    renderReservoirs(d); renderCommodities(d); renderNews(d);
+  })
+  .catch(e => {
+    $("stamp").textContent = "could not load data";
+    $("stamp").classList.add("stale");
+    console.error("energy.json", e);
+  });
+</script>
+</body>
+</html>
