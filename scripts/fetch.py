@@ -542,6 +542,66 @@ def collect_gas_storage() -> dict:
     return out
 
 
+
+# SSB's observed national average, to sit beside the modelled figure. Table
+# 09654 runs monthly back to 1986, free and keyless, and lags about six
+# weeks - useless for "what is it today", invaluable as an anchor showing
+# whether the model has drifted.
+#
+# The product codes are SSB's own, read from the table metadata rather than
+# guessed: guessing "01"/"02" returned a 400.
+SSB_FUEL_TABLE = "https://data.ssb.no/api/v0/no/table/09654"
+SSB_FUEL_CODES = {"031": "petrol", "035": "diesel"}
+
+
+def collect_observed_fuel(months: int = 13) -> dict:
+    """Observed kr/litre, so the model can be checked rather than believed."""
+    query = {
+        "query": [
+            {"code": "PetroleumProd",
+             "selection": {"filter": "item", "values": list(SSB_FUEL_CODES)}},
+            {"code": "Tid",
+             "selection": {"filter": "top", "values": [str(months)]}},
+        ],
+        "response": {"format": "json-stat2"},
+    }
+    try:
+        req = urllib.request.Request(
+            SSB_FUEL_TABLE, data=json.dumps(query).encode(),
+            headers={"User-Agent": UA, "Content-Type": "application/json"})
+        with urllib.request.urlopen(req, timeout=30) as r:
+            d = json.loads(r.read())
+    except Exception as e:
+        print(f"  ! SSB unavailable: {str(e)[:60]}")
+        return {}
+
+    try:
+        dim = d["dimension"]
+        prod_keys = list(dim["PetroleumProd"]["category"]["index"])
+        times = list(dim["Tid"]["category"]["index"])
+        values = d["value"]
+    except Exception as e:
+        print(f"  ! SSB shape unexpected: {e}")
+        return {}
+
+    n_t = len(times)
+    out = {"source": "SSB 09654", "months": times, "byFuel": {}}
+    for i, code in enumerate(prod_keys):
+        key = SSB_FUEL_CODES.get(code)
+        if not key:
+            continue
+        series = [v for v in (values[i * n_t + t] for t in range(n_t))
+                  if v is not None]
+        if not series:
+            continue
+        out["byFuel"][key] = {
+            "latest": round(series[-1], 2),
+            "month": times[-1],
+            "series": [round(v, 2) for v in series],
+        }
+    return out
+
+
 # --------------------------------------------------------- fuel at the pump
 # Norwegian fuel duty, NOK per litre. These are rates, not measurements: they
 # change in the national budget, and are stated here so the page can show what
@@ -612,6 +672,21 @@ def collect_fuel() -> dict:
               f"{duty['road'] + duty['co2']:4.2f} + VAT {vat:4.2f} = "
               f"{total:5.2f} NOK/l ({f['taxShare']}% tax)  "
               f"3m: product {f['productMove']:+.2f}, krone {f['currencyMove']:+.2f}")
+
+    # Observed, for comparison. The model is then checkable rather than
+    # asserted, and a widening gap says something in it has gone stale.
+    observed = collect_observed_fuel()
+    if observed.get("byFuel"):
+        out["observed"] = observed
+        for f in out["fuels"]:
+            obs = observed["byFuel"].get(f["key"])
+            if not obs:
+                continue
+            f["observedNok"] = obs["latest"]
+            f["observedMonth"] = obs["month"]
+            f["gapNok"] = round(f["modelledTotal"] - obs["latest"], 2)
+            print(f"  {f['label']:<13}observed {obs['latest']:.2f} "
+                  f"({obs['month']}), model {f['gapNok']:+.2f} off")
     return out
 
 

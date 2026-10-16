@@ -97,7 +97,9 @@
     <h2>What is in a litre</h2>
     <p class="sub"><span class="hint" tabindex="0" data-tip="There is no free feed for Norwegian pump prices - drivstoffappen is a website, not an API. So the refined product and the exchange rate are live, duty is a stated rate, and VAT is a multiplier. If the total is out against the forecourt sign, the difference is retail margin.">Modelled, not observed</span>
        &mdash; and the point is the split, not the total. Tax is fixed between
-       budgets, so everything that moves is the product or the krone.</p>
+       budgets, so everything that moves is the product or the krone. SSB's
+       observed national average sits underneath each, so the model can be
+       checked rather than believed.</p>
     <div id="pumpRows"></div>
   </section>
 
@@ -506,6 +508,15 @@ function renderFrance(d) {
     </div>`;
 }
 
+/* SSB writes months as "2026M08". */
+const MONTHS = ["January", "February", "March", "April", "May", "June", "July",
+                "August", "September", "October", "November", "December"];
+function monthLabel(key) {
+  const m = /^(\d{4})M(\d{2})$/.exec(String(key || ""));
+  if (!m) return String(key || "");
+  return `${MONTHS[parseInt(m[2], 10) - 1]} ${m[1]}`;
+}
+
 /* ------------------------------------------------------ what is in a litre */
 function renderPump(d) {
   const f = d.fuel || {};
@@ -537,6 +548,13 @@ function renderPump(d) {
         <b class="${x.productMove >= 0 ? "bad" : "ok"}">${x.productMove >= 0 ? "+" : ""}${x.productMove.toFixed(2)}</b> from the product,
         <b class="${x.currencyMove >= 0 ? "bad" : "ok"}">${x.currencyMove >= 0 ? "+" : ""}${x.currencyMove.toFixed(2)}</b> from the krone
       </div>
+      ${x.observedNok == null ? "" : `<div class="pump-obs">
+        <span class="hint" tabindex="0" data-tip="SSB table 09654, the official national average, monthly and about six weeks behind. It cannot tell you today's price, but it can tell you whether the model above has drifted - which is the only way to know the model is worth anything.">Observed</span>
+        <b>${x.observedNok.toFixed(2)}</b> NOK/l
+        <span class="dim">national average, ${esc(monthLabel(x.observedMonth))}</span>
+        <span class="pump-gap ${Math.abs(x.gapNok) <= 0.5 ? "ok" : "dim"}">model is
+          ${x.gapNok >= 0 ? "+" : ""}${x.gapNok.toFixed(2)} against it</span>
+      </div>`}
     </div>`;
   }).join("") + `<p class="sub tight pump-note">${esc(f.note || "")}</p>`;
 }

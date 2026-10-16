@@ -99,6 +99,13 @@ def main() -> int:
         check(f"{f.get('key')} is a plausible pump price",
               5 < total < 60, f"{total} NOK/l")
 
+        # When the observed anchor is present it must be a believable pump
+        # price too, or the comparison is noise against noise.
+        obs = f.get("observedNok")
+        if obs is not None:
+            check(f"{f.get('key')} observed is plausible", 5 < obs < 60,
+                  f"{obs} NOK/l ({f.get('observedMonth')})")
+
     fr = d.get("france") or {}
     if fr:
         check("French availability is a percentage",

@@ -478,3 +478,13 @@ footer a { color: var(--muted); }
 /* "1,063.4 TWh" wrapped in a 136px column; a tenth of a terawatt-hour was
    false precision anyway, but give the name room regardless. */
 .gas { grid-template-columns: 156px 1fr 108px; }
+
+/* The observed anchor under each modelled litre. */
+.pump-obs {
+  margin-top: 6px; padding-top: 7px; border-top: 1px dashed var(--line);
+  font-size: .72rem; color: var(--faint);
+  display: flex; gap: 8px; flex-wrap: wrap; align-items: baseline;
+}
+.pump-obs b { font-family: var(--mono); color: var(--ink); font-weight: 500; }
+.pump-gap { margin-left: auto; }
+@media (max-width: 620px) { .pump-gap { margin-left: 0; } }
