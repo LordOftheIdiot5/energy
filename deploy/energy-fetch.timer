@@ -1,0 +1,16 @@
+[Unit]
+Description=Hourly energy fetch
+
+[Timer]
+# Every day, not weekdays: power is priced at weekends too, and tomorrow's
+# day-ahead curve lands about 13:00 CET regardless of the calendar.
+#
+# At :20, which is also the GitHub cron. That cron is kept only as a fallback
+# at a much sparser interval, so there is nothing to race: whichever arrives
+# first runs, and the script skips the second.
+OnCalendar=*-*-* *:20:00
+Persistent=true
+RandomizedDelaySec=60
+
+[Install]
+WantedBy=timers.target

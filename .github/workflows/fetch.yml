@@ -1,12 +1,16 @@
 name: Fetch
 
 on:
-  # Hourly, every day. Unlike the stock scanner there is no weekend to skip:
-  # power is priced on Saturdays too, and tomorrow's day-ahead prices land
-  # around 13:00 CET, which is the one moment of the day the page gains a
-  # whole new chart.
+  # A fallback, not the schedule. The hourly trigger is a systemd timer on the
+  # VPS, because GitHub's cron is best effort and has dropped eighteen
+  # consecutive hours on the sibling repo while reporting every run a success.
+  #
+  # Every six hours rather than hourly so the two do not race or double the
+  # commits. If the VPS goes down this keeps the page roughly current, and the
+  # page's own staleness banner - which trips at three hours - says plainly
+  # that something has stopped.
   schedule:
-    - cron: "20 * * * *"
+    - cron: "20 */6 * * *"
   workflow_dispatch:
 
 permissions:
