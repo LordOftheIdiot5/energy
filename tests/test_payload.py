@@ -42,11 +42,35 @@ def main() -> int:
                   all(-5 < v < 50 for v in local),
                   f"{min(local):.3f}..{max(local):.3f} per kWh")
 
+    eu = d.get("europe") or []
+    check("has European zones", len(eu) >= 6, f"{len(eu)} zones")
+    for z in eu:
+        c = z.get("cents") or []
+        check(f"{z.get('zone')} has prices", len(c) >= 20, f"{len(c)} points")
+        # Euro cents per kWh. Europe has seen negative prices and has seen
+        # 70c in a crisis; outside that range the unit has changed, not the
+        # market. A series that is half zeros is the Elexon two-provider bug.
+        if c:
+            zeros = sum(1 for v in c if v == 0)
+            check(f"{z.get('zone')} range plausible",
+                  all(-20 < v < 120 for v in c), f"{min(c)}..{max(c)}")
+            check(f"{z.get('zone')} not half zeros", zeros < len(c) * 0.4,
+                  f"{zeros}/{len(c)} zero")
+
     res = (d.get("reservoirs") or {}).get("zones") or {}
     check("has reservoirs", len(res) >= 4, f"{len(res)} areas")
     for k, v in res.items():
         check(f"{k} fill is a fraction", 0 <= (v.get("fill") or -1) <= 1,
               str(v.get("fill")))
+
+    g = d.get("grid") or {}
+    check("has a generation mix", bool(g.get("mix")), str((g.get("mix") or {}).get("hydro")))
+    flows = g.get("flows") or []
+    check("flows carry a direction, not a minus sign",
+          all(f.get("mw", 0) > 0 for f in flows), f"{len(flows)} links")
+
+    wx = d.get("weather") or {}
+    check("has weather", len(wx) >= 6, f"{len(wx)} zones")
 
     com = d.get("commodities") or []
     check("has commodities", len(com) >= 8, f"{len(com)} instruments")

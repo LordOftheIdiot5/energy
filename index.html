@@ -26,12 +26,15 @@
   </section>
 
   <section class="panel">
-    <h2>Day-ahead power by zone</h2>
-    <p class="sub">Today's range for every Nordic bidding zone, on one shared axis.
-       The axis is <b>euro cents per kWh</b> — the currency the power actually clears
-       in — because a Norwegian krone and a Swedish krona are not the same ruler and
-       laying them side by side would invent a difference that is not there. Each
-       zone's own currency is on the right. The tick marks today's average.</p>
+    <h2>Day-ahead power across Europe</h2>
+    <p class="sub">Every bidding zone from Troms&oslash; to northern Italy on one
+       shared axis, in <b>euro cents per kWh</b> &mdash; the currency power actually
+       clears in. A Norwegian krone and a Swedish krona are not the same ruler, and a
+       German &euro;/MWh is not a Norwegian &oslash;re/kWh, so everything is converted
+       rather than laid side by side to invent a difference that is not there. Nordic
+       zones keep their own currency on the right. The tick marks today's average.
+       <b>Iceland is absent deliberately</b>: an isolated grid with no day-ahead
+       market, so there is no price to show.</p>
     <div id="zones"></div>
     <div class="axis" id="zoneAxis"></div>
   </section>
@@ -135,42 +138,71 @@ function ago(iso) {
 let DATA = null, activeZone = null;
 
 /* ------------------------------------------------------- zone strip */
-function renderZones(d) {
-  const zs = d.zones.filter(z => z.today && z.today.eur && z.today.eur.length);
-  if (!zs.length) { $("zones").innerHTML = "<p class='sub'>No prices yet.</p>"; return; }
+/* Nordic and continental zones on ONE axis, in euro cents per kWh.
+   Two separate strips would have let you read each and compare neither, and
+   the comparison is the whole point: the gap between northern Sweden and
+   northern Italy is the largest number on this page. */
+function allZones(d) {
+  const rows = [];
+  (d.zones || []).forEach(z => {
+    if (!z.today || !z.today.eur || !z.today.eur.length) return;
+    rows.push({
+      code: z.zone, label: z.label, region: "Nordic",
+      // Nordic feeds give EUR per kWh; everything here is euro cents.
+      series: z.today.eur.map(v => v * 100),
+      local: money(z.today.mean, z.currency) + "/kWh",
+    });
+  });
+  // Denmark and Finland arrive from the European feed but are Nordic markets;
+  // tagging them "Continental" because of where the data came from would be
+  // an artefact of our plumbing, not a fact about the grid.
+  const NORDIC = new Set(["DK1", "DK2", "FI"]);
+  (d.europe || []).forEach(z => {
+    if (!z.cents || !z.cents.length) return;
+    rows.push({
+      code: z.zone, label: z.name,
+      region: z.zone === "GB" ? "Britain"
+            : NORDIC.has(z.zone) ? "Nordic" : "Continental",
+      series: z.cents, local: z.stale ? "last known" : "",
+    });
+  });
+  return rows;
+}
 
-  // Shared axis across every zone, in EUR.
-  const all = zs.flatMap(z => z.today.eur);
+function renderZones(d) {
+  const rows = allZones(d);
+  if (!rows.length) { $("zones").innerHTML = "<p class='sub'>No prices yet.</p>"; return; }
+
+  const all = rows.flatMap(r => r.series);
   const lo = Math.min(...all), hi = Math.max(...all);
   const span = (hi - lo) || 1;
   const pct = v => ((v - lo) / span) * 100;
 
-  $("zones").innerHTML = zs
-    .slice()
+  $("zones").innerHTML = rows
     // By average, not by cheapest hour: a zone with one wild cheap hour would
     // otherwise sort above a zone that is cheaper all day, which is backwards.
-    .sort((a, b) => avgOf(a.today.eur) - avgOf(b.today.eur))
-    .map(z => {
-      const e = z.today.eur;
-      const zlo = Math.min(...e), zhi = Math.max(...e);
-      const avg = e.reduce((s, x) => s + x, 0) / e.length;
+    .sort((a, b) => avgOf(a.series) - avgOf(b.series))
+    .map(r => {
+      const zlo = Math.min(...r.series), zhi = Math.max(...r.series);
+      const avg = avgOf(r.series);
       const left = pct(zlo), width = Math.max(pct(zhi) - pct(zlo), 1.2);
       return `<div class="zone">
         <div class="who">
-          <span class="code">${esc(z.zone)}</span>
-          <span class="place">${esc(z.label)}</span>
+          <span class="code">${esc(r.code)}<i>${esc(r.region)}</i></span>
+          <span class="place">${esc(r.label)}</span>
         </div>
         <div class="track">
           <span class="range" style="left:${left}%;width:${width}%;
             --a:${priceColor(zlo, lo, hi)};--b:${priceColor(zhi, lo, hi)}"></span>
           <span class="now" style="left:${pct(avg)}%"></span>
         </div>
-        <div class="val">${cents(avg)}<small>${money(z.today.mean, z.currency)}/kWh</small></div>
+        <div class="val">${avg.toFixed(1)}<small>${esc(r.local)}</small></div>
       </div>`;
     }).join("");
 
   $("zoneAxis").innerHTML =
-    `<span>${cents(lo)}c</span><span>${cents((lo + hi) / 2)}c</span><span>${cents(hi)}c</span>`;
+    `<span>${lo.toFixed(1)}c</span><span>${((lo + hi) / 2).toFixed(1)}c</span>` +
+    `<span>${hi.toFixed(1)}c</span>`;
 }
 
 /* ------------------------------------------------------- hour curve */
@@ -435,9 +467,11 @@ function fmtAge(h) {
 
 /* -------------------------------------------------------------- lede */
 function renderLede(d) {
-  const zs = d.zones.filter(z => z.today && z.today.eur.length);
-  if (!zs.length) return;
-  const means = zs.map(z => ({ z, m: z.today.eur.reduce((s, x) => s + x, 0) / z.today.eur.length }));
+  // Across every zone on the page, not just the Nordic ones: the headline
+  // should describe the same picture the strip below it shows.
+  const rows = allZones(d);
+  if (!rows.length) return;
+  const means = rows.map(r => ({ z: { zone: r.code }, m: avgOf(r.series) }));
   means.sort((a, b) => a.m - b.m);
   const cheap = means[0], dear = means[means.length - 1];
   const ratio = cheap.m > 0 ? dear.m / cheap.m : 0;
@@ -447,12 +481,12 @@ function renderLede(d) {
     .filter(([, v]) => v.vsNormal != null)
     .sort((a, b) => a[1].vsNormal - b[1].vsNormal)[0];
 
-  let txt = `Power costs <span class="read">${cents(dear.m)} euro cents</span> per kWh in
-    ${esc(dear.z.zone)} today and <span class="read">${cents(cheap.m)}</span> in
+  let txt = `Power costs <span class="read">${dear.m.toFixed(1)} euro cents</span> per kWh in
+    ${esc(dear.z.zone)} today and <span class="read">${cheap.m.toFixed(1)}</span> in
     ${esc(cheap.z.zone)}`;
   // Phrased as "a spread of N" rather than "a N× difference" so the article
   // is never wrong: 8, 11 and 18 all want "an".
-  txt += ratio > 2 ? ` — a spread of <span class="read">${Math.round(ratio)}×</span> across one synchronous grid.`
+  txt += ratio > 2 ? ` — a spread of <span class="read">${Math.round(ratio)}×</span> across the continent.`
                    : ` — unusually close together for the Nordics.`;
   if (below) {
     const [zn, v] = below;

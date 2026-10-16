@@ -245,3 +245,52 @@ footer a { color: var(--muted); }
   .wx { grid-template-columns: 78px 1fr 1fr; }
   .whdh { grid-column: 1 / -1; }
 }
+
+/* ------------------------------------ zone strip, wider and unsqueezed */
+/* The label column was 112px with the place name clipped to an ellipsis -
+   "Trondheim & the…" told you nothing. Wider, with the region as a small
+   tag, and it wraps to two lines on a phone instead of truncating. */
+.zone { grid-template-columns: 168px 1fr 108px; }
+.zone .code { display: flex; align-items: baseline; gap: 6px; }
+.zone .code i {
+  font-style: normal; font-size: .56rem; letter-spacing: .07em;
+  text-transform: uppercase; color: var(--faint);
+  border: 1px solid var(--line); border-radius: 3px; padding: 1px 4px;
+}
+.zone .place { white-space: normal; overflow: visible; line-height: 1.25; }
+.zone .val small { white-space: nowrap; }
+
+@media (max-width: 680px) {
+  .zone { grid-template-columns: 1fr 86px; row-gap: 4px; }
+  .zone .who { grid-column: 1; }
+  .zone .val { grid-column: 2; }
+  .zone .track { grid-column: 1 / -1; }
+}
+
+/* --------------------------------- phone: stop squeezing place names */
+/* Measured, not guessed: .zone-name had 78px of box for 123px of content
+   ("NO2 / Kristiansand"). Long single words cannot ellipsise their way out
+   of that, so the column gets the full row on a phone instead. */
+.zone-name small { overflow-wrap: anywhere; }
+
+@media (max-width: 620px) {
+  .wx {
+    grid-template-columns: 1fr 1fr;
+    row-gap: 6px;
+    padding: 11px 0;
+  }
+  .wx .zone-name { grid-column: 1 / -1; }
+  .wx .zone-name small { display: inline; margin-left: 6px; }
+  .whdh { grid-column: 1 / -1; }
+
+  .res { grid-template-columns: 1fr 112px; row-gap: 5px; }
+  .res .zone-name { grid-column: 1; }
+  .res .fig { grid-column: 2; }
+  .res .dev { grid-column: 1 / -1; }
+  .res .zone-name small { display: inline; margin-left: 6px; }
+
+  .flow { grid-template-columns: 1fr 78px; row-gap: 3px; }
+  .flow .ends { grid-column: 1; }
+  .flow .fmw { grid-column: 2; }
+  .flow .fbar { grid-column: 1 / -1; }
+}

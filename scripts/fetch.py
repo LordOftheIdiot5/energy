@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import json
 import statistics
+import time
 import urllib.parse
 import urllib.request
 from datetime import date, datetime, timedelta, timezone
@@ -41,6 +42,26 @@ ZONES = [
     ("SE3", "SE", "Stockholm", "elprisetjustnu.se", "SEK_per_kWh"),
     ("SE4", "SE", "Malmö", "elprisetjustnu.se", "SEK_per_kWh"),
 ]
+
+# The rest of Europe, from Fraunhofer's energy-charts. Prices come as EUR/MWh
+# against the Nordic feeds' local currency per kWh, but both convert to euro
+# cents per kWh, so everything lands on one honest axis.
+#
+# Iceland is deliberately absent: an isolated grid with no day-ahead market,
+# so there is no price to publish rather than a source we failed to find.
+EUROPE_ZONES = [
+    ("DK1", "Denmark west", "DK"), ("DK2", "Denmark east", "DK"),
+    ("FI", "Finland", "FI"), ("DE-LU", "Germany", "DE"),
+    ("NL", "Netherlands", "NL"), ("BE", "Belgium", "BE"),
+    ("FR", "France", "FR"), ("AT", "Austria", "AT"),
+    ("CH", "Switzerland", "CH"), ("ES", "Spain", "ES"),
+    ("PL", "Poland", "PL"), ("IT-North", "Italy north", "IT"),
+]
+
+# energy-charts throttles hard - a tight loop gets 429 after three or four
+# calls - so requests are spaced and retried. A zone that still fails keeps
+# its previous value rather than blanking, which would read as "free power".
+EUROPE_GAP_SECONDS = 6.5
 
 # NVE's EL areas map one-to-one onto the Norwegian price zones.
 RESERVOIR_AREAS = {1: "NO1", 2: "NO2", 3: "NO3", 4: "NO4", 5: "NO5"}
@@ -267,6 +288,122 @@ def collect_commodities() -> list[dict]:
     return out
 
 
+# ---------------------------------------------------------- the rest of Europe
+def _previous_europe() -> dict:
+    """Last run's European prices, to fall back on when a zone is throttled."""
+    try:
+        old = json.loads(OUT.read_text(encoding="utf-8"))
+        return {z["zone"]: z for z in (old.get("europe") or [])}
+    except Exception:
+        return {}
+
+
+def _euro_zone(code: str, name: str, country: str) -> dict | None:
+    url = f"https://api.energy-charts.info/price?bzn={code}"
+    for attempt in range(2):
+        try:
+            d = get_json(url, timeout=25)
+            break
+        except Exception as e:
+            if attempt:
+                print(f"  ! {code}: {e}")
+                return None
+            time.sleep(EUROPE_GAP_SECONDS * 2)
+    else:
+        return None
+
+    raw = [p for p in (d.get("price") or []) if p is not None]
+    if not raw:
+        return None
+    # EUR/MWh -> euro cents per kWh, the page's common unit.
+    cents = [round(p / 10.0, 3) for p in raw]
+    return {
+        "zone": code, "name": name, "country": country,
+        "points": len(cents),
+        "cents": cents,
+        "min": min(cents), "max": max(cents),
+        "mean": round(statistics.mean(cents), 3),
+        "unit": "eurocent/kWh",
+    }
+
+
+def _great_britain() -> dict | None:
+    """GB separately: energy-charts does not carry it since Brexit.
+
+    Elexon's market index is the real wholesale price in pounds. Octopus
+    Agile was the easier source and the wrong one - a retail tariff carrying
+    margin, standing charge and VAT would look like a market price while
+    describing something else.
+    """
+    today = date.today()
+    url = ("https://data.elexon.co.uk/bmrs/api/v1/balancing/pricing/market-index"
+           f"?from={today.isoformat()}T00:00Z"
+           f"&to={today.isoformat()}T23:59Z&format=json")
+    try:
+        rows = (get_json(url, timeout=25) or {}).get("data") or []
+    except Exception as e:
+        print(f"  ! GB: {e}")
+        return None
+    # Elexon publishes each settlement period under two data providers, and
+    # the second reports zero. Taking both gave an alternating
+    # [22.4, 0.0, 22.5, 0.0] series - Britain with free power every other
+    # half-hour. APXMIDP is the standard market index reference.
+    prices = [float(r["price"]) for r in rows
+              if r.get("price") is not None
+              and r.get("dataProvider") == "APXMIDP"
+              and float(r["price"]) > 0]
+    if not prices:
+        return None
+
+    # GBP/MWh -> EUR cents/kWh. Without the rate the number is not comparable
+    # to anything else here, so no rate means no GB row.
+    try:
+        fx = get_json("https://query1.finance.yahoo.com/v8/finance/chart/"
+                      "GBPEUR%3DX?range=5d&interval=1d")
+        closes = [c for c in fx["chart"]["result"][0]["indicators"]["quote"][0]["close"]
+                  if c is not None]
+        rate = closes[-1]
+    except Exception as e:
+        print(f"  ! GB: no GBP/EUR rate ({e}), skipping")
+        return None
+
+    cents = [round(p * rate / 10.0, 3) for p in prices]
+    return {
+        "zone": "GB", "name": "Great Britain", "country": "GB",
+        "points": len(cents), "cents": cents,
+        "min": min(cents), "max": max(cents),
+        "mean": round(statistics.mean(cents), 3),
+        "unit": "eurocent/kWh", "fx": round(rate, 4),
+    }
+
+
+def collect_europe() -> list[dict]:
+    previous = _previous_europe()
+    out, reused = [], 0
+    for code, name, country in EUROPE_ZONES:
+        row = _euro_zone(code, name, country)
+        if row is None and code in previous:
+            row = dict(previous[code], stale=True)
+            reused += 1
+        if row:
+            out.append(row)
+            flag = " (kept from last run)" if row.get("stale") else ""
+            print(f"  {code:<9}{name:<16}{row['min']:>6.2f}-{row['max']:>6.2f} "
+                  f"c/kWh{flag}")
+        time.sleep(EUROPE_GAP_SECONDS)
+
+    gb = _great_britain()
+    if gb is None and "GB" in previous:
+        gb = dict(previous["GB"], stale=True)
+        reused += 1
+    if gb:
+        out.append(gb)
+        print(f"  {'GB':<9}{'Great Britain':<16}{gb['min']:>6.2f}-{gb['max']:>6.2f} c/kWh")
+    if reused:
+        print(f"  ({reused} kept from the previous run after throttling)")
+    return out
+
+
 # ------------------------------------------------------------- the grid
 def _mw(raw) -> float | None:
     """Statnett returns megawatts as '17 270', separated by a hard space."""
@@ -395,6 +532,8 @@ def main() -> int:
     zones = collect_spot()
     print("\nreservoirs")
     reservoirs = collect_reservoirs()
+    print("\nthe rest of Europe")
+    europe = collect_europe()
     print("\nthe grid")
     grid = collect_grid()
     print("\nweather")
@@ -415,6 +554,7 @@ def main() -> int:
         "generated": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
         "zones": zones,
         "reservoirs": reservoirs,
+        "europe": europe,
         "grid": grid,
         "weather": weather,
         "commodities": commodities,
@@ -425,7 +565,8 @@ def main() -> int:
         json.dump(payload, f, indent=1, ensure_ascii=False)
         f.write("\n")
     print(f"\nwrote {OUT.relative_to(ROOT)}  "
-          f"{len(zones)} zones, {len(commodities)} instruments, "
+          f"{len(zones)} Nordic + {len(europe)} European zones, "
+          f"{len(commodities)} instruments, "
           f"{len(stories)} stories")
     return 0
 
