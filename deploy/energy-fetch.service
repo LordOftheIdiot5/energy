@@ -6,16 +6,18 @@ Wants=network-online.target
 [Service]
 Type=oneshot
 User=root
-ExecStart=/usr/bin/env bash /opt/energy-trigger/trigger.sh
+# Runs straight out of the clone at /opt/energy, the same arrangement as
+# stockwatch: updating the trigger is then a git pull rather than a copy, and
+# the script keeps the LF endings git checks out rather than the CRLF a copy
+# from Windows would bring, which a shebang will not survive.
+ExecStart=/opt/energy/deploy/trigger.sh
+WorkingDirectory=/opt/energy
 
-# A dispatch is cheap and idempotent - the script skips when a run is already
-# going - so a failure is worth retrying rather than waiting an hour.
 Restart=on-failure
 RestartSec=120
 
 NoNewPrivileges=true
 PrivateTmp=true
-ProtectSystem=strict
 ProtectHome=true
 
 StandardOutput=journal
