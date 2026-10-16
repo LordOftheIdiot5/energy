@@ -462,32 +462,38 @@ GAS_COUNTRIES = [("eu", "Europe"), ("de", "Germany"), ("nl", "Netherlands"),
                  ("fr", "France"), ("it", "Italy"), ("at", "Austria")]
 
 
-def _gas_rows(key: str, country: str):
-    """AGSI, tried both ways it documents accepting a key."""
+def _gas_rows(key: str, country: str) -> tuple[list, str]:
+    """AGSI for one country. Returns (rows, why-it-failed).
+
+    The reason matters: the first run got Germany and nothing else, and a
+    bare "no data" cannot distinguish a wrong country code from a throttle
+    from an expired key. Guessing between those wastes a deploy each time.
+    """
     url = f"https://agsi.gie.eu/api?country={country}&size=2"
-    attempts = (
-        {"x-key": key},                      # the documented header
-        None,                                # and as a query parameter
-    )
-    for headers in attempts:
+    last = "no attempt"
+    for use_header in (True, False):
         try:
-            if headers is None:
+            if use_header:
+                req = urllib.request.Request(
+                    url, headers={"User-Agent": UA, "x-key": key})
+            else:
                 req = urllib.request.Request(
                     url + f"&apikey={urllib.parse.quote(key)}",
                     headers={"User-Agent": UA})
-            else:
-                req = urllib.request.Request(
-                    url, headers={"User-Agent": UA, **headers})
             with urllib.request.urlopen(req, timeout=25) as r:
                 payload = json.loads(r.read())
-        except Exception:
+        except Exception as e:
+            last = f"{type(e).__name__}: {str(e)[:60]}"
             continue
         if payload.get("error"):
+            last = f"api error: {str(payload.get('message'))[:70]}"
             continue
         rows = payload.get("data") or []
         if rows:
-            return rows
-    return []
+            return rows, ""
+        last = (f"empty data (keys {sorted(payload)[:4]}, "
+                f"total {payload.get('total')})")
+    return [], last
 
 
 def collect_gas_storage() -> dict:
@@ -497,10 +503,12 @@ def collect_gas_storage() -> dict:
         return {}
 
     out = {"countries": []}
-    for code, name in GAS_COUNTRIES:
-        rows = _gas_rows(key, code)
+    for i, (code, name) in enumerate(GAS_COUNTRIES):
+        if i:
+            time.sleep(1.5)        # AGSI is not energy-charts, but be polite
+        rows, why = _gas_rows(key, code)
         if not rows:
-            print(f"  ! {name}: no data")
+            print(f"  ! {name} ({code}): {why}")
             continue
         now = rows[0]
 
