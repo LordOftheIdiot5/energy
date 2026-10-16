@@ -417,3 +417,45 @@ footer a { color: var(--muted); }
   .cor { grid-template-columns: 1fr 70px; row-gap: 2px; }
   .cor-bar { grid-column: 1 / -1; }
 }
+
+/* ------------------------------------------------- France, in the grid */
+.fr { background: var(--panel-lit); border: 1px solid var(--line);
+      border-radius: 11px; padding: 13px 14px; }
+.fr-main { display: flex; align-items: baseline; gap: 9px; flex-wrap: wrap; }
+.fr-val { font-size: 1.6rem; font-weight: 650; letter-spacing: -.02em; }
+.fr-lab { font-size: .76rem; color: var(--muted); }
+.fr-bar { height: 8px; background: var(--line); border-radius: 4px;
+          margin: 9px 0 8px; overflow: hidden; }
+.fr-bar i { display: block; height: 100%;
+            background: linear-gradient(90deg, var(--p4), var(--p2), var(--p0)); }
+.fr-nums { display: flex; gap: 16px; flex-wrap: wrap;
+           font-size: .72rem; color: var(--faint); }
+.fr-nums b { color: var(--ink); font-family: var(--mono); font-weight: 500; }
+
+/* -------------------------------------------------- what is in a litre */
+.pump { margin-bottom: 18px; }
+.pump:last-of-type { margin-bottom: 10px; }
+.pump-head { display: flex; align-items: baseline; gap: 10px;
+             flex-wrap: wrap; margin-bottom: 8px; }
+.pump-name { font-size: .88rem; font-weight: 600; }
+.pump-tax { font-size: .7rem; color: var(--faint); }
+.pump-total { margin-left: auto; font-family: var(--mono);
+              font-size: 1.12rem; font-weight: 600; }
+.pump-total u { text-decoration: none; font-size: .6rem;
+                color: var(--faint); margin-left: 4px; font-family: var(--sans); }
+.pump-move { margin-top: 8px; font-size: .72rem; color: var(--faint); }
+.pump-move b { font-family: var(--mono); font-weight: 500; }
+.pump-note { color: var(--faint); font-size: .7rem; margin-top: 4px; }
+@media (max-width: 620px) {
+  .pump-total { margin-left: 0; }
+}
+
+/* ---------------------------- weather names, at every width not just phone */
+/* The phone fix left desktop alone, where a 96px column still had to hold
+   "NO3 / Trondheim" - so overflow-wrap did its job and broke the word in
+   half. An audit for overflow cannot catch that; it only looks wrong. */
+.wx { grid-template-columns: 136px 1fr 1fr 150px; }
+.wx .zone-name small { overflow-wrap: normal; word-break: keep-all; }
+@media (max-width: 900px) {
+  .wx { grid-template-columns: 120px 1fr 1fr 120px; }
+}

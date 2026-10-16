@@ -30,6 +30,7 @@
     <a href="#weather">Weather</a>
     <a href="#hydro">Hydro</a>
     <a href="#fuels">Fuels</a>
+    <a href="#pump">At the pump</a>
     <a href="#market">Companies</a>
     <a href="#news">Being built</a>
     <a href="guide.html" class="guide">How to read this</a>
@@ -61,6 +62,7 @@
     <h2>The grid, right now</h2>
         <p class="sub">What is generating this minute, and which way it is flowing. <span class="hint" tabindex="0" data-tip="A zone is dear when it is exporting into a dearer neighbour and cheap when its power has nowhere to go. NO2 runs down the cables to Germany and England; NO4 sits behind constrained transmission.">The flows explain the price map above.</span></p>
     <div id="mix"></div>
+    <div id="france"></div>
     <div id="flows"></div>
   </section>
 
@@ -80,6 +82,14 @@
     <h2>Fuels, carbon and currency</h2>
         <p class="sub">What the marginal plant burns, what it pays to emit, and the rates between the price that is set and the bill that is paid. <span class="hint" tabindex="0" data-tip="The thin bar under each card. A price can fall on the day and still sit near the top of where it has been for six months, which the daily change alone will not tell you.">Range position</span> is the bar beneath each.</p>
     <div id="commodities"></div>
+  </section>
+
+  <section class="panel" id="pump">
+    <h2>What is in a litre</h2>
+    <p class="sub"><span class="hint" tabindex="0" data-tip="There is no free feed for Norwegian pump prices - drivstoffappen is a website, not an API. So the refined product and the exchange rate are live, duty is a stated rate, and VAT is a multiplier. If the total is out against the forecourt sign, the difference is retail margin.">Modelled, not observed</span>
+       &mdash; and the point is the split, not the total. Tax is fixed between
+       budgets, so everything that moves is the product or the krone.</p>
+    <div id="pumpRows"></div>
   </section>
 
   <section class="panel" id="market">
@@ -439,6 +449,66 @@ function renderCommodities(d) {
   }).join("");
 }
 
+/* ---------------------------------------------- France, inside the grid */
+function renderFrance(d) {
+  const f = d.france || {};
+  if (!f.nuclearMw) { $("france").innerHTML = ""; return; }
+  // Availability against installed capacity is the number traders watch:
+  // the shortfall is what the rest of Europe has to burn gas to cover.
+  const pct = f.availabilityPct;
+  const tone = pct >= 80 ? "ok" : pct >= 65 ? "" : "bad";
+  $("france").innerHTML = `
+    <div class="group-title">France, the biggest swing in European power</div>
+    <div class="fr">
+      <div class="fr-main">
+        <span class="fr-val ${tone}">${pct}%</span>
+        <span class="fr-lab">of the ${f.fleetGw} GW reactor fleet running</span>
+      </div>
+      <div class="fr-bar"><i style="width:${Math.min(100, pct)}%"></i></div>
+      <div class="fr-nums">
+        <span>nuclear <b>${f.nuclearMw.toLocaleString("en-US")}</b> MW</span>
+        ${f.loadMw ? `<span>load <b>${f.loadMw.toLocaleString("en-US")}</b> MW</span>` : ""}
+        <span>wind <b>${f.windMw.toLocaleString("en-US")}</b> MW</span>
+        <span>gas <b>${f.gasMw.toLocaleString("en-US")}</b> MW</span>
+      </div>
+    </div>`;
+}
+
+/* ------------------------------------------------------ what is in a litre */
+function renderPump(d) {
+  const f = d.fuel || {};
+  const fuels = f.fuels || [];
+  if (!fuels.length) { $("pumpRows").innerHTML = ""; return; }
+  const PARTS = [
+    ["productNok", "Product", "#58b9ff"],
+    ["roadTax", "Road duty", "#f09243"],
+    ["co2Tax", "CO₂ duty", "#ef5a6a"],
+    ["vat", "VAT", "#b48cff"],
+  ];
+  $("pumpRows").innerHTML = fuels.map(x => {
+    const total = x.modelledTotal || 1;
+    const segs = PARTS.map(([k, label, col]) =>
+      `<span class="seg" style="width:${(x[k] / total) * 100}%;background:${col}"
+         title="${label} ${x[k].toFixed(2)} NOK"></span>`).join("");
+    const legend = PARTS.map(([k, label, col]) =>
+      `<span class="key"><i style="background:${col}"></i>${label}
+        <b>${x[k].toFixed(2)}</b></span>`).join("");
+    return `<div class="pump">
+      <div class="pump-head">
+        <span class="pump-name">${esc(x.label)}</span>
+        <span class="pump-tax">${x.taxShare}% of it is tax</span>
+        <span class="pump-total">${x.modelledTotal.toFixed(2)}<u>NOK/l</u></span>
+      </div>
+      <div class="stack">${segs}</div>
+      <div class="legend">${legend}</div>
+      <div class="pump-move">Last three months:
+        <b class="${x.productMove >= 0 ? "bad" : "ok"}">${x.productMove >= 0 ? "+" : ""}${x.productMove.toFixed(2)}</b> from the product,
+        <b class="${x.currencyMove >= 0 ? "bad" : "ok"}">${x.currencyMove >= 0 ? "+" : ""}${x.currencyMove.toFixed(2)}</b> from the krone
+      </div>
+    </div>`;
+  }).join("") + `<p class="sub tight pump-note">${esc(f.note || "")}</p>`;
+}
+
 /* ------------------------------------------------- margins & equities */
 function renderMarket(d) {
   const m = d.market || {};
@@ -589,6 +659,7 @@ fetch("data/energy.json?cb=" + Date.now())
     renderPills(d); renderCurves(d);
     renderGrid(d); renderWeather(d);
     renderReservoirs(d); renderCommodities(d);
+    renderFrance(d); renderPump(d);
     renderMarket(d); renderNews(d);
     placeHints();
   })

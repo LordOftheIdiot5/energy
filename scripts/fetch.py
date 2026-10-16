@@ -446,6 +446,123 @@ def collect_market(zones: list[dict]) -> dict:
     }
 
 
+
+# --------------------------------------------------------- fuel at the pump
+# Norwegian fuel duty, NOK per litre. These are rates, not measurements: they
+# change in the national budget, and are stated here so the page can show what
+# part of a litre is tax rather than pretending to observe a pump price.
+#
+# There is no free feed for Norwegian pump prices - drivstoffappen is a site,
+# not an API - so what is modelled is the part that MOVES: the refined product
+# and the exchange rate. Duty is fixed between budgets and VAT is a multiplier,
+# so if the total is out against the sign on the forecourt, the difference is
+# retail margin, which is itself worth seeing.
+FUEL_DUTY = {
+    "petrol": {"road": 5.62, "co2": 2.21, "label": "Petrol (95)"},
+    "diesel": {"road": 3.93, "co2": 2.54, "label": "Diesel"},
+}
+FUEL_DUTY_NOTE = ("Norwegian duty as published for 2025 - verify against "
+                  "skatteetaten.no before relying on the total")
+MVA = 0.25
+LITRES_PER_GALLON = 3.785411784
+
+
+def _yahoo_closes(symbol: str, rng: str = "3mo") -> list[float]:
+    try:
+        url = ("https://query1.finance.yahoo.com/v8/finance/chart/"
+               f"{urllib.parse.quote(symbol)}?range={rng}&interval=1d")
+        block = (get_json(url).get("chart") or {}).get("result")[0]
+        return [c for c in block["indicators"]["quote"][0]["close"]
+                if c is not None]
+    except Exception:
+        return []
+
+
+def collect_fuel() -> dict:
+    """What is actually in a litre, and which part of it moved."""
+    fx = _yahoo_closes("USDNOK=X")
+    if not fx:
+        print("  ! no USD/NOK, skipping fuel")
+        return {}
+    usdnok, usdnok_then = fx[-1], fx[0]
+
+    out = {"usdnok": round(usdnok, 4), "note": FUEL_DUTY_NOTE,
+           "vatPct": int(MVA * 100), "fuels": []}
+    for key, sym in (("petrol", "RB=F"), ("diesel", "HO=F")):
+        hist = _yahoo_closes(sym)
+        if not hist:
+            continue
+        duty = FUEL_DUTY[key]
+        product = hist[-1] / LITRES_PER_GALLON * usdnok        # NOK per litre
+        before_vat = product + duty["road"] + duty["co2"]
+        vat = before_vat * MVA
+        total = before_vat + vat
+
+        # Split the three-month move into what the commodity did and what the
+        # krone did. A pump price can rise with nothing happening to oil.
+        then_product = hist[0] / LITRES_PER_GALLON * usdnok_then
+        same_fx = hist[-1] / LITRES_PER_GALLON * usdnok_then
+        out["fuels"].append({
+            "key": key, "label": duty["label"],
+            "productNok": round(product, 2),
+            "roadTax": duty["road"], "co2Tax": duty["co2"],
+            "vat": round(vat, 2),
+            "modelledTotal": round(total, 2),
+            "taxShare": round((duty["road"] + duty["co2"] + vat) / total * 100, 1),
+            "productMove": round(same_fx - then_product, 2),
+            "currencyMove": round(product - same_fx, 2),
+        })
+        f = out["fuels"][-1]
+        print(f"  {duty['label']:<13}product {product:5.2f} + duty "
+              f"{duty['road'] + duty['co2']:4.2f} + VAT {vat:4.2f} = "
+              f"{total:5.2f} NOK/l ({f['taxShare']}% tax)  "
+              f"3m: product {f['productMove']:+.2f}, krone {f['currencyMove']:+.2f}")
+    return out
+
+
+# ------------------------------------------------- the French nuclear fleet
+def collect_france() -> dict:
+    """France's reactors, the biggest single swing in European power.
+
+    When that fleet is down, everything from Spain to Germany reprices. RTE's
+    own open dataset answered but its newest row was six weeks old, and a
+    stale number labelled "now" is worse than none; energy-charts is current
+    to the quarter hour and already in use here.
+    """
+    try:
+        d = get_json("https://api.energy-charts.info/public_power?country=fr")
+    except Exception as e:
+        print(f"  ! France unavailable: {e}")
+        return {}
+    types = {t.get("name"): t for t in (d.get("production_types") or [])}
+
+    def newest(name: str):
+        vals = [v for v in ((types.get(name) or {}).get("data") or [])
+                if v is not None]
+        return vals[-1] if vals else None
+
+    nuclear, load = newest("Nuclear"), newest("Load")
+    if nuclear is None:
+        return {}
+    wind = (newest("Wind onshore") or 0) + (newest("Wind offshore") or 0)
+    # Installed capacity of the French fleet, roughly 61.4 GW across 57
+    # reactors. Availability against that is what the market watches, because
+    # the shortfall is what the rest of Europe has to burn gas to cover.
+    fleet_mw = 61_400
+    out = {
+        "nuclearMw": round(nuclear), "loadMw": round(load) if load else None,
+        "windMw": round(wind), "solarMw": round(newest("Solar") or 0),
+        "gasMw": round(newest("Fossil gas") or 0),
+        "fleetGw": fleet_mw / 1000,
+        "availabilityPct": round(nuclear / fleet_mw * 100, 1),
+        "shareOfLoadPct": round(nuclear / load * 100, 1) if load else None,
+    }
+    print(f"  nuclear {nuclear:,.0f} MW of {fleet_mw/1000:.1f} GW installed "
+          f"({out['availabilityPct']}%)"
+          + (f", load {load:,.0f} MW" if load else ""))
+    return out
+
+
 # ------------------------------------------------------------- the grid
 def _mw(raw) -> float | None:
     """Statnett returns megawatts as '17 270', separated by a hard space."""
@@ -578,6 +695,10 @@ def main() -> int:
     europe = collect_europe()
     print("\nmargins and equities")
     market = collect_market(zones)
+    print("\nfuel at the pump")
+    fuel = collect_fuel()
+    print("\nthe French fleet")
+    france = collect_france()
     print("\nthe grid")
     grid = collect_grid()
     print("\nweather")
@@ -601,6 +722,8 @@ def main() -> int:
         "europe": europe,
         "market": market,
         "grid": grid,
+        "fuel": fuel,
+        "france": france,
         "weather": weather,
         "commodities": commodities,
         "news": stories,

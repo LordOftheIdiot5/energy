@@ -77,6 +77,26 @@ def main() -> int:
     check("every commodity has a sparkline",
           all(len(c.get("spark") or []) >= 2 for c in com))
 
+    fuel = d.get("fuel") or {}
+    fuels = fuel.get("fuels") or []
+    check("has fuel breakdown", len(fuels) >= 1, f"{len(fuels)} fuels")
+    for f in fuels:
+        total = f.get("modelledTotal") or 0
+        parts = sum(f.get(k) or 0 for k in
+                    ("productNok", "roadTax", "co2Tax", "vat"))
+        # The whole point of the panel is that the parts add up. If they
+        # drift apart, the model is lying about its own arithmetic.
+        check(f"{f.get('key')} parts sum to the total",
+              abs(parts - total) < 0.02, f"{parts:.2f} vs {total:.2f}")
+        check(f"{f.get('key')} is a plausible pump price",
+              5 < total < 60, f"{total} NOK/l")
+
+    fr = d.get("france") or {}
+    if fr:
+        check("French availability is a percentage",
+              0 < (fr.get("availabilityPct") or 0) <= 100,
+              f"{fr.get('availabilityPct')}%")
+
     mk = d.get("market") or {}
     margins = mk.get("margins") or []
     check("has margins", len(margins) >= 2, f"{len(margins)} spreads")
