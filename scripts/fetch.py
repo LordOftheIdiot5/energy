@@ -63,6 +63,23 @@ COMMODITIES = [
 ]
 
 
+# One representative point per bidding zone. Weather is the only leading
+# indicator available: temperature sets demand and wind sets supply, both
+# before the market prices either. Everything else on the page is a
+# measurement of something that has already happened.
+ZONE_WEATHER = {
+    "NO1": ("Oslo", 59.91, 10.75), "NO2": ("Kristiansand", 58.15, 8.00),
+    "NO3": ("Trondheim", 63.43, 10.39), "NO4": ("Tromsø", 69.65, 18.96),
+    "NO5": ("Bergen", 60.39, 5.32), "SE1": ("Luleå", 65.58, 22.15),
+    "SE2": ("Sundsvall", 62.39, 17.31), "SE3": ("Stockholm", 59.33, 18.07),
+    "SE4": ("Malmö", 55.60, 13.00),
+}
+
+# Below this, buildings start drawing heat. The gap is what actually drives
+# winter demand, far more than the temperature reading on its own.
+HEATING_BASE_C = 15.0
+
+
 def get(url: str, timeout: int = 25) -> str:
     req = urllib.request.Request(url, headers={"User-Agent": UA})
     with urllib.request.urlopen(req, timeout=timeout) as resp:
@@ -250,11 +267,138 @@ def collect_commodities() -> list[dict]:
     return out
 
 
+# ------------------------------------------------------------- the grid
+def _mw(raw) -> float | None:
+    """Statnett returns megawatts as '17 270', separated by a hard space."""
+    if raw is None:
+        return None
+    text = str(raw).replace(" ", "").replace(" ", "").replace(",", "")
+    try:
+        return float(text)
+    except ValueError:
+        return None
+
+
+def collect_grid() -> dict:
+    """What is generating right now, and which way it is flowing.
+
+    The price map on this page shows NO2 dear and NO4 cheap without saying
+    why. The flows are the why: NO2 exports down the cables to Germany and
+    England and is priced against them, while NO4 sits behind constrained
+    transmission with nowhere for its power to go.
+    """
+    out: dict = {}
+    try:
+        d = get_json("https://driftsdata.statnett.no/restapi/"
+                     "ProductionConsumption/GetLatestDetailedOverview")
+    except Exception as e:
+        print(f"  ! Statnett production unavailable: {e}")
+        d = {}
+
+    if d:
+        mix, by_country = {}, {}
+        for key, label in (("HydroData", "hydro"), ("WindData", "wind"),
+                           ("ThermalData", "thermal"), ("NuclearData", "nuclear"),
+                           ("NotSpecifiedData", "other"),
+                           ("ConsumptionData", "consumption")):
+            rows = d.get(key) or []
+            # Rows carrying a countryCode are the per-country figures; the two
+            # without are a heading and a Nordic total.
+            per = {r["countryCode"]: _mw(r.get("value"))
+                   for r in rows if r.get("countryCode")}
+            total = sum(v for v in per.values() if v is not None)
+            mix[label] = round(total)
+            for cc, v in per.items():
+                if v is not None:
+                    by_country.setdefault(cc, {})[label] = round(v)
+        generation = sum(v for k, v in mix.items() if k != "consumption")
+        out["mix"] = mix
+        out["byCountry"] = by_country
+        out["generation"] = round(generation)
+        renew = (mix.get("hydro") or 0) + (mix.get("wind") or 0)
+        out["renewableShare"] = round(renew / generation * 100, 1) if generation else None
+        print(f"  mix: hydro {mix.get('hydro'):,} MW, wind {mix.get('wind'):,}, "
+              f"thermal {mix.get('thermal'):,}, nuclear {mix.get('nuclear'):,}"
+              f"  ({out['renewableShare']}% hydro+wind)")
+
+    try:
+        flows = get_json("https://driftsdata.statnett.no/restapi/"
+                         "PhysicalFlowMap/GetFlow")
+    except Exception as e:
+        print(f"  ! Statnett flows unavailable: {e}")
+        flows = []
+
+    links = []
+    for row in flows or []:
+        value = row.get("Value")
+        if value is None:
+            continue
+        mw = round(float(value))
+        a, b = row.get("OutAreaElspotId"), row.get("InAreaElspotId")
+        # Statnett names each link with a fixed orientation and signs the
+        # value, so a negative reading means the power is going the other way.
+        # "NO1 -> NO5, -1985 MW" is true but reads as nonsense; the direction
+        # belongs in the arrow, not in a minus sign.
+        if mw < 0:
+            a, b, mw = b, a, -mw
+        links.append({"from": a, "to": b, "mw": mw})
+    # Biggest movers first; a link sitting at zero says nothing.
+    links = [l for l in links if abs(l["mw"]) > 0]
+    links.sort(key=lambda l: -abs(l["mw"]))
+    out["flows"] = links
+    print(f"  flows: {len(links)} links carrying power, "
+          f"largest {links[0]['from']}->{links[0]['to']} {links[0]['mw']:,} MW"
+          if links else "  flows: none")
+    return out
+
+
+# ------------------------------------------------------------- weather
+def collect_weather() -> dict:
+    zones = {}
+    for zone, (place, lat, lon) in ZONE_WEATHER.items():
+        try:
+            d = get_json("https://api.met.no/weatherapi/locationforecast/2.0/"
+                         f"compact?lat={lat}&lon={lon}")
+            steps = d["properties"]["timeseries"]
+        except Exception as e:
+            print(f"  ! {zone}: {e}")
+            continue
+        now = steps[0]["data"]["instant"]["details"]
+        # The next two days is the horizon a price actually responds to.
+        ahead = steps[:48]
+        temps = [s["data"]["instant"]["details"].get("air_temperature")
+                 for s in ahead]
+        winds = [s["data"]["instant"]["details"].get("wind_speed")
+                 for s in ahead]
+        temps = [t for t in temps if t is not None]
+        winds = [w for w in winds if w is not None]
+        zones[zone] = {
+            "place": place,
+            "tempNow": now.get("air_temperature"),
+            "windNow": now.get("wind_speed"),
+            "tempMin": min(temps) if temps else None,
+            "tempMax": max(temps) if temps else None,
+            "windMean": round(statistics.mean(winds), 1) if winds else None,
+            # Degree-hours below the heating threshold: the demand signal.
+            "heatingDegreeHours": round(
+                sum(max(0.0, HEATING_BASE_C - t) for t in temps), 1) if temps else None,
+            "hours": len(temps),
+        }
+        print(f"  {zone}  {place:<13} {now.get('air_temperature')}C  "
+              f"wind {now.get('wind_speed')} m/s  "
+              f"HDH48 {zones[zone]['heatingDegreeHours']}")
+    return zones
+
+
 def main() -> int:
     print("spot prices")
     zones = collect_spot()
     print("\nreservoirs")
     reservoirs = collect_reservoirs()
+    print("\nthe grid")
+    grid = collect_grid()
+    print("\nweather")
+    weather = collect_weather()
     print("\ncommodities")
     commodities = collect_commodities()
     print("\nnews")
@@ -271,6 +415,8 @@ def main() -> int:
         "generated": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
         "zones": zones,
         "reservoirs": reservoirs,
+        "grid": grid,
+        "weather": weather,
         "commodities": commodities,
         "news": stories,
     }

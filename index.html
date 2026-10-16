@@ -48,6 +48,26 @@
   </section>
 
   <section class="panel">
+    <h2>The grid, right now</h2>
+    <p class="sub">What is actually generating across the Nordics this minute, and
+       which way it is flowing. The flows are the answer to the map above: a zone
+       is dear when it is exporting into a dearer neighbour and cheap when its
+       power has nowhere to go.</p>
+    <div id="mix"></div>
+    <div id="flows"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Weather, the only thing that moves first</h2>
+    <p class="sub">Everything else on this page measures something that has already
+       happened — prices that cleared yesterday, reservoirs read last week. Temperature
+       sets demand and wind sets supply, both before the market prices either.
+       <b>Heating demand</b> is degree-hours below 15°C over the next two days: the
+       gap matters far more than the temperature on its own.</p>
+    <div id="weather"></div>
+  </section>
+
+  <section class="panel">
     <h2>Hydro storage, against normal</h2>
     <p class="sub">Nordic power is mostly water, so this is the closest thing to a
        forecast on the page. A fill percentage alone says nothing — 52% could be a
@@ -239,6 +259,81 @@ function renderPills(d) {
     }));
 }
 
+/* -------------------------------------------------------- the grid */
+const MIX = [["hydro", "Hydro", "#3fa9ff"], ["wind", "Wind", "#35d6a4"],
+             ["nuclear", "Nuclear", "#b48cff"], ["thermal", "Thermal", "#f09243"],
+             ["other", "Other", "#6d7c9c"]];
+
+function renderGrid(d) {
+  const g = d.grid || {};
+  const mix = g.mix || {};
+  const gen = g.generation || 0;
+  if (!gen) { $("mix").innerHTML = ""; $("flows").innerHTML = ""; return; }
+
+  const segs = MIX.filter(([k]) => mix[k] > 0).map(([k, label, col]) => {
+    const pct = mix[k] / gen * 100;
+    return `<span class="seg" style="width:${pct}%;background:${col}"
+              title="${label} ${mix[k].toLocaleString("en-US")} MW"></span>`;
+  }).join("");
+
+  const legend = MIX.filter(([k]) => mix[k] > 0).map(([k, label, col]) =>
+    `<span class="key"><i style="background:${col}"></i>${label}
+       <b>${(mix[k] / gen * 100).toFixed(0)}%</b>
+       <u>${mix[k].toLocaleString("en-US")} MW</u></span>`).join("");
+
+  $("mix").innerHTML = `
+    <div class="mixhead">
+      <span><b>${gen.toLocaleString("en-US")} MW</b> generating</span>
+      <span class="dim">${(mix.consumption || 0).toLocaleString("en-US")} MW consumed</span>
+      <span class="ok">${g.renewableShare}% hydro &amp; wind</span>
+    </div>
+    <div class="stack">${segs}</div>
+    <div class="legend">${legend}</div>`;
+
+  // Only links touching a Nordic bidding zone, biggest first. A DE->NL flow is
+  // real but says nothing about why NO2 costs what it does.
+  const nordic = /^(NO|SE|DK|FI)/;
+  const links = (g.flows || [])
+    .filter(l => nordic.test(l.from || "") || nordic.test(l.to || ""))
+    .slice(0, 12);
+  if (!links.length) { $("flows").innerHTML = ""; return; }
+  const peak = Math.max(...links.map(l => l.mw));
+  $("flows").innerHTML = `<div class="group-title">Flowing now</div>` +
+    links.map(l => `
+      <div class="flow">
+        <span class="ends">${esc(l.from)} <em>→</em> ${esc(l.to)}</span>
+        <span class="fbar"><i style="width:${l.mw / peak * 100}%"></i></span>
+        <span class="fmw">${l.mw.toLocaleString("en-US")}<small>MW</small></span>
+      </div>`).join("");
+}
+
+/* --------------------------------------------------------- weather */
+function renderWeather(d) {
+  const w = d.weather || {};
+  const keys = Object.keys(w);
+  if (!keys.length) { $("weather").innerHTML = ""; return; }
+  const hdh = keys.map(k => w[k].heatingDegreeHours).filter(v => v != null);
+  const maxH = Math.max(...hdh, 1);
+
+  // Coldest first: that is the order demand pressure runs in.
+  $("weather").innerHTML = keys
+    .sort((a, b) => (w[b].heatingDegreeHours || 0) - (w[a].heatingDegreeHours || 0))
+    .map(k => {
+      const z = w[k];
+      return `<div class="wx">
+        <div class="zone-name">${esc(k)}<small>${esc(z.place)}</small></div>
+        <div class="wtemp">${z.tempNow == null ? "—" : z.tempNow.toFixed(1) + "°"}
+          <small>${z.tempMin == null ? "" : z.tempMin.toFixed(0) + "–" + z.tempMax.toFixed(0) + "° ahead"}</small></div>
+        <div class="wwind">${z.windNow == null ? "—" : z.windNow.toFixed(1)}
+          <small>m/s${z.windMean == null ? "" : ", mean " + z.windMean}</small></div>
+        <div class="whdh">
+          <span class="hbar"><i style="width:${(z.heatingDegreeHours || 0) / maxH * 100}%"></i></span>
+          <b>${z.heatingDegreeHours == null ? "—" : Math.round(z.heatingDegreeHours)}</b>
+        </div>
+      </div>`;
+    }).join("");
+}
+
 /* ------------------------------------------------------- reservoirs */
 function renderReservoirs(d) {
   const r = d.reservoirs || {};
@@ -394,6 +489,7 @@ fetch("data/energy.json?cb=" + Date.now())
     activeZone = (d.zones[0] || {}).zone;
     renderStamp(d); renderLede(d); renderZones(d);
     renderPills(d); renderCurves(d);
+    renderGrid(d); renderWeather(d);
     renderReservoirs(d); renderCommodities(d); renderNews(d);
   })
   .catch(e => {

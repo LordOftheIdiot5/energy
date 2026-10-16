@@ -202,3 +202,46 @@ footer a { color: var(--muted); }
 }
 .stories a:hover { color: var(--accent); }
 .stories .by { color: var(--faint); font-size: .68rem; }
+
+/* --------------------------------------------------- the grid mix */
+.mixhead { display: flex; gap: 16px; flex-wrap: wrap; align-items: baseline;
+           font-size: .82rem; margin-bottom: 9px; }
+.mixhead b { font-size: 1.05rem; }
+.stack { display: flex; height: 16px; border-radius: 8px; overflow: hidden;
+         background: var(--line); }
+.stack .seg { display: block; height: 100%; }
+.legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 10px;
+          font-size: .74rem; color: var(--muted); }
+.legend .key { display: inline-flex; align-items: center; gap: 5px; }
+.legend i { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
+.legend b { color: var(--ink); font-weight: 600; }
+.legend u { text-decoration: none; color: var(--faint); }
+
+.flow { display: grid; grid-template-columns: 112px 1fr 86px; gap: 12px;
+        align-items: center; padding: 5px 0; font-size: .8rem; }
+.flow .ends { font-family: var(--mono); font-size: .76rem; }
+.flow .ends em { color: var(--faint); font-style: normal; }
+.flow .fbar { height: 7px; background: var(--line); border-radius: 4px; }
+.flow .fbar i { display: block; height: 100%; border-radius: 4px;
+                background: linear-gradient(90deg, var(--accent), var(--p0)); }
+.flow .fmw { text-align: right; font-family: var(--mono); font-size: .78rem; }
+.flow .fmw small { color: var(--faint); font-family: var(--sans);
+                   font-size: .62rem; margin-left: 3px; }
+
+/* ----------------------------------------------------------- weather */
+.wx { display: grid; grid-template-columns: 96px 1fr 1fr 150px; gap: 12px;
+      align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.wx:last-child { border-bottom: 0; }
+.wtemp, .wwind { font-family: var(--mono); font-size: .92rem; }
+.wtemp small, .wwind small { display: block; color: var(--faint);
+                             font-family: var(--sans); font-size: .64rem; }
+.whdh { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
+.whdh .hbar { flex: 1; height: 7px; background: var(--line); border-radius: 4px; }
+.whdh .hbar i { display: block; height: 100%; border-radius: 4px;
+                background: linear-gradient(90deg, var(--p2), var(--p4)); }
+.whdh b { font-family: var(--mono); font-size: .78rem; min-width: 32px;
+          text-align: right; }
+@media (max-width: 620px) {
+  .wx { grid-template-columns: 78px 1fr 1fr; }
+  .whdh { grid-column: 1 / -1; }
+}
