@@ -30,6 +30,7 @@
     <a href="#weather">Weather</a>
     <a href="#hydro">Hydro</a>
     <a href="#fuels">Fuels</a>
+    <a href="#market">Companies</a>
     <a href="#news">Being built</a>
     <a href="guide.html" class="guide">How to read this</a>
   </nav>
@@ -79,6 +80,16 @@
     <h2>Fuels, carbon and currency</h2>
         <p class="sub">What the marginal plant burns, what it pays to emit, and the rates between the price that is set and the bill that is paid. <span class="hint" tabindex="0" data-tip="The thin bar under each card. A price can fall on the day and still sit near the top of where it has been for six months, which the daily change alone will not tell you.">Range position</span> is the bar beneath each.</p>
     <div id="commodities"></div>
+  </section>
+
+  <section class="panel" id="market">
+    <h2>What this does to companies</h2>
+    <p class="sub"><span class="hint" tabindex="0" data-tip="A margin is arithmetic, not a fitted relationship. Smelting aluminium takes about 14 MWh a tonne, so a smelter's economics ARE the metal price minus fourteen times the power price. It cannot be a coincidence, because it is the cost structure.">Margins first</span>,
+       because they are arithmetic rather than association. Correlations below
+       are the check on them, never the argument.</p>
+    <div id="margins"></div>
+    <div id="cohorts"></div>
+    <div id="correlations"></div>
   </section>
 
   <section class="panel" id="news">
@@ -428,6 +439,59 @@ function renderCommodities(d) {
   }).join("");
 }
 
+/* ------------------------------------------------- margins & equities */
+function renderMarket(d) {
+  const m = d.market || {};
+
+  $("margins").innerHTML = (m.margins || []).map(x => `
+    <div class="spread">
+      <div class="sp-head">
+        <span class="sp-name">${esc(x.name)}</span>
+        <span class="hint sp-why" tabindex="0" data-tip="${esc(x.note)}">why</span>
+      </div>
+      <div class="sp-val ${x.value >= 0 ? "ok" : "bad"}">
+        ${x.value >= 0 ? "" : "-"}${Math.abs(x.value).toLocaleString("en-US")}<u>${esc(x.unit)}</u>
+      </div>
+      <div class="sp-parts">${(x.parts || []).map(p => `
+        <span><i>${esc(p.label)}</i>
+          <b class="${p.value >= 0 ? "" : "bad"}">${p.value >= 0 ? "" : "-"}${Math.abs(p.value).toLocaleString("en-US")}</b></span>`).join("")}
+      </div>
+      <div class="sp-watch">${esc(x.watch || "")}</div>
+    </div>`).join("");
+
+  const coh = m.cohorts || [];
+  $("cohorts").innerHTML = coh.length ? `<div class="group-title">Who gained, who paid</div>
+    <div class="cohorts">${coh.map(c => `
+      <div class="cohort">
+        <div class="co-head">
+          <span class="co-name">${esc(c.name)}</span>
+          <span class="co-med ${c.medianYearPct >= 0 ? "ok" : "bad"}">
+            ${c.medianYearPct >= 0 ? "+" : ""}${c.medianYearPct}%</span>
+        </div>
+        <div class="co-why">${esc(c.why)} &middot; median over a year</div>
+        <ul>${(c.members || []).map(x => `
+          <li><span>${esc(x.name)}</span>
+            <b class="${x.yearPct >= 0 ? "ok" : "bad"}">${x.yearPct >= 0 ? "+" : ""}${x.yearPct}%</b></li>`).join("")}
+        </ul>
+      </div>`).join("")}</div>` : "";
+
+  const cors = m.correlations || [];
+  $("correlations").innerHTML = cors.length ? `
+    <div class="group-title">And what actually moved together</div>
+    <p class="sub tight">${m.tested} pairs tested, ${(m.survived || cors.length) > cors.length
+      ? "top " + cors.length + " of " : ""}${m.survived || cors.length} above
+      |r|&nbsp;&ge;&nbsp;${m.threshold}. A pure coincidence would have produced about
+      <b>${m.expectedByChance}</b> of them, so these are not noise &mdash; but co-movement
+      is still not cause.</p>
+    <div class="cors">${cors.map(c => `
+      <div class="cor">
+        <span class="cor-pair">${esc(c.driver)} <em>&rarr;</em> ${esc(c.name)}</span>
+        <span class="cor-bar"><i class="${c.r >= 0 ? "pos" : "neg"}"
+          style="width:${Math.abs(c.r) * 100}%"></i></span>
+        <span class="cor-r">${c.r >= 0 ? "+" : ""}${c.r.toFixed(2)}<small>n=${c.n}</small></span>
+      </div>`).join("")}</div>` : "";
+}
+
 /* -------------------------------------------------------------- news */
 function renderNews(d) {
   const items = d.news || [];
@@ -524,7 +588,8 @@ fetch("data/energy.json?cb=" + Date.now())
     renderStamp(d); renderLede(d); renderZones(d);
     renderPills(d); renderCurves(d);
     renderGrid(d); renderWeather(d);
-    renderReservoirs(d); renderCommodities(d); renderNews(d);
+    renderReservoirs(d); renderCommodities(d);
+    renderMarket(d); renderNews(d);
     placeHints();
   })
   .catch(e => {

@@ -404,6 +404,48 @@ def collect_europe() -> list[dict]:
     return out
 
 
+
+# ------------------------------------------------- margins and equities
+def collect_market(zones: list[dict]) -> dict:
+    """What the energy price does to the companies that live off it.
+
+    NO2 is the reference zone: it is the one priced against the cables to
+    Germany and England, so it is where an exporter's marginal economics are
+    actually set.
+    """
+    import margins as m
+
+    ref = next((z for z in zones if z["zone"] == "NO2"), None)
+    power_eur_mwh = None
+    if ref and ref.get("today", {}).get("eur"):
+        eur = ref["today"]["eur"]
+        power_eur_mwh = sum(eur) / len(eur) * 1000          # EUR/kWh -> EUR/MWh
+
+    fx = {}
+    s = m.series("EURUSD=X", "5d")
+    if s:
+        fx["EURUSD"] = list(s.values())[-1]
+
+    spreads = m.collect_margins(power_eur_mwh, fx)
+    for sp in spreads:
+        print(f"  {sp['name']:<30}{sp['value']:>10,} {sp['unit']}")
+
+    drivers = {}
+    for sym, label in (("BZ=F", "Brent"), ("TTF=F", "TTF gas"),
+                       ("ALI=F", "Aluminium"), ("KRBN", "Carbon")):
+        ds = m.series(sym, "1y")
+        if ds:
+            drivers[label] = m.pct_change(ds)
+
+    equities = m.collect_equities(drivers)
+    return {
+        "referenceZone": "NO2",
+        "referencePowerEurMwh": round(power_eur_mwh, 1) if power_eur_mwh else None,
+        "margins": spreads,
+        **equities,
+    }
+
+
 # ------------------------------------------------------------- the grid
 def _mw(raw) -> float | None:
     """Statnett returns megawatts as '17 270', separated by a hard space."""
@@ -534,6 +576,8 @@ def main() -> int:
     reservoirs = collect_reservoirs()
     print("\nthe rest of Europe")
     europe = collect_europe()
+    print("\nmargins and equities")
+    market = collect_market(zones)
     print("\nthe grid")
     grid = collect_grid()
     print("\nweather")
@@ -555,6 +599,7 @@ def main() -> int:
         "zones": zones,
         "reservoirs": reservoirs,
         "europe": europe,
+        "market": market,
         "grid": grid,
         "weather": weather,
         "commodities": commodities,

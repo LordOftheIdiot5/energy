@@ -77,6 +77,26 @@ def main() -> int:
     check("every commodity has a sparkline",
           all(len(c.get("spark") or []) >= 2 for c in com))
 
+    mk = d.get("market") or {}
+    margins = mk.get("margins") or []
+    check("has margins", len(margins) >= 2, f"{len(margins)} spreads")
+    for sp in margins:
+        # A margin is a difference of two real prices; if it has exploded, a
+        # unit has changed somewhere rather than the market having moved.
+        check(f"{sp.get('key')} is sane", abs(sp.get("value") or 0) < 100000,
+              f"{sp.get('value')} {sp.get('unit')}")
+        check(f"{sp.get('key')} shows its working", len(sp.get("parts") or []) >= 2)
+    coh = mk.get("cohorts") or []
+    check("has cohorts", len(coh) >= 2, f"{len(coh)} groups")
+    # The guard is the point of the correlation section; without the counts
+    # it is just a list of suggestive numbers.
+    check("correlations state what was tested",
+          mk.get("tested") is not None and mk.get("expectedByChance") is not None,
+          f"{mk.get('tested')} tested, ~{mk.get('expectedByChance')} by chance")
+    check("survived count is not the truncated one",
+          (mk.get("survived") or 0) >= len(mk.get("correlations") or []),
+          f"{mk.get('survived')} survived, {len(mk.get('correlations') or [])} shown")
+
     # News is allowed to be empty - it is the least important part and the
     # most fragile - but it must not be malformed when present.
     news = d.get("news") or []
