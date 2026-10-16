@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>energy — how to read this</title>
+<meta name="description" content="What each number on energy.nordl.dev means, where it comes from, and what it cannot tell you."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<main class="page">
+  <header class="masthead">
+    <span class="wordmark">energy<span>.nordl</span></span>
+    <span class="stamp"><a href="index.html" style="color:var(--accent);text-decoration:none">&larr; back to the numbers</a></span>
+  </header>
+
+  <section class="lede">
+    <h1>How to read this.</h1>
+    <p>What each number means, where it comes from, and — more usefully — what it
+       cannot tell you.</p>
+  </section>
+
+  <section class="panel prose">
+    <h2>Prices</h2>
+
+    <h3>Why euro cents, when I pay in kroner</h3>
+    <p>Because the alternative is a lie. A Norwegian krone and a Swedish krona are
+       different units, and a German price quoted in €/MWh is not a Norwegian one
+       quoted in øre/kWh. Laying those on a single axis would invent a difference
+       that isn't there — so everything is converted to euro cents per kWh, which
+       is what the power actually cleared in. Nordic zones keep their own currency
+       in the right-hand column.</p>
+
+    <h3>What the bar shows</h3>
+    <p>The span from the cheapest to the dearest hour of the day in that zone. The
+       tick inside it is today's average. A long bar means a volatile day, which is
+       worth as much as a high average: it's where the cheap hours live.</p>
+
+    <h3>What these prices are not</h3>
+    <p>They exclude grid rent, taxes and VAT. Your bill is higher than anything
+       here, often two to three times higher in Norway once <em>nettleie</em> and
+       <em>elavgift</em> are added. What's shown is the part that <em>moves</em>,
+       which is the part worth watching.</p>
+
+    <h3>Why Iceland is missing</h3>
+    <p>It has no day-ahead market. The grid is isolated, with no interconnector to
+       anywhere, and power is sold on long-term bilateral contracts — mostly to
+       aluminium smelters. There is no spot price to publish. That's a fact about
+       Iceland, not a source we failed to find.</p>
+  </section>
+
+  <section class="panel prose">
+    <h2>Hydro</h2>
+
+    <h3>Why the gap matters more than the level</h3>
+    <p>A reservoir at 52% tells you nothing on its own. It could be an ordinary
+       autumn or the reason next February is brutal. What makes it legible is the
+       median for the <em>same week of the year</em> across every year since 1995 —
+       so the bars show the gap, not the level. NO2 at 52% against a normal of 84%
+       is a thirty-point hole, and that is the number that will still be being paid
+       for in winter.</p>
+
+    <h3>Why it's the closest thing here to a forecast</h3>
+    <p>Nordic power is mostly water, and water in a reservoir is energy that has
+       already arrived and hasn't been spent. Everything else on the page describes
+       the present or the past. Storage describes what there is left to sell.</p>
+  </section>
+
+  <section class="panel prose">
+    <h2>The grid</h2>
+
+    <h3>Flows, and why they explain the price map</h3>
+    <p>A zone is expensive when it is exporting into a dearer neighbour, and cheap
+       when its power has nowhere to go. NO2 runs down the cables to Germany and
+       England and is priced against them; NO4 sits behind constrained transmission
+       in the north. That single mechanism explains most of what the price strip
+       shows.</p>
+
+    <h3>Direction, not sign</h3>
+    <p>Statnett names each link with a fixed orientation and signs the value, so
+       power running the other way arrives as <code>NO1 → NO5, −1985 MW</code>.
+       True, and unreadable. Direction belongs in the arrow, so the flows here are
+       flipped to always run the way the electricity does.</p>
+  </section>
+
+  <section class="panel prose">
+    <h2>Weather</h2>
+
+    <h3>Heating demand, not temperature</h3>
+    <p>Degree-hours below 15 °C over the next 48 hours. Below roughly that point
+       buildings start drawing heat, and the <em>size of the gap</em> is what
+       drives demand — not the reading itself. Two zones can sit at the same
+       temperature now and have very different demand coming, which is exactly the
+       case this column is built to show.</p>
+
+    <h3>Why this is the only leading indicator here</h3>
+    <p>Prices on this page already cleared. Reservoirs were read last week. Weather
+       is the one thing that moves <em>before</em> the market does: cold raises
+       demand and wind raises supply, both ahead of anyone pricing them.</p>
+  </section>
+
+  <section class="panel prose">
+    <h2>Fuels and currency</h2>
+
+    <h3>Range position</h3>
+    <p>The thin bar under each card: where today's price sits between its six-month
+       low and high. A price can fall on the day and still be near the top of
+       everywhere it has been, and the daily percentage alone will never tell you
+       that.</p>
+
+    <h3>Why the exchange rates are here</h3>
+    <p>Nordic power clears in euros and is paid for in kroner. So a bill can rise
+       with nothing whatever happening to electricity. Separating the two is the
+       same discipline as splitting a trading profit from a currency move — if you
+       don't, you will eventually congratulate yourself for a weak krone.</p>
+  </section>
+
+  <section class="panel prose">
+    <h2>What this page can't do</h2>
+    <p>It describes a market; it does not predict one. Reservoir gaps and weather
+       lean on the price, but neither determines it — an outage, a policy change or
+       a cold snap in Germany can overwhelm both in a day.</p>
+    <p>Nothing here is advice about what to buy, sell or fix a tariff on. It is a
+       set of public measurements, assembled so the relationships between them are
+       visible.</p>
+    <p>Every source is free and keyless: <a href="https://www.hvakosterstrommen.no">hvakosterstrommen.no</a>,
+       <a href="https://www.elprisetjustnu.se">elprisetjustnu.se</a>,
+       <a href="https://api.energy-charts.info">energy-charts</a>,
+       <a href="https://www.elexon.co.uk">Elexon</a>,
+       <a href="https://www.nve.no">NVE</a>,
+       <a href="https://driftsdata.statnett.no">Statnett</a>,
+       <a href="https://api.met.no">met.no</a>, Yahoo Finance and Google News. No
+       account, no quota, nothing to expire — which is the only way a page like
+       this is still working in a year.</p>
+  </section>
+
+  <footer>
+    <p><a href="index.html">&larr; Back to the numbers</a></p>
+  </footer>
+</main>
+</body>
+</html>

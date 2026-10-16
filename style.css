@@ -294,3 +294,76 @@ footer a { color: var(--muted); }
   .flow .fmw { grid-column: 2; }
   .flow .fbar { grid-column: 1 / -1; }
 }
+
+/* --------------------------------------------------------------- nav */
+.jump {
+  display: flex; gap: 2px; flex-wrap: wrap; align-items: center;
+  margin: 0 0 22px; padding: 4px; border-radius: 11px;
+  background: var(--panel); border: 1px solid var(--line);
+  position: sticky; top: 8px; z-index: 20; backdrop-filter: blur(10px);
+}
+.jump a {
+  color: var(--muted); text-decoration: none; font-size: .76rem;
+  padding: 6px 11px; border-radius: 8px; white-space: nowrap;
+}
+.jump a:hover { color: var(--ink); background: rgba(255, 255, 255, .05); }
+.jump a.guide {
+  margin-left: auto; color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 32%, transparent);
+}
+@media (max-width: 620px) {
+  .jump { position: static; }
+  .jump a.guide { margin-left: 0; }
+}
+
+/* ---------------------------------------------------------- tooltips */
+/* Reasoning lives against the thing it explains, rather than as a
+   paragraph you must read past to reach a number. Focusable so it works
+   on a phone, where there is no hover. */
+.hint {
+  border-bottom: 1px dotted var(--faint); cursor: help;
+  position: relative; outline: none;
+}
+.hint::after {
+  content: attr(data-tip);
+  position: absolute; left: 0; top: calc(100% + 8px);
+  width: max-content; max-width: min(330px, 72vw);
+  background: #121a2b; color: var(--ink);
+  border: 1px solid var(--edge, rgba(255, 255, 255, .14));
+  border-radius: 9px; padding: 9px 11px;
+  font-size: .74rem; line-height: 1.5; font-weight: 400;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .55);
+  opacity: 0; visibility: hidden; transform: translateY(-3px);
+  transition: opacity .13s ease, transform .13s ease;
+  z-index: 40; pointer-events: none; white-space: normal;
+}
+.hint:hover::after, .hint:focus::after, .hint:focus-visible::after {
+  opacity: 1; visibility: visible; transform: translateY(0);
+}
+/* Near the right edge the box would run off screen. */
+.hint.right::after { left: auto; right: 0; }
+
+/* On a phone the box should never be wider than the screen allows. */
+@media (max-width: 620px) {
+  .hint::after { max-width: calc(100vw - 34px); }
+}
+
+/* ----------------------------------------------------- the guide page */
+.prose h2 {
+  font-size: .74rem; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--accent); margin: 0 0 14px;
+}
+.prose h3 {
+  font-size: .95rem; margin: 20px 0 6px; color: var(--ink); font-weight: 600;
+}
+.prose h3:first-of-type { margin-top: 0; }
+.prose p {
+  margin: 0 0 10px; color: var(--muted); line-height: 1.65;
+  font-size: .88rem; max-width: 74ch;
+}
+.prose em { color: var(--ink); font-style: italic; }
+.prose code {
+  font-family: var(--mono); font-size: .8rem; color: var(--ink);
+  background: rgba(255, 255, 255, .05); padding: 1px 5px; border-radius: 4px;
+}
+.prose a { color: var(--accent); }

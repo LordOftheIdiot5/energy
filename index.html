@@ -19,82 +19,71 @@
 
   <div class="stale-bar" id="staleBar"></div>
 
+  <!-- One page, not tabs. The explanations are adjacent on purpose: the price
+       map sits beside the reservoirs that explain it and the flows that explain
+       those. Tabs would hide exactly the comparisons worth having. This just
+       makes the scroll navigable. -->
+  <nav class="jump" aria-label="Sections">
+    <a href="#prices">Prices</a>
+    <a href="#day">The day</a>
+    <a href="#grid">Grid</a>
+    <a href="#weather">Weather</a>
+    <a href="#hydro">Hydro</a>
+    <a href="#fuels">Fuels</a>
+    <a href="#news">Being built</a>
+    <a href="guide.html" class="guide">How to read this</a>
+  </nav>
+
   <section class="lede">
     <h1>What sets the price, and why.</h1>
     <p id="lede">Nordic day-ahead power by zone, the hydro storage behind it, and the
        fuels and currencies that move both.</p>
   </section>
 
-  <section class="panel">
+  <section class="panel" id="prices">
     <h2>Day-ahead power across Europe</h2>
-    <p class="sub">Every bidding zone from Troms&oslash; to northern Italy on one
-       shared axis, in <b>euro cents per kWh</b> &mdash; the currency power actually
-       clears in. A Norwegian krone and a Swedish krona are not the same ruler, and a
-       German &euro;/MWh is not a Norwegian &oslash;re/kWh, so everything is converted
-       rather than laid side by side to invent a difference that is not there. Nordic
-       zones keep their own currency on the right. The tick marks today's average.
-       <b>Iceland is absent deliberately</b>: an isolated grid with no day-ahead
-       market, so there is no price to show.</p>
+        <p class="sub">Every bidding zone from Troms&oslash; to northern Italy on one axis, in <span class="hint" tabindex="0" data-tip="The currency power actually clears in. A Norwegian krone and a Swedish krona are not the same ruler, and a German &euro;/MWh is not a Norwegian &oslash;re/kWh, so everything is converted rather than laid side by side.">euro cents per kWh</span>. <span class="hint" tabindex="0" data-tip="An isolated grid with no day-ahead market, so there is no price to publish rather than a source we failed to find.">Iceland is absent</span>.</p>
     <div id="zones"></div>
     <div class="axis" id="zoneAxis"></div>
   </section>
 
-  <section class="panel">
+  <section class="panel" id="day">
     <h2>The day, hour by hour</h2>
-    <p class="sub">Day-ahead prices are published the afternoon before, so tomorrow
-       is usually known by about 13:00 CET. The cheapest three-hour run is marked:
-       that is the window worth moving a car charge or a wash into.</p>
+        <p class="sub">The cheapest three-hour run is marked &mdash; the window worth moving a car charge into. <span class="hint" tabindex="0" data-tip="Nord Pool publishes the next day around 13:00 CET, so tomorrow appears in the afternoon and is empty before it.">Tomorrow arrives about 13:00 CET</span>.</p>
     <div class="curve-head">
       <div class="pills" id="zonePills"></div>
     </div>
     <div class="curve-wrap" id="curves"></div>
   </section>
 
-  <section class="panel">
+  <section class="panel" id="grid">
     <h2>The grid, right now</h2>
-    <p class="sub">What is actually generating across the Nordics this minute, and
-       which way it is flowing. The flows are the answer to the map above: a zone
-       is dear when it is exporting into a dearer neighbour and cheap when its
-       power has nowhere to go.</p>
+        <p class="sub">What is generating this minute, and which way it is flowing. <span class="hint" tabindex="0" data-tip="A zone is dear when it is exporting into a dearer neighbour and cheap when its power has nowhere to go. NO2 runs down the cables to Germany and England; NO4 sits behind constrained transmission.">The flows explain the price map above.</span></p>
     <div id="mix"></div>
     <div id="flows"></div>
   </section>
 
-  <section class="panel">
+  <section class="panel" id="weather">
     <h2>Weather, the only thing that moves first</h2>
-    <p class="sub">Everything else on this page measures something that has already
-       happened — prices that cleared yesterday, reservoirs read last week. Temperature
-       sets demand and wind sets supply, both before the market prices either.
-       <b>Heating demand</b> is degree-hours below 15°C over the next two days: the
-       gap matters far more than the temperature on its own.</p>
+        <p class="sub">Temperature sets demand and wind sets supply, both before the market prices either. <span class="hint" tabindex="0" data-tip="Degree-hours below 15C over the next 48 hours. A reading of 10C means nothing alone: SE1 at 10C now and 0.6C by Sunday is what puts its demand top of the list.">Heating demand</span> is the column that matters.</p>
     <div id="weather"></div>
   </section>
 
-  <section class="panel">
+  <section class="panel" id="hydro">
     <h2>Hydro storage, against normal</h2>
-    <p class="sub">Nordic power is mostly water, so this is the closest thing to a
-       forecast on the page. A fill percentage alone says nothing — 52% could be a
-       normal autumn or a hard winter coming. What matters is the gap from the median
-       for this same week across every year since 1995, which is what the bars show.</p>
+        <p class="sub">The closest thing to a forecast here. <span class="hint" tabindex="0" data-tip="A fill percentage alone says nothing - 52% could be a normal autumn or a hard winter coming. The bars show the gap from the median for this same week in every year since 1995.">Shown against the median for this week since 1995</span>, not as a bare percentage.</p>
     <div id="reservoirs"></div>
   </section>
 
-  <section class="panel">
+  <section class="panel" id="fuels">
     <h2>Fuels, carbon and currency</h2>
-    <p class="sub">What the marginal power plant burns, what it pays to emit, and the
-       exchange rates between the price that is set and the bill that is paid. The
-       thin bar under each is where the price sits in its own six-month range: a
-       number can fall on the day and still be near the top of where it has been.</p>
+        <p class="sub">What the marginal plant burns, what it pays to emit, and the rates between the price that is set and the bill that is paid. <span class="hint" tabindex="0" data-tip="The thin bar under each card. A price can fall on the day and still sit near the top of where it has been for six months, which the daily change alone will not tell you.">Range position</span> is the bar beneath each.</p>
     <div id="commodities"></div>
   </section>
 
-  <section class="panel">
+  <section class="panel" id="news">
     <h2>Being built, laid and switched on</h2>
-    <p class="sub">Projects and machines rather than share prices: cables between
-       countries, reactors being licensed, factories for electrolysers. Searched by
-       topic across twenty terms, filtered to outlets that report rather than
-       recycle, and de-duplicated — one cable factory opening reached four
-       publications under four headlines.</p>
+        <p class="sub">Projects and machines rather than share prices. <span class="hint" tabindex="0" data-tip="Searched across twenty topic terms, filtered to outlets that report rather than recycle, and merged on shared nouns - one cable factory opening reached four publications under four different headlines.">Filtered and de-duplicated</span> across twenty topics.</p>
     <div id="news"></div>
   </section>
 
@@ -516,6 +505,17 @@ function renderStamp(d) {
   }
 }
 
+/* A tooltip anchored to a word near the right edge would open off-screen.
+   Flip those to open leftwards instead, and redo it on resize because the
+   edge moves. */
+function placeHints() {
+  const edge = window.innerWidth * 0.52;
+  document.querySelectorAll(".hint").forEach(h => {
+    h.classList.toggle("right", h.getBoundingClientRect().left > edge);
+  });
+}
+window.addEventListener("resize", placeHints);
+
 fetch("data/energy.json?cb=" + Date.now())
   .then(r => r.ok ? r.json() : Promise.reject(r.status))
   .then(d => {
@@ -525,6 +525,7 @@ fetch("data/energy.json?cb=" + Date.now())
     renderPills(d); renderCurves(d);
     renderGrid(d); renderWeather(d);
     renderReservoirs(d); renderCommodities(d); renderNews(d);
+    placeHints();
   })
   .catch(e => {
     $("stamp").textContent = "could not load data";
