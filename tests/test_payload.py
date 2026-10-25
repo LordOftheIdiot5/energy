@@ -66,12 +66,18 @@ def main() -> int:
             # to the same collapse, so near-zero is a band rather than an
             # equality test - otherwise they shred one real run into nine
             # and it reads as dropouts.
+            # The run ceiling is 8, not 3. The bug it guards against put a
+            # zero between every real price - 48 runs in a 96-point day - so
+            # 8 still catches it six times over. Real markets fragment more
+            # than 3: on 2026-10-25 France ran 32/100 near zero across 6
+            # runs and Denmark 23/100 across 6, both legitimate. A ceiling
+            # of 3 would have failed either the moment it crossed 40%.
             near = [abs(v) < 0.01 for v in c]
             zeros = sum(near)
             runs = sum(1 for i, n in enumerate(near)
                        if n and (i == 0 or not near[i - 1]))
             dead = zeros >= len(c) * 0.95        # nothing traded all day
-            shredded = zeros >= len(c) * 0.4 and runs > 3
+            shredded = zeros >= len(c) * 0.4 and runs > 8
             check(f"{z.get('zone')} zeros are a collapse, not dropouts",
                   not (dead or shredded),
                   f"{zeros}/{len(c)} near zero in {runs} run(s)")
