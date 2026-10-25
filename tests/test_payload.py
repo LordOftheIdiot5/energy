@@ -49,13 +49,32 @@ def main() -> int:
         check(f"{z.get('zone')} has prices", len(c) >= 20, f"{len(c)} points")
         # Euro cents per kWh. Europe has seen negative prices and has seen
         # 70c in a crisis; outside that range the unit has changed, not the
-        # market. A series that is half zeros is the Elexon two-provider bug.
+        # market.
         if c:
-            zeros = sum(1 for v in c if v == 0)
             check(f"{z.get('zone')} range plausible",
                   all(-20 < v < 120 for v in c), f"{min(c)}..{max(c)}")
-            check(f"{z.get('zone')} not half zeros", zeros < len(c) * 0.4,
-                  f"{zeros}/{len(c)} zero")
+
+            # Zeros have to be judged by SHAPE, not by count. The Elexon
+            # two-provider bug alternated real,0,real,0 - many one-point
+            # runs. A genuine price collapse is one long block, which
+            # Germany does on windy Sundays: on 2026-10-25 DE-LU sat at
+            # exactly 0 EUR/MWh for 48 of 100 quarter-hours and still
+            # peaked at 71.61 that evening. Counting alone called that real
+            # day a bug and blocked publishing for sixteen hours.
+            #
+            # Tiny prints either side of zero (-0.01, +0.01 EUR/MWh) belong
+            # to the same collapse, so near-zero is a band rather than an
+            # equality test - otherwise they shred one real run into nine
+            # and it reads as dropouts.
+            near = [abs(v) < 0.01 for v in c]
+            zeros = sum(near)
+            runs = sum(1 for i, n in enumerate(near)
+                       if n and (i == 0 or not near[i - 1]))
+            dead = zeros >= len(c) * 0.95        # nothing traded all day
+            shredded = zeros >= len(c) * 0.4 and runs > 3
+            check(f"{z.get('zone')} zeros are a collapse, not dropouts",
+                  not (dead or shredded),
+                  f"{zeros}/{len(c)} near zero in {runs} run(s)")
 
     res = (d.get("reservoirs") or {}).get("zones") or {}
     check("has reservoirs", len(res) >= 4, f"{len(res)} areas")
