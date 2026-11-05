@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-05T16:23:22+00:00",
+ "generated": "2026-11-05T17:23:51+00:00",
  "zones": [
   {
    "zone": "NO1",
@@ -2306,7 +2306,8 @@
    "min": 18.0,
    "max": 35.28,
    "mean": 25.512,
-   "unit": "eurocent/kWh"
+   "unit": "eurocent/kWh",
+   "stale": true
   },
   {
    "zone": "BE",
@@ -3068,47 +3069,49 @@
    "zone": "GB",
    "name": "Great Britain",
    "country": "GB",
-   "points": 33,
+   "points": 35,
    "cents": [
-    33.005,
-    33.553,
-    33.647,
-    30.004,
-    30.764,
-    24.405,
-    24.485,
-    22.301,
-    21.006,
-    20.87,
-    20.075,
-    21.721,
-    20.588,
-    19.772,
-    20.111,
-    23.428,
-    24.226,
-    25.568,
-    25.047,
-    21.328,
-    19.252,
-    18.219,
-    18.36,
-    18.181,
-    18.253,
-    18.162,
-    18.341,
-    18.87,
-    18.866,
-    18.69,
-    20.237,
-    19.042,
-    18.765
+    31.86,
+    32.598,
+    32.999,
+    33.548,
+    33.641,
+    29.999,
+    30.759,
+    24.401,
+    24.481,
+    22.298,
+    21.002,
+    20.867,
+    20.071,
+    21.717,
+    20.585,
+    19.769,
+    20.107,
+    23.424,
+    24.222,
+    25.564,
+    25.043,
+    21.325,
+    19.248,
+    18.216,
+    18.357,
+    18.178,
+    18.25,
+    18.159,
+    18.338,
+    18.867,
+    18.863,
+    18.687,
+    20.233,
+    19.038,
+    18.761
    ],
-   "min": 18.162,
-   "max": 33.647,
-   "mean": 22.398,
+   "min": 18.159,
+   "max": 33.641,
+   "mean": 22.956,
    "unit": "eurocent/kWh",
-   "fx": 1.1997
+   "fx": 1.1995
   }
  ],
  "market": {
@@ -3118,17 +3121,17 @@
    {
     "key": "smelter",
     "name": "Aluminium smelter margin",
-    "value": -156.0,
+    "value": -148.0,
     "unit": "$/tonne",
     "parts": [
      {
       "label": "Aluminium",
-      "value": 3184.0,
+      "value": 3195.0,
       "unit": "$/t"
      },
      {
       "label": "Power (14 MWh/t)",
-      "value": -3340.0,
+      "value": -3343.0,
       "unit": "$/t"
      }
     ],
@@ -3138,7 +3141,7 @@
    {
     "key": "spark",
     "name": "Spark spread",
-    "value": 47.4,
+    "value": 49.1,
     "unit": "€/MWh",
     "parts": [
      {
@@ -3148,7 +3151,7 @@
      },
      {
       "label": "Gas at 55% efficiency",
-      "value": -165.1,
+      "value": -163.4,
       "unit": "€/MWh"
      }
     ],
@@ -3158,17 +3161,17 @@
    {
     "key": "crack",
     "name": "Refining crack (3-2-1)",
-    "value": 47.58,
+    "value": 46.84,
     "unit": "$/bbl",
     "parts": [
      {
       "label": "2 petrol + 1 diesel",
-      "value": 138.2,
+      "value": 137.04,
       "unit": "$/bbl"
      },
      {
       "label": "Crude",
-      "value": -90.62,
+      "value": -90.2,
       "unit": "$/bbl"
      }
     ],
@@ -3205,16 +3208,16 @@
      {
       "symbol": "FORTUM.HE",
       "name": "Fortum",
-      "last": 23.2,
-      "changePct": 0.65,
-      "yearPct": 16.8
+      "last": 23.28,
+      "changePct": 1.0,
+      "yearPct": 17.2
      },
      {
       "symbol": "VER.VI",
       "name": "Verbund",
-      "last": 74.45,
-      "changePct": 7.28,
-      "yearPct": 9.9
+      "last": 75.35,
+      "changePct": 8.57,
+      "yearPct": 11.2
      },
      {
       "symbol": "ORSTED.CO",
@@ -3247,16 +3250,16 @@
      {
       "symbol": "BOL.ST",
       "name": "Boliden",
-      "last": 508.4,
-      "changePct": -0.59,
-      "yearPct": 23.4
+      "last": 507.6,
+      "changePct": -0.74,
+      "yearPct": 23.2
      },
      {
       "symbol": "SSAB-B.ST",
       "name": "SSAB",
-      "last": 93.06,
-      "changePct": -2.72,
-      "yearPct": 60.8
+      "last": 93.12,
+      "changePct": -2.66,
+      "yearPct": 60.9
      },
      {
       "symbol": "ELK.OL",
@@ -3268,9 +3271,9 @@
      {
       "symbol": "AMG.AS",
       "name": "AMG",
-      "last": 23.42,
-      "changePct": -3.38,
-      "yearPct": -13.6
+      "last": 23.66,
+      "changePct": -2.39,
+      "yearPct": -12.8
      }
     ],
     "medianYearPct": 11.4
@@ -3282,47 +3285,47 @@
      {
       "symbol": "NEX.PA",
       "name": "Nexans",
-      "last": 116.8,
-      "changePct": -1.43,
-      "yearPct": -7.0
+      "last": 118.3,
+      "changePct": -0.17,
+      "yearPct": -5.8
      },
      {
       "symbol": "PRY.MI",
       "name": "Prysmian",
-      "last": 99.06,
-      "changePct": -5.11,
-      "yearPct": 13.2
+      "last": 100.2,
+      "changePct": -4.02,
+      "yearPct": 14.5
      },
      {
       "symbol": "ENR.DE",
       "name": "Siemens Energy",
-      "last": 111.64,
-      "changePct": -6.55,
-      "yearPct": 4.1
+      "last": 113.84,
+      "changePct": -4.7,
+      "yearPct": 6.1
      },
      {
       "symbol": "ABBN.SW",
       "name": "ABB",
-      "last": 66.62,
-      "changePct": -5.45,
-      "yearPct": 15.1
+      "last": 67.5,
+      "changePct": -4.2,
+      "yearPct": 16.7
      },
      {
       "symbol": "SU.PA",
       "name": "Schneider Electric",
-      "last": 223.95,
-      "changePct": -3.28,
-      "yearPct": -7.6
+      "last": 227.85,
+      "changePct": -1.6,
+      "yearPct": -5.9
      },
      {
       "symbol": "HUBN.SW",
       "name": "Huber+Suhner",
-      "last": 151.6,
-      "changePct": -3.44,
-      "yearPct": 0.7
+      "last": 153.4,
+      "changePct": -2.29,
+      "yearPct": 1.9
      }
     ],
-    "medianYearPct": 2.4
+    "medianYearPct": 4.0
    }
   ],
   "correlations": [
@@ -3334,20 +3337,6 @@
     "n": 244
    },
    {
-    "driver": "TTF gas",
-    "symbol": "EQNR.OL",
-    "name": "Equinor",
-    "r": 0.68,
-    "n": 244
-   },
-   {
-    "driver": "TTF gas",
-    "symbol": "VAR.OL",
-    "name": "Vår Energi",
-    "r": 0.61,
-    "n": 244
-   },
-   {
     "driver": "Brent",
     "symbol": "AKRBP.OL",
     "name": "Aker BP",
@@ -3359,13 +3348,6 @@
     "symbol": "VAR.OL",
     "name": "Vår Energi",
     "r": 0.59,
-    "n": 244
-   },
-   {
-    "driver": "TTF gas",
-    "symbol": "AKRBP.OL",
-    "name": "Aker BP",
-    "r": 0.54,
     "n": 244
    },
    {
@@ -3397,149 +3379,149 @@
     "n": 244
    },
    {
-    "driver": "TTF gas",
+    "driver": "Brent",
     "symbol": "VER.VI",
     "name": "Verbund",
-    "r": 0.37,
+    "r": 0.36,
     "n": 245
    },
    {
-    "driver": "TTF gas",
-    "symbol": "BOL.ST",
-    "name": "Boliden",
-    "r": -0.37,
-    "n": 244
+    "driver": "Brent",
+    "symbol": "SU.PA",
+    "name": "Schneider Electric",
+    "r": -0.36,
+    "n": 248
    }
   ],
-  "survived": 15,
-  "tested": 72,
+  "survived": 9,
+  "tested": 54,
   "threshold": 0.35,
   "expectedByChance": 0.2
  },
  "grid": {
   "mix": {
-   "hydro": 26760,
-   "wind": 18558,
-   "thermal": 3417,
+   "hydro": 27250,
+   "wind": 18771,
+   "thermal": 3426,
    "nuclear": 6266,
-   "other": 2779,
-   "consumption": 56569
+   "other": 2672,
+   "consumption": 57824
   },
   "byCountry": {
    "SE": {
-    "hydro": 4530,
-    "wind": 7823,
-    "thermal": 5,
+    "hydro": 4746,
+    "wind": 8225,
+    "thermal": 17,
     "nuclear": 3646,
-    "other": 1301,
-    "consumption": 17723
+    "other": 1353,
+    "consumption": 18406
    },
    "DK": {
     "hydro": 2,
     "wind": 194,
     "thermal": 1541,
     "other": 661,
-    "consumption": 5104
+    "consumption": 5316
    },
    "NO": {
-    "hydro": 20012,
-    "wind": 1519,
-    "thermal": 190,
-    "other": 75,
-    "consumption": 18445
+    "hydro": 20219,
+    "wind": 1433,
+    "thermal": 188,
+    "other": 85,
+    "consumption": 18519
    },
    "FI": {
     "hydro": 1818,
-    "wind": 7108,
-    "thermal": 977,
+    "wind": 6828,
+    "thermal": 962,
     "nuclear": 2620,
-    "other": 281,
-    "consumption": 11624
+    "other": 251,
+    "consumption": 11786
    },
    "EE": {
     "hydro": 1,
-    "wind": 398,
-    "thermal": 313,
-    "other": 154,
-    "consumption": 907
+    "wind": 456,
+    "thermal": 317,
+    "other": 61,
+    "consumption": 1026
    },
    "LT": {
     "hydro": 24,
-    "wind": 1227,
-    "thermal": 188,
-    "other": 252,
-    "consumption": 1856
+    "wind": 1366,
+    "thermal": 189,
+    "other": 220,
+    "consumption": 1815
    },
    "LV": {
-    "hydro": 373,
-    "wind": 289,
-    "thermal": 203,
-    "other": 55,
-    "consumption": 910
+    "hydro": 440,
+    "wind": 269,
+    "thermal": 212,
+    "other": 41,
+    "consumption": 956
    }
   },
-  "generation": 57780,
-  "renewableShare": 78.4,
+  "generation": 58385,
+  "renewableShare": 78.8,
   "flows": [
    {
     "from": "SE2",
     "to": "SE3",
-    "mw": 5847
+    "mw": 5640
    },
    {
     "from": "SE3",
     "to": "SE4",
-    "mw": 1741
-   },
-   {
-    "from": "DE",
-    "to": "DK1",
-    "mw": 1644
-   },
-   {
-    "from": "SE1",
-    "to": "SE2",
-    "mw": 1308
+    "mw": 1939
    },
    {
     "from": "FI",
     "to": "EE",
-    "mw": 1003
+    "mw": 1030
    },
    {
-    "from": "LV",
-    "to": "LT",
-    "mw": 849
+    "from": "DE",
+    "to": "DK1",
+    "mw": 876
    },
    {
     "from": "EE",
     "to": "LV",
-    "mw": 799
-   },
-   {
-    "from": "DK1",
-    "to": "NL",
-    "mw": 688
+    "mw": 695
    },
    {
     "from": "DK2",
     "to": "SE4",
-    "mw": 565
+    "mw": 693
    },
    {
-    "from": "SE4",
+    "from": "LV",
     "to": "LT",
-    "mw": 406
+    "mw": 646
+   },
+   {
+    "from": "SE1",
+    "to": "FI",
+    "mw": 641
+   },
+   {
+    "from": "SE1",
+    "to": "SE2",
+    "mw": 527
    },
    {
     "from": "DE",
     "to": "DK2",
-    "mw": 301
+    "mw": 351
+   },
+   {
+    "from": "SE4",
+    "to": "LT",
+    "mw": 241
    },
    {
     "from": "PL",
     "to": "LT",
-    "mw": 235
+    "mw": 228
    },
    {
     "from": "SE4",
@@ -3547,29 +3529,29 @@
     "mw": 205
    },
    {
-    "from": "FI",
-    "to": "SE1",
-    "mw": 176
-   },
-   {
-    "from": "DK1",
-    "to": "DK2",
-    "mw": 173
-   },
-   {
     "from": "PL",
     "to": "SE4",
-    "mw": 106
+    "mw": 151
    },
    {
     "from": "DK1",
     "to": "SE3",
-    "mw": 52
+    "mw": 142
    },
    {
     "from": "SE3",
     "to": "FI",
     "mw": 49
+   },
+   {
+    "from": "DK1",
+    "to": "NL",
+    "mw": 42
+   },
+   {
+    "from": "DK2",
+    "to": "DK1",
+    "mw": 20
    }
   ]
  },
@@ -3626,39 +3608,39 @@
   ]
  },
  "fuel": {
-  "usdnok": 9.2921,
+  "usdnok": 9.2936,
   "note": "Norwegian duty as published for 2025 - verify against skatteetaten.no before relying on the total",
   "vatPct": 25,
   "fuels": [
    {
     "key": "petrol",
     "label": "Petrol (95)",
-    "productNok": 6.78,
+    "productNok": 6.73,
     "roadTax": 5.62,
     "co2Tax": 2.21,
-    "vat": 3.65,
-    "modelledTotal": 18.27,
-    "taxShare": 62.9,
-    "productMove": -0.19,
+    "vat": 3.64,
+    "modelledTotal": 18.2,
+    "taxShare": 63.0,
+    "productMove": -0.24,
     "currencyMove": -0.18,
     "observedNok": 26.18,
     "observedMonth": "2026M09",
-    "gapNok": -7.91
+    "gapNok": -7.98
    },
    {
     "key": "diesel",
     "label": "Diesel",
-    "productNok": 10.68,
+    "productNok": 10.58,
     "roadTax": 3.93,
     "co2Tax": 2.54,
-    "vat": 4.29,
-    "modelledTotal": 21.44,
-    "taxShare": 50.2,
-    "productMove": 1.4,
+    "vat": 4.26,
+    "modelledTotal": 21.31,
+    "taxShare": 50.4,
+    "productMove": 1.29,
     "currencyMove": -0.28,
     "observedNok": 27.52,
     "observedMonth": "2026M09",
-    "gapNok": -6.08
+    "gapNok": -6.21
    }
   ],
   "observed": {
@@ -3721,104 +3703,104 @@
   }
  },
  "france": {
-  "nuclearMw": 39981,
-  "loadMw": 60252,
-  "windMw": 1741,
-  "solarMw": 8689,
-  "gasMw": 6082,
+  "nuclearMw": 40120,
+  "loadMw": 57863,
+  "windMw": 1821,
+  "solarMw": 5193,
+  "gasMw": 6146,
   "fleetGw": 61.4,
-  "availabilityPct": 65.1,
-  "shareOfLoadPct": 66.4
+  "availabilityPct": 65.3,
+  "shareOfLoadPct": 69.3
  },
  "weather": {
   "NO1": {
    "place": "Oslo",
-   "tempNow": 5.9,
-   "windNow": 0.3,
-   "tempMin": 0.6,
-   "tempMax": 5.9,
+   "tempNow": 5.3,
+   "windNow": 1.9,
+   "tempMin": 0.8,
+   "tempMax": 5.3,
    "windMean": 1.2,
-   "heatingDegreeHours": 609.9,
+   "heatingDegreeHours": 600.5,
    "hours": 48
   },
   "NO2": {
    "place": "Kristiansand",
-   "tempNow": 7.5,
-   "windNow": 1.9,
+   "tempNow": 6.7,
+   "windNow": 2.3,
    "tempMin": 2.5,
-   "tempMax": 9.3,
+   "tempMax": 9.4,
    "windMean": 2.4,
-   "heatingDegreeHours": 471.9,
+   "heatingDegreeHours": 465.1,
    "hours": 48
   },
   "NO3": {
    "place": "Trondheim",
-   "tempNow": 8.3,
-   "windNow": 2.8,
-   "tempMin": 2.1,
-   "tempMax": 8.3,
+   "tempNow": 7.5,
+   "windNow": 2.2,
+   "tempMin": 2.0,
+   "tempMax": 7.9,
    "windMean": 3.3,
-   "heatingDegreeHours": 477.2,
+   "heatingDegreeHours": 481.9,
    "hours": 48
   },
   "NO4": {
    "place": "Tromsø",
-   "tempNow": 2.7,
-   "windNow": 2.6,
-   "tempMin": 2.5,
-   "tempMax": 7.8,
+   "tempNow": 1.9,
+   "windNow": 2.9,
+   "tempMin": 1.9,
+   "tempMax": 7.6,
    "windMean": 5.8,
-   "heatingDegreeHours": 448.9,
+   "heatingDegreeHours": 466.6,
    "hours": 48
   },
   "NO5": {
    "place": "Bergen",
-   "tempNow": 7.1,
-   "windNow": 2.4,
-   "tempMin": 3.0,
-   "tempMax": 9.4,
-   "windMean": 2.4,
-   "heatingDegreeHours": 414.1,
+   "tempNow": 6.8,
+   "windNow": 2.2,
+   "tempMin": 3.4,
+   "tempMax": 9.5,
+   "windMean": 2.3,
+   "heatingDegreeHours": 409.8,
    "hours": 48
   },
   "SE1": {
    "place": "Luleå",
-   "tempNow": 5.2,
-   "windNow": 6.8,
-   "tempMin": 1.0,
+   "tempNow": 3.7,
+   "windNow": 5.0,
+   "tempMin": 1.1,
    "tempMax": 6.1,
-   "windMean": 3.5,
-   "heatingDegreeHours": 567.7,
+   "windMean": 3.3,
+   "heatingDegreeHours": 565.4,
    "hours": 48
   },
   "SE2": {
    "place": "Sundsvall",
-   "tempNow": 7.8,
-   "windNow": 6.0,
-   "tempMin": 2.4,
+   "tempNow": 6.9,
+   "windNow": 5.1,
+   "tempMin": 2.0,
    "tempMax": 7.8,
    "windMean": 3.7,
-   "heatingDegreeHours": 490.1,
+   "heatingDegreeHours": 499.3,
    "hours": 48
   },
   "SE3": {
    "place": "Stockholm",
-   "tempNow": 7.6,
+   "tempNow": 7.1,
    "windNow": 4.8,
-   "tempMin": 2.6,
-   "tempMax": 7.6,
+   "tempMin": 2.8,
+   "tempMax": 7.1,
    "windMean": 3.4,
-   "heatingDegreeHours": 516.1,
+   "heatingDegreeHours": 512.6,
    "hours": 48
   },
   "SE4": {
    "place": "Malmö",
-   "tempNow": 9.9,
-   "windNow": 2.8,
-   "tempMin": 2.3,
-   "tempMax": 9.9,
+   "tempNow": 8.6,
+   "windNow": 3.7,
+   "tempMin": 2.4,
+   "tempMax": 9.3,
    "windMean": 2.4,
-   "heatingDegreeHours": 416.2,
+   "heatingDegreeHours": 424.4,
    "hours": 48
   }
  },
@@ -3828,12 +3810,12 @@
    "name": "Brent crude",
    "unit": "$/bbl",
    "group": "oil",
-   "last": 97.29,
-   "changePct": 2.82,
-   "changeSixMonthPct": -11.4,
+   "last": 96.82,
+   "changePct": 2.33,
+   "changeSixMonthPct": -11.9,
    "low": 71.57,
    "high": 117.64,
-   "rangePos": 55.8,
+   "rangePos": 54.8,
    "spark": [
     87.07,
     88.52,
@@ -3894,7 +3876,7 @@
     104.77,
     103.6,
     94.62,
-    97.29
+    96.82
    ]
   },
   {
@@ -3902,12 +3884,12 @@
    "name": "WTI crude",
    "unit": "$/bbl",
    "group": "oil",
-   "last": 90.8,
-   "changePct": 3.04,
-   "changeSixMonthPct": -11.2,
+   "last": 90.3,
+   "changePct": 2.47,
+   "changeSixMonthPct": -11.7,
    "low": 68.55,
    "high": 108.66,
-   "rangePos": 55.5,
+   "rangePos": 54.2,
    "spark": [
     81.25,
     82.4,
@@ -3968,81 +3950,7 @@
     96.46,
     96.09,
     88.12,
-    90.8
-   ]
-  },
-  {
-   "symbol": "TTF=F",
-   "name": "TTF gas",
-   "unit": "€/MWh",
-   "group": "gas",
-   "last": 90.8,
-   "changePct": 3.09,
-   "changeSixMonthPct": 93.5,
-   "low": 40.405,
-   "high": 103.944,
-   "rangePos": 79.3,
-   "spark": [
-    60.4,
-    61.424,
-    61.757,
-    63.646,
-    63.381,
-    65.295,
-    65.865,
-    68.32,
-    66.588,
-    65.626,
-    68.095,
-    66.979,
-    69.809,
-    72.218,
-    73.634,
-    71.81,
-    71.952,
-    75.841,
-    79.246,
-    82.047,
-    79.52,
-    82.566,
-    80.06,
-    78.03,
-    76.352,
-    79.518,
-    73.253,
-    73.34,
-    72.01,
-    75.106,
-    72.071,
-    73.437,
-    69.805,
-    72.357,
-    73.938,
-    74.76,
-    73.513,
-    75.691,
-    78.08,
-    78.849,
-    81.434,
-    84.351,
-    87.223,
-    87.138,
-    86.432,
-    87.547,
-    88.04,
-    85.062,
-    87.426,
-    90.043,
-    93.853,
-    96.681,
-    96.061,
-    100.72,
-    98.588,
-    103.944,
-    94.861,
-    91.602,
-    88.082,
-    90.8
+    90.3
    ]
   },
   {
@@ -4050,12 +3958,12 @@
    "name": "US gas (Henry Hub)",
    "unit": "$/MMBtu",
    "group": "gas",
-   "last": 2.985,
-   "changePct": 0.88,
-   "changeSixMonthPct": 7.1,
+   "last": 2.975,
+   "changePct": 0.54,
+   "changeSixMonthPct": 6.7,
    "low": 2.602,
    "high": 3.343,
-   "rangePos": 51.7,
+   "rangePos": 50.3,
    "spark": [
     2.727,
     2.733,
@@ -4116,7 +4024,7 @@
     2.856,
     2.895,
     2.959,
-    2.985
+    2.975
    ]
   },
   {
@@ -4124,12 +4032,12 @@
    "name": "Heating oil",
    "unit": "$/gal",
    "group": "refined",
-   "last": 4.3504,
-   "changePct": 3.45,
-   "changeSixMonthPct": 7.9,
+   "last": 4.3097,
+   "changePct": 2.48,
+   "changeSixMonthPct": 6.9,
    "low": 3.0931,
    "high": 5.262,
-   "rangePos": 58.0,
+   "rangePos": 56.1,
    "spark": [
     4.2506,
     4.2829,
@@ -4190,7 +4098,7 @@
     4.4216,
     4.5306,
     4.2055,
-    4.3504
+    4.3097
    ]
   },
   {
@@ -4198,12 +4106,12 @@
    "name": "Petrol (RBOB)",
    "unit": "$/gal",
    "group": "refined",
-   "last": 2.764,
-   "changePct": 1.3,
-   "changeSixMonthPct": -23.7,
+   "last": 2.7429,
+   "changePct": 0.52,
+   "changeSixMonthPct": -24.2,
    "low": 2.7286,
    "high": 3.7607,
-   "rangePos": 3.4,
+   "rangePos": 1.4,
    "spark": [
     3.128,
     3.1841,
@@ -4264,7 +4172,7 @@
     2.9001,
     2.9355,
     2.7286,
-    2.764
+    2.7429
    ]
   },
   {
@@ -4272,12 +4180,12 @@
    "name": "EUR/NOK",
    "unit": "",
    "group": "fx",
-   "last": 10.4278,
-   "changePct": 0.37,
-   "changeSixMonthPct": -3.8,
+   "last": 10.4402,
+   "changePct": 0.49,
+   "changeSixMonthPct": -3.7,
    "low": 10.2793,
    "high": 11.3334,
-   "rangePos": 14.1,
+   "rangePos": 15.3,
    "spark": [
     10.9626,
     10.9254,
@@ -4338,7 +4246,7 @@
     10.2793,
     10.4108,
     10.3891,
-    10.4278
+    10.4402
    ]
   },
   {
@@ -4346,12 +4254,12 @@
    "name": "USD/NOK",
    "unit": "",
    "group": "fx",
-   "last": 9.291,
-   "changePct": 0.23,
+   "last": 9.2934,
+   "changePct": 0.25,
    "changeSixMonthPct": 0.2,
    "low": 9.1622,
    "high": 9.9325,
-   "rangePos": 16.7,
+   "rangePos": 17.0,
    "spark": [
     9.5042,
     9.4397,
@@ -4412,7 +4320,7 @@
     9.2138,
     9.3011,
     9.27,
-    9.291
+    9.2934
    ]
   },
   {
@@ -4420,12 +4328,12 @@
    "name": "Carbon allowances",
    "unit": "",
    "group": "transition",
-   "last": 35.11,
-   "changePct": -1.21,
-   "changeSixMonthPct": 8.9,
+   "last": 35.375,
+   "changePct": -0.46,
+   "changeSixMonthPct": 9.8,
    "low": 31.26,
    "high": 35.54,
-   "rangePos": 90.0,
+   "rangePos": 96.1,
    "spark": [
     34.36,
     34.35,
@@ -4486,7 +4394,7 @@
     35.303,
     35.295,
     35.54,
-    35.11
+    35.375
    ]
   },
   {
@@ -4494,10 +4402,10 @@
    "name": "Uranium miners",
    "unit": "",
    "group": "transition",
-   "last": 31.23,
-   "changePct": -4.5,
-   "changeSixMonthPct": -42.4,
-   "low": 31.23,
+   "last": 30.84,
+   "changePct": -5.69,
+   "changeSixMonthPct": -43.1,
+   "low": 30.84,
    "high": 58.26,
    "rangePos": 0.0,
    "spark": [
@@ -4560,7 +4468,7 @@
     32.93,
     33.05,
     32.7,
-    31.23
+    30.84
    ]
   },
   {
@@ -4568,12 +4476,12 @@
    "name": "Wind",
    "unit": "",
    "group": "transition",
-   "last": 22.67,
-   "changePct": -1.56,
-   "changeSixMonthPct": -16.3,
+   "last": 22.8,
+   "changePct": -1.0,
+   "changeSixMonthPct": -15.8,
    "low": 21.58,
    "high": 27.23,
-   "rangePos": 19.3,
+   "rangePos": 21.6,
    "spark": [
     24.38,
     24.32,
@@ -4634,7 +4542,7 @@
     22.04,
     22.34,
     23.03,
-    22.67
+    22.8
    ]
   },
   {
@@ -4642,12 +4550,12 @@
    "name": "Solar",
    "unit": "",
    "group": "transition",
-   "last": 43.745,
-   "changePct": -4.47,
-   "changeSixMonthPct": -27.9,
+   "last": 43.42,
+   "changePct": -5.18,
+   "changeSixMonthPct": -28.5,
    "low": 40.2,
    "high": 73.93,
-   "rangePos": 10.5,
+   "rangePos": 9.5,
    "spark": [
     52.47,
     51.97,
@@ -4708,7 +4616,7 @@
     42.07,
     43.34,
     45.79,
-    43.745
+    43.42
    ]
   },
   {
@@ -4716,10 +4624,10 @@
    "name": "Nuclear",
    "unit": "",
    "group": "transition",
-   "last": 85.205,
-   "changePct": -3.47,
-   "changeSixMonthPct": -39.7,
-   "low": 85.205,
+   "last": 84.39,
+   "changePct": -4.4,
+   "changeSixMonthPct": -40.3,
+   "low": 84.39,
    "high": 149.25,
    "rangePos": 0.0,
    "spark": [
@@ -4782,7 +4690,7 @@
     89.65,
     90.04,
     88.27,
-    85.205
+    84.39
    ]
   },
   {
@@ -4790,12 +4698,12 @@
    "name": "Dry bulk freight",
    "unit": "",
    "group": "transition",
-   "last": 12.915,
-   "changePct": 2.42,
-   "changeSixMonthPct": 6.0,
+   "last": 12.92,
+   "changePct": 2.46,
+   "changeSixMonthPct": 6.1,
    "low": 11.27,
    "high": 16.58,
-   "rangePos": 31.0,
+   "rangePos": 31.1,
    "spark": [
     13.89,
     14.287,
@@ -4856,7 +4764,7 @@
     12.36,
     12.402,
     12.61,
-    12.915
+    12.92
    ]
   }
  ],
@@ -4867,7 +4775,7 @@
    "url": "https://news.google.com/rss/articles/CBMitwFBVV95cUxOdlhYRDhZUkZBOVl5OGlTcElCNW9TVzk5VTNCaUlVdWZxSS1xdWR2MnVJT0R3LVRWcGptcXFPMjZQX1BaSHIwUUQ5X0drTkRrT1lWNTFaVDhIYVRvaGZqSm1iekF6b2c0ZmFQTEd1bXJhaldNQnNNbU81X1hjUVY4UnBSOTdfaDM2SDZsNVQtWUJ4SU5aTlMxTHN4YlpvUjZEYVN4NU5wRUxEcTJUMC1HYms0ay11a2s?oc=5",
    "topic": "sodium ion battery",
    "category": "Storage",
-   "ageHours": 369.4,
+   "ageHours": 370.4,
    "score": 6
   },
   {
@@ -4876,7 +4784,7 @@
    "url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxOSGFnSVZaSlZGQXhCdFQ4WFBVN2Itc2RPaWg5WXAwTk1XclFiTVpLVFplTXhMWmZYcWJXRWZuaF9BckxjenNDOHAtSkMyWGtxMGxxbEQ2dmhOSXJMVWdpWTh3S1V5NkhZcUp2QlN5al8wMEl4ZmR2TXl3eS10N3JlSUpqZ1htN2cxSno2aVB5R2REY0pxc3RncVlNNnZ2NXRKcXNkU3Q3VU9tRkx4YWsxWg?oc=5",
    "topic": "offshore wind farm",
    "category": "Wind & solar",
-   "ageHours": 9.4,
+   "ageHours": 10.4,
    "score": 5
   },
   {
@@ -4885,7 +4793,7 @@
    "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxNblZfRVg4LTdYLUR3WTh5WFFSYzFlSlBtYUxyTjA4Y3V2RVVVS0w5d0l4Z0xnTk0tWXE1MTlGRUxzQkd3blg5c0xqUk55cDBpeEJFQ0ZsV0Q2WVVxU3A4aU1BNEF6QVA5NU1jT1A2NEJTMk85bDlsN29oRUw4cW5QQ0JaajFpSWFranR6Ni1MTnUybkVzb01wZTdIYWFPN0xGcERldw?oc=5",
    "topic": "pumped hydro storage",
    "category": "Storage",
-   "ageHours": 417.4,
+   "ageHours": 418.4,
    "score": 4
   },
   {
@@ -4894,8 +4802,17 @@
    "url": "https://news.google.com/rss/articles/CBMixAFBVV95cUxOWmQ4U3hXcGdNTHJNZFU0cVZsV21kRWVvQmVCOVpVYVRQYWVHNVFWbHNLcFlhUDBqangtbzhwRHRJbzlqeHNVaUQtUHBTSnhhaFlPTl93WkVtWWtqaTVHZmRiSXllR3pUdlZiN1Y5YUxqM0V2SzFIZm9aLW94aFQybERyYlliUlc3by02c0N2V09WcmZDRVNoUnRXRkpyUFBJQ2xkVDh6WjY0NFNSUXE4UHRPZGl5NDAxNV9WUXFHTlFLWUNl?oc=5",
    "topic": "grid connection queue",
    "category": "Grids & cables",
-   "ageHours": 489.4,
+   "ageHours": 490.4,
    "score": 4
+  },
+  {
+   "title": "Orsted profit beats estimates, says energy volatility boosts offshore wind growth",
+   "publisher": "Reuters",
+   "url": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxQWkVPb2dPRENTSkswNlhtYnFMOElBZEZiUTM5Yzh1Y2lqYnFzTkNSZmtkLUZ0dFcyVHZsek1lbXNKd1plRWplcmg1Tk9MQXFWbTFWZ0FkZnJSQTljME90MUw1UzJqdVlEeWpoRzVKckVZZmR0ZVlLUFBQLUkxcGRVcUIxUVppM0czZUp4bkpUeXhOdkIxbEFiTUxWQlhsN2RRVk5naTdjVHdUVFRDT2JUdXJWZ3NBTXVN?oc=5",
+   "topic": "offshore wind farm",
+   "category": "Wind & solar",
+   "ageHours": 10.0,
+   "score": 3
   },
   {
    "title": "India launches US$1.5bil energy storage plan",
@@ -4903,7 +4820,7 @@
    "url": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxPV3kyaGpZeERETEtuMU1MMzFYN3dYZjIzbjVqWUFVVzExZVo3WWI4TEt2QzBBT3VlSmtwc09scFpKTGhpNWhNWmNsSWZhWnZMZDRuM3N5bnBDdlZKR1JuMzFpc3J4dHB5ZDVXYkFJbVRsbmJ1b3ZoLUNrRmIyVWNpOVNYTjRFaHpxb2ZFaFlsM3BLZ1FiLVM5VjhZZFVOdk1PbGlzYm5jQWxhbE0?oc=5",
    "topic": "pumped hydro storage",
    "category": "Storage",
-   "ageHours": 9.1,
+   "ageHours": 10.1,
    "score": 3
   },
   {
@@ -4912,7 +4829,7 @@
    "url": "https://news.google.com/rss/articles/CBMikgFBVV95cUxQMmZ1Zk8tdEU1ek1JZk0zOThDNkVleHhhV3gySTIwd0xVa3djd2VzbUFxQW51R095X0ZpWGpja2cxM0kzdHJhTUhRcEFzTm1aU054ZlpCUXB2LVRQVnFacXc3bVY1bkVpUC10bEVHSkpOWkVzRUh1YzdlcWNjdDk4OU0tTm1EQm5TVlFmUThWTUp2Zw?oc=5",
    "topic": "carbon capture project",
    "category": "Hydrogen & fuels",
-   "ageHours": 10.3,
+   "ageHours": 11.3,
    "score": 3
   },
   {
@@ -4921,7 +4838,7 @@
    "url": "https://news.google.com/rss/articles/CBMi3wFBVV95cUxQNHNIRmY2X0xKX3FjLWk0SGFYWmxZMXFnWG5uS3NsbTllMjl4SGtyYzNRVXNoeXRSZzhWcV9GYzlQNlpMcC0wTlVfTF91V2U0SkswOE5sNXFJVFVPVzJReEVSVW9WMkZSN01PMVRmdmNiRUNBdjhtTHhScUYtWXMtYndHZUpaTW9oOGZCUGJxSUFVTUtNXzVDcGN4ZW95eVd5LTFMZHZGbVZVR0xNWC0tZWZUblFWTnJVby1aQTN5a2RadHVZMXpyV3pQZm1ET1ZtaFctX1R2eTJhd1hyNF9V?oc=5",
    "topic": "green hydrogen project",
    "category": "Hydrogen & fuels",
-   "ageHours": 18.5,
+   "ageHours": 19.5,
    "score": 3
   },
   {
@@ -4930,16 +4847,16 @@
    "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxPU2dFM09WbE1QUnFzR3NWT2IwUVgxTGtZSE9rV2VYT0t3bWNfMURqTFBlUl91bF9uR3NybTI1bkoyTGFKUHVaWk5BWGZpYm1nN3diS25FQ25YTkplNzRKSklvVU1oNlZaZ05ieHlqRFhvenpGWnlnTkhpSWI4SGF3Y0VzYXhKNjhkSHNFSy1PMVFBTzA3dEZLOG9DZS05WkJMRHpPS3U2bEpkcU10ZVhF?oc=5",
    "topic": "grid scale battery",
    "category": "Storage",
-   "ageHours": 25.5,
+   "ageHours": 26.6,
    "score": 3
   },
   {
-   "title": "Econergy buys up 106 MW of operational UK battery storage capacity",
-   "publisher": "ESS News",
-   "url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxORlVfWTlJMEpHbGlEc3lwYU8xS3VYRkxYa3k3RGwyNnYzVHZRU0U2VzNnVUFQZlhKODkyUEw1akFHbEJWUktmOEtBeXBRMHhGcFNNQmxYcG9FczNTWnk5dGhmMC1MUlhCb1hETDM5QWwwbjdzdVJQN29NdEdoOURYblgwblh2U0xTNEZZWnhROG5wUWpkRHA4SU90T2c3eGhhbFIyMGpB?oc=5",
-   "topic": "grid scale battery",
-   "category": "Storage",
-   "ageHours": 27.7,
+   "title": "BW Offshore Awarded NOK 1.94 billion Enova Grant for Floating Offshore Wind Project",
+   "publisher": "Renewable Energy Magazine",
+   "url": "https://news.google.com/rss/articles/CBMilAFBVV95cUxQdVdiUWI2VWRrU2VyX1lIX2lDaC16OGhEd0QtVEtKaEstQ0M3ZUxhR3pQam5zLTBYVDRnY2N0UjFnMzZTWE9wR1pYMktacndYV3hZYWZ6TlBzU0U2T2NmUHFLN0lFVzdnN3dxRER5TmdMODRuNWR6Q0pjRFVra01HOTZoSGtZYnJ4X1ZlaEFkY0Vva1ox?oc=5",
+   "topic": "floating offshore wind",
+   "category": "Wind & solar",
+   "ageHours": 27.8,
    "score": 3
   },
   {
@@ -4948,7 +4865,7 @@
    "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxQSWdMdTN3TnZ1T3ZLWERPSjB2OHFISkNPWWdmaW5OTS03X2F1Q2pFMWU0SkZQNllZTnA5RzVmT0hUSGxZbS0zbkVuSGZ5MEkyTjZnY2g0b0FjdXZUMUNhR1VlNE5JSzJUbkY2Yzk4ZGMxNUNfaWRSRHBvYWRPbThVWXR5Vk9fZmNDTEJhS0lnR2RmbHpnZFd3aXZvNjFEb0NLNE5nMnR6VXlZNWNEYTZ0Mjd5SQ?oc=5",
    "topic": "grid scale battery",
    "category": "Storage",
-   "ageHours": 27.7,
+   "ageHours": 28.7,
    "score": 3
   },
   {
@@ -4957,7 +4874,16 @@
    "url": "https://news.google.com/rss/articles/CBMikAFBVV95cUxPUlpqY3AyMV9LTTVGdTlVaXNQb2hCMDQ3Ul9VRzVicHF4ZEEzTUhsaE9iOFBCNXcwQXpyYTd6bFFNcW5FeXprVUl0dE1XMlU5b29TTDh1SXRoRlAyNEI4LU9zeWpxZzhhOEtEZzZfdHM0aU85QmFvVXowVnpUcXA1bDRteGc1STAyTWpyRERNNkU?oc=5",
    "topic": "offshore wind farm",
    "category": "Wind & solar",
-   "ageHours": 28.1,
+   "ageHours": 29.1,
+   "score": 3
+  },
+  {
+   "title": "Cabinet approves Rs 17,500 crore scheme to promote grid-scale energy storage system",
+   "publisher": "The Indian Express",
+   "url": "https://news.google.com/rss/articles/CBMixAFBVV95cUxQa3ljNmM0ZElzajliVUg5dHQ2LVRBT091NkNDVDBjXzk5RTZmSmlpSWNDZXNRb0hQX0tITnhEYk5UWllVcEtLYWdYX3ZFQk5EVlpKUlIzYjRYdjJWemdhd2MwckktZDlUZUsyTTdBeHlvQkRKZEM5bWN6Z0RGRXVXemR6Q3VRczZlOUxrY0l1Nm05bkNPendENkE2S3ZFMjJzeHh5bnZPV2FZZGdXcUk1UVVzQnVrcUlIQTZGMDRYejJEOXBJ0gHLAUFVX3lxTE1DcHoxbDNLNU1rb01jSjB6LWVzRlVLSUtQeHplQUdEQkpaVmpRU2pWdDI3alFKQ1JhNDhLN3NwdW1KcmI3RXlNQnhGRjBWcDY4MmFnYm11X2RCVHJxbUdoYm55RGZaR1NjdzNQSzBJSDlweVBHeTd2VGluUUFrNXhMendGOU9KLU9ORXlVS3FqdkNzdVpaZDFUOW5tMUxfUy1YX0N0MHg0VjdGNmRndms0eGpLR2VvdmR4SDlRUGFRYkRFTTVCSmxyNlpr?oc=5",
+   "topic": "pumped hydro storage",
+   "category": "Storage",
+   "ageHours": 31.2,
    "score": 3
   },
   {
@@ -4966,7 +4892,7 @@
    "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTE1ER1lkRVpoLWJBOFNxU2Z6T1UwaldfbTBOQkdkazVMMnJwUjZvMUptenlRVXQzVTU3TnBlZ3BEakxNcGtpZ25vQ1ZYQS1WWUQ2YWExdU1vX3YtQ3VKbFdzaHZQLWhXZDRWYjhYXzBLOGpodXdkNFdYTGJyUQ?oc=5",
    "topic": "HVDC",
    "category": "Grids & cables",
-   "ageHours": 68.7,
+   "ageHours": 69.7,
    "score": 3
   },
   {
@@ -4975,7 +4901,7 @@
    "url": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxPZHNfdXFmOGF5d1FRTGhVOGdmUmNhbWU1ZElRTDdzcksxOWhRUjc0dkR4SkJQdllFcTFJMzh3aXFkQld5UnNfXzBOdzdGXzV3d2E3ZDBHU0NDNGV3N3hrM1Y5WjVnQXVaOWZhYkFQZGJHcGV1Zjh2aWk2eTMtVF9ZTlJsQ1BjR3VaTXVN?oc=5",
    "topic": "small modular reactor",
    "category": "Nuclear",
-   "ageHours": 75.2,
+   "ageHours": 76.2,
    "score": 3
   },
   {
@@ -4984,7 +4910,7 @@
    "url": "https://news.google.com/rss/articles/CBMinAFBVV95cUxORUFLQTB0U21uNVNBbVpxb2VzVjhScGRiQ1lCRVd4azZCNTFQWmMxQ0toTUhlbUNJV0IxRTVGakNaZnh1UzBlVmxDRTZIb0xYY3Z5cDZPSEtBdC05aTFyTEVQTVE2R3ZlZjBMYUppOVBzT1FvVkh4Skd6UUhhbXRISnZkV3RIOHhyU0dtM1VBSG5Qc25VaGJleS1kREM?oc=5",
    "topic": "subsea power cable",
    "category": "Grids & cables",
-   "ageHours": 78.0,
+   "ageHours": 79.0,
    "score": 3
   },
   {
@@ -4993,7 +4919,7 @@
    "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPNDN1UUVIdWJmaVNxXzJtVWJlMDVZZmR6Wi1mVXExWmI1RWFWcWtRSVFWd0lycGRVM0FkcVpuZDVfb2tDaF9wNm1xQ1VWLUtQNTVHM3JPb045bjkzS3c4WXBOQUJCZ1oxb0xCSnpVREFzZWtrb0ptMGROREEtVFh2dzc3SXU?oc=5",
    "topic": "small modular reactor",
    "category": "Nuclear",
-   "ageHours": 155.4,
+   "ageHours": 156.4,
    "score": 3
   },
   {
@@ -5002,7 +4928,7 @@
    "url": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxOVTdJbnhGSlRXMjZsQmNTeEdhQWpvYlpaMWRDWWFnaVVmSWR0ZlJZNmk1N3VuWUNublhRV0pxMFlZbVFIS3NpSkdRbXpObXlVeDZzaHRod0NQZVRkWDBGUDdSbEF4NU9hc1ByTVctc2I2d0RGY1oySXV5LTF0MTVKVW1ZQ212OXdJMW1XSEd5SWloNGlfRlNpM0syMFZYUDJ4ZDVwdWFfT3lhOTJ0V0tBOTdzYnpabndf?oc=5",
    "topic": "small modular reactor",
    "category": "Nuclear",
-   "ageHours": 393.4,
+   "ageHours": 394.4,
    "score": 3
   },
   {
@@ -5011,7 +4937,7 @@
    "url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxQVHNLUTZqLWNKZnZhS2hPYnJXdXkxN1k0VUNZdHlhc01rX20zQnpDeDZSZy1JQ1pqUFB6dDcyQWJLcXRGdFgxa3VKSzBDN19pZHpBNm5FWDVnd0ZQUVE3dkFaWG9NQi1jRHVRMFNGOGw1S3lyVGFXZ2JSUy1zUDdQYkJzd3VEbC1JcmQ2RHFfZlE2QUxtNzZCdkFhOA?oc=5",
    "topic": "subsea power cable",
    "category": "Grids & cables",
-   "ageHours": 417.4,
+   "ageHours": 418.4,
    "score": 3
   },
   {
@@ -5020,7 +4946,7 @@
    "url": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxQT0JUVU1JLWpoNXRVR2w0U2w1aGlWaHlLNTYwOWphZ05CQlk0SGd0TnpLYXRJNHdIRXd4QXdBa0Vld1dxMmFqTVZEM2JFbU1OMEhKYW1iTEFEcU1TWTJjeHJwZXVObGRhRHlDUWpkdlhTeHEtMDBmZ1RKbk9lZ0lHUzRZSjV0Y2tBTzJvOG1TYklka0ZzRFBZYUE4aldaeEZqamtuZ085aG1zazQ?oc=5",
    "topic": "interconnector",
    "category": "Grids & cables",
-   "ageHours": 465.4,
+   "ageHours": 466.4,
    "score": 3
   },
   {
@@ -5029,7 +4955,7 @@
    "url": "https://news.google.com/rss/articles/CBMiwAFBVV95cUxPRW1aTWhsMWh2NXVRcXJzbnh3bDBaenN0ZnFSNnZIZkJpTXpaUi0ydWlVNWdZZDZ4cDFnbXlFaW9KeWl0eVhhYWhXMnA5WUt2a1ZhSDdQUWRUUk9yc3Eyb2hnUlVvQWY2NWNma3BxWWVaQ2xWWG03N1BvaWdLMXZ3Y3ljWEltOGF5YVhNcnFBYmp0eXdJVEpiOHA1VUdRcE5jSDFWWGdzdndnZ05Vd0MxNFZMWjBnNm5zTEtaNXZWUmg?oc=5",
    "topic": "interconnector",
    "category": "Grids & cables",
-   "ageHours": 0.4,
+   "ageHours": 1.4,
    "score": 2
   },
   {
@@ -5038,7 +4964,7 @@
    "url": "https://news.google.com/rss/articles/CBMiggFBVV95cUxPTVF3MjdMOTAtYjRYaWxYQXVhSUllWS0tejBfUVdEV0FNV0w0QkJLcFZSM183UEFvZXpIUXdiWTVobTBvNkI2WkJxSTR6cG11M3drUFpGSGg1R3hSMVVhVU9JaVBCQjZMdEMzVGdRaWtVYnlCWm5pdVNIVWp1Wk1ha01n?oc=5",
    "topic": "carbon capture project",
    "category": "Hydrogen & fuels",
-   "ageHours": 4.3,
+   "ageHours": 5.3,
    "score": 2
   },
   {
@@ -5047,16 +4973,7 @@
    "url": "https://news.google.com/rss/articles/CBMixAFBVV95cUxPOFo3SGVVNVpLNWZpdG02YmlpendIRDNRMFRBYm1Oem1lUGhiVmZ2c2Vwcm55X0JCTFZTbm9vSmh4NW5fMmQwcWs2aEtrZ2FUanVCbjBKNC1UMlU1NEVrcXBHclFlcHpPNHc1TWdDREozak9rMnZleFdiRzBOcHBLc1o5ak5HSEJfRjdxTktBdlZFZW5TWGx3NTFZb2ZOaHdsam1xTnEtVHVrRDFYUmZBTkpfYmI2RHl4SlJPaEcwbHBKNms1?oc=5",
    "topic": "offshore wind farm",
    "category": "Wind & solar",
-   "ageHours": 26.6,
-   "score": 2
-  },
-  {
-   "title": "Fram Wind Solutions awarded Enova grant",
-   "publisher": "Energy Global",
-   "url": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxQeEg3V2xDakpOTDZnS1doYTBTeHFzNnVEY2RseGFVQTRtMlZUT082dkxEVDk2V0F4RUFxakNnUm5TeUxqWS0wVExvWFhXZjR1MDF4Tm9rd25aVmNJOWoxemVHUGhTN3l2bUstWlFPZllpMG55R3BRWC1wNVlCS0Vyc2o4dW41YnhGbGFV?oc=5",
-   "topic": "floating offshore wind",
-   "category": "Wind & solar",
-   "ageHours": 28.3,
+   "ageHours": 27.6,
    "score": 2
   },
   {
@@ -5065,7 +4982,7 @@
    "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTE5lelpMYUtKRVFFVkUwM0s5ZzN3MmdFVjFvM2pheHJnNGNSQ0d0aWFwcWpnWmV2NVoyVFBiQ0NwVWZuVWJYSmdVWWhvUXY2NTNrOUpwb2owaW81UzlJRDNrbDR1QWh5SElYTEhZ?oc=5",
    "topic": "floating offshore wind",
    "category": "Wind & solar",
-   "ageHours": 29.5,
+   "ageHours": 30.5,
    "score": 2
   },
   {
@@ -5074,16 +4991,7 @@
    "url": "https://news.google.com/rss/articles/CBMi_AFBVV95cUxOVk9yd2M1U015S09nZWNfZWRmTFluSTM0MlBVTUJNTUFPc0pqWFBUZlJHdVVOWGJQUEswQVBwWXF5alNDei0zWERRS182SGZINTRUWjZyaTNFS1NzU2lpR2tqNElrMnpab0RZVW1xdHROZm1OdS1mYjNPRm0zclBuQlhmdkJuU3VtQlNieFF3TGg5TkxEZzJMb3c3NmFwemo2bmoxNlBGcG1ZdHlFTzZRaHFJS1VpcV9nVnNqM3NvLXNwYjYtcjN5Z0JiVXNHQW9TU0NYQldkMUtfbFZ0TzJFX0pZcDZVa1RHUjBPdmxZREFteHJ5cENVZ3F2Rl8?oc=5",
    "topic": "green hydrogen project",
    "category": "Hydrogen & fuels",
-   "ageHours": 49.3,
-   "score": 2
-  },
-  {
-   "title": "Floating wind has hit a sticky point – this is how we must move forward",
-   "publisher": "Recharge News",
-   "url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxPcUhfQ3BpY1RyYjBVOEVPQ1NuMTFEZ0wtNFhOOTNjTmlOOVNNc3R4UXEzb0toRUhXQzlDRGtITFltbmVSRTR1ZjA3SHRSQm5FQnU0cUtrUDJZS1lKTTh3dkk1TVhSYkE2d2JHSk50RFY0bFk1N1R2djVPLWVEZ0sxbEpfN05TWEpob3Y1M053UWZWMXBsYlF2cklJR0hlWW9EaDcyQkl5a3h1QUpuUmdnb0JtMFNFRHlYN0E?oc=5",
-   "topic": "floating offshore wind",
-   "category": "Wind & solar",
-   "ageHours": 52.1,
+   "ageHours": 50.3,
    "score": 2
   },
   {
@@ -5092,7 +5000,7 @@
    "url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxPSHVVc3pyWEJpR005cV9NUUtLVnluRk9XTVEwaTQzWXBwRnJnaWQxLTZEZkFHNWZEdnFfQldfZE9PWUgteUlSYm1wTE02WkNJVmFVem9QQ2JUYk1BRm96am51U1FOZThxbXNXR2RibnNVZjZKQWMyanZJZDh2NXhQUWRmN0NtUTEtUFFTSm53NHFBUTR6Y0s0bF9ybmhBQTJlRndGT2Y0U09ZamVidHZzNnNWQUZqS2N4dEE?oc=5",
    "topic": "fusion energy",
    "category": "Nuclear",
-   "ageHours": 4.9,
+   "ageHours": 6.0,
    "score": 1
   },
   {
@@ -5101,7 +5009,16 @@
    "url": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE1NM0hBd2p2ZGZIYnpOYVRpeV9URWI3OXJzT1FvV3R1WFJfZmpNekYxNGJ2RUxiVE90WnNBdGtCU29ZbW53YmlUVWJmdnhzZnk1Snc?oc=5",
    "topic": "green hydrogen project",
    "category": "Hydrogen & fuels",
-   "ageHours": 16.4,
+   "ageHours": 17.4,
+   "score": 1
+  },
+  {
+   "title": "Use £5bn oil and gas revenues to fund Acorn carbon capture – SNP",
+   "publisher": "London Evening Standard",
+   "url": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxPd29VZ1VsakNhRlhKZm85YmVsNlhiQ1pOemJKdzg2VDFOUmIxc1hZN2xMRWx5dUxNaHZST2pxZkJqc092YlRKTEZpcEVwM0ZnM1hfdDRTMFFPS2dZdXgyYk9YUjZKeVBocUE4Tmc2VVRxdGdyck1xMS0zbTR6VFZWaVNpbG9GSkh2U29TWkZ4dzd1YmNUS1hKYS1UWXJWTWl2TG1UR1pjZ1FrUnBVaDF0RnY5VTZoWjYzVHBV?oc=5",
+   "topic": "carbon capture project",
+   "category": "Hydrogen & fuels",
+   "ageHours": 25.7,
    "score": 1
   },
   {
@@ -5110,16 +5027,7 @@
    "url": "https://news.google.com/rss/articles/CBMijwFBVV95cUxOc3MxZmhpb0gtQ1EwVHFPcTc0c1E2SVVlM1JiNEZ4WXZBX0dvQTlreUs2eXVObk05RXJ0a1c0bXVxeFZ0QTFEclNzMnp4RlU1M0RMTktDTHROSVJLQkVvTjNpMC1FRmFyOXdhRGR0ekM4ZlNJaG1PZFhfcGVoVFNqZWVLMm9jcGhOSE1ONXlXdw?oc=5",
    "topic": "fusion energy",
    "category": "Nuclear",
-   "ageHours": 39.5,
-   "score": 1
-  },
-  {
-   "title": "Use £5bn oil and gas revenues to fund Acorn carbon capture – SNP",
-   "publisher": "The Independent",
-   "url": "https://news.google.com/rss/articles/CBMisgFBVV95cUxQVzVhNGFTalU5UU8tYXNPYTRoenhLVzJLdXptczRRWjlPUjAwU1lsUXF3MTdSb2lsbTlUa29xSk9NdXg0VjJUblM0N0VjNThNVFVSMDVUX0hJNzhRZ2JRLU43SlRrQlczY1ltRDRkVWQ3ZllkSkI0X1pyMDgyODVlTU9WWlpubXdjRHlRSzZxd3RKeFJoNFdRNnU5bFpLSTZsZ0lIZVZPZVRMVml0emZzalZB?oc=5",
-   "topic": "carbon capture project",
-   "category": "Hydrogen & fuels",
-   "ageHours": 78.7,
+   "ageHours": 40.5,
    "score": 1
   }
  ]
