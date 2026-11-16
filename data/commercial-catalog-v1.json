@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "reviewed_at": "2026-11-16",
+  "notice": "Selected source-attributed open datasets. Public JSON remains free; optional authenticated service is not yet deployed. No rights to external restricted data are transferred.",
+  "datasets": [
+    {
+      "id": "hydro-weekly",
+      "path": "hydro-v1.json",
+      "title": "Norwegian weekly reservoir storage",
+      "source": "https://api.nve.no/doc/magasinstatistikk/",
+      "attribution": "NVE",
+      "license": "https://data.norge.no/nlod/",
+      "notes": "Regional observations; not individual reservoir fill.",
+      "access": "open_with_attribution",
+      "schema_version": 1
+    },
+    {
+      "id": "hydro-plants",
+      "path": "hydro-plants-v1.json",
+      "title": "Norwegian hydro plant register",
+      "source": "https://api.nve.no/web/Powerplant/GetHydroPowerPlantsInOperation",
+      "attribution": "NVE",
+      "license": "https://data.norge.no/nlod/",
+      "notes": "Retrieved in-operation register; reported main owners.",
+      "access": "open_with_attribution",
+      "schema_version": 1
+    },
+    {
+      "id": "hydro-stations",
+      "path": "nve-stations-v1.json",
+      "title": "Norwegian station geography",
+      "source": "https://gis3.nve.no/map/rest/services/Mapservices/VassdragsreguleringVannkraft/MapServer/1",
+      "attribution": "NVE",
+      "license": "https://data.norge.no/nlod/",
+      "notes": "Source coordinates and reported station attributes.",
+      "access": "open_with_attribution",
+      "schema_version": 1
+    },
+    {
+      "id": "hydro-reservoirs",
+      "path": "nve-reservoirs-v1.json",
+      "title": "Norwegian reservoir geography",
+      "source": "https://gis3.nve.no/map/rest/services/Mapservices/VassdragsreguleringVannkraft/MapServer/9",
+      "attribution": "NVE",
+      "license": "https://data.norge.no/nlod/",
+      "notes": "Simplified geometry, regulated volume; not current fill.",
+      "access": "open_with_attribution",
+      "schema_version": 1
+    },
+    {
+      "id": "hydro-catchments",
+      "path": "nve-catchments-v1.json",
+      "title": "Norwegian catchment geography",
+      "source": "https://gis3.nve.no/map/rest/services/Mapservices/VassdragsreguleringVannkraft/MapServer/8",
+      "attribution": "NVE",
+      "license": "https://data.norge.no/nlod/",
+      "notes": "Simplified geometry and normal runoff.",
+      "access": "open_with_attribution",
+      "schema_version": 1
+    },
+    {
+      "id": "hydro-owners",
+      "path": "hydro-owners-v1.json",
+      "title": "Reported hydro main-owner groups",
+      "source": "https://api.nve.no/web/Powerplant/GetHydroPowerPlantsInOperation",
+      "attribution": "NVE; Nordl aggregation",
+      "license": "https://data.norge.no/nlod/",
+      "notes": "Nameplate capacity not equity-adjusted ownership.",
+      "access": "open_with_attribution",
+      "schema_version": 1
+    },
+    {
+      "id": "europe-plants",
+      "path": "europe-plants-v1.json",
+      "title": "European power plants, historical 2021",
+      "source": "https://datasets.wri.org/datasets/global-power-plant-database",
+      "attribution": "Global Energy Observatory, Google, KTH, Enipedia, WRI (2021); Nordl subset",
+      "license": "https://creativecommons.org/licenses/by/4.0/",
+      "notes": "Historical archive; no inference of current operation.",
+      "access": "open_with_attribution",
+      "schema_version": 1
+    }
+  ]
+}

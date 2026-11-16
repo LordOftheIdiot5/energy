@@ -22,6 +22,7 @@ import statistics
 import time
 import urllib.parse
 import urllib.request
+from price_rights import OPEN_ZONES, permitted, eur_mwh
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
@@ -306,6 +307,9 @@ def _previous_europe() -> dict:
 
 
 def _euro_zone(code: str, name: str, country: str) -> dict | None:
+    if code not in OPEN_ZONES:
+        print(f"  ! {code}: Energy-Charts price reuse not permitted; omitted")
+        return None
     url = f"https://api.energy-charts.info/price?bzn={code}"
     for attempt in range(2):
         try:
@@ -319,6 +323,9 @@ def _euro_zone(code: str, name: str, country: str) -> dict | None:
     else:
         return None
 
+    if not permitted(code,d.get("license_info")) or not eur_mwh(d.get("unit")):
+        print(f"  ! {code}: unverified price license or units; omitted")
+        return None
     raw = [p for p in (d.get("price") or []) if p is not None]
     if not raw:
         return None
@@ -330,7 +337,7 @@ def _euro_zone(code: str, name: str, country: str) -> dict | None:
         "cents": cents,
         "min": min(cents), "max": max(cents),
         "mean": round(statistics.mean(cents), 3),
-        "unit": "eurocent/kWh",
+        "unit": "eurocent/kWh", "priceSource": "Energy-Charts.info / Bundesnetzagentur | SMARD.de", "licenseInfo": d["license_info"],
     }
 
 
@@ -389,7 +396,7 @@ def collect_europe() -> list[dict]:
     out, reused = [], 0
     for code, name, country in EUROPE_ZONES:
         row = _euro_zone(code, name, country)
-        if row is None and code in previous:
+        if row is None and code in previous and permitted(code,previous[code].get("licenseInfo")):
             row = dict(previous[code], stale=True)
             reused += 1
         if row:
