@@ -7,51 +7,27 @@
 <meta name="description" content="Nordic power prices by zone, hydro reservoirs against their thirty-year normal, and the fuels and currencies behind them."/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="style.css"/>
+<link rel="stylesheet" href="workspace.css"/>
+<meta name="theme-color" content="#080e18"/>
 </head>
-<body>
-<main class="page">
-  <header class="masthead">
-    <span class="wordmark">energy<span>.nordl</span></span>
-    <span class="stamp" id="stamp">loading…</span>
-  </header>
-
-  <div class="stale-bar" id="staleBar"></div>
-
-  <!-- One page, not tabs. The explanations are adjacent on purpose: the price
-       map sits beside the reservoirs that explain it and the flows that explain
-       those. Tabs would hide exactly the comparisons worth having. This just
-       makes the scroll navigable. -->
-  <nav class="jump" aria-label="Sections">
-    <a href="#prices">Prices</a>
-    <a href="#day">The day</a>
-    <a href="#grid">Grid</a>
-    <a href="#weather">Weather</a>
-    <a href="#hydro">Hydro</a>
-    <a href="#fuels">Fuels</a>
-    <a href="#gas" id="gasNav" hidden>Gas store</a>
-    <a href="#pump">At the pump</a>
-    <a href="#market">Companies</a>
-    <a href="#news">Being built</a>
-    <a href="guide.html" class="guide">How to read this</a>
-  </nav>
-
-  <section class="lede">
-    <h1>What sets the price, and why.</h1>
-    <p id="lede">Nordic day-ahead power by zone, the hydro storage behind it, and the
-       fuels and currencies that move both.</p>
-  </section>
+<body data-theme="dark"><a class="en-skip" href="#overview">Skip to content</a><div class="en-layout"><aside class="en-side" id="enNav" aria-label="Energy navigation"><a class="en-logo" href="index.html" aria-label="Energy home"><span class="en-mark" aria-hidden="true">ϟ</span><span>energy<b>.nordl</b><small>ENERGY INTELLIGENCE</small></span></a><nav class="en-nav"><div class="en-group"><div class="en-label">WORKSPACE</div><a class="en-link active" href="#overview" aria-current="location"><span aria-hidden="true">◫</span>Overview</a><a class="en-link" href="#prices"><span aria-hidden="true">▥</span>European power prices</a><a class="en-link" href="#day"><span aria-hidden="true">◷</span>Hourly electricity</a></div><div class="en-group"><div class="en-label">ENERGY SYSTEM</div><a class="en-link" href="#grid"><span aria-hidden="true">⇄</span>Generation &amp; flows</a><a class="en-link" href="#weather"><span aria-hidden="true">☀</span>Weather &amp; demand</a><a class="en-link" href="#hydro"><span aria-hidden="true">≋</span>Hydro reservoirs</a><a class="en-link" href="#fuels"><span aria-hidden="true">◈</span>Fuels, carbon &amp; FX</a><a class="en-link" href="#gas" id="gasNav" hidden><span aria-hidden="true">▤</span>Gas storage</a><a class="en-link" href="#pump"><span aria-hidden="true">◉</span>Pump prices</a></div><div class="en-group"><div class="en-label">MARKET INTELLIGENCE</div><a class="en-link" href="#market"><span aria-hidden="true">↗</span>Company economics</a><a class="en-link" href="#news"><span aria-hidden="true">▧</span>Energy projects</a></div><div class="en-group"><div class="en-label">PLATFORM</div><a class="en-link" href="#sources"><span aria-hidden="true">◇</span>Data &amp; sources</a></div><a class="en-link" href="guide.html"><span aria-hidden="true">?</span>Methodology guide</a></nav><div class="en-sidefoot"><a href="https://stocks.nordl.dev/">Stockwatch ↗</a><a href="https://leivro.com/">Leivro ↗</a><p>Independent energy intelligence</p></div></aside><div class="en-main"><div class="en-tape"><strong>ENERGY MARKETS</strong><span id="enTape">Loading latest published snapshot…</span></div><header class="en-top"><button class="en-button en-mobile" id="enMenu" aria-label="Toggle navigation" aria-controls="enNav" aria-expanded="false" type="button">☰</button><div class="en-crumb">Energy <span>/</span> Dashboard</div><form class="en-search" id="enSearch" role="search"><label class="en-sr" for="enQuery">Find an energy section</label><input id="enQuery" type="search" placeholder="Find prices, hydro, gas…" autocomplete="off"><button type="submit" aria-label="Go to section">⌕</button></form><span class="stamp" id="stamp" role="status">Loading data…</span><button class="en-button" id="enTheme" aria-label="Switch light and dark theme" type="button">☾</button></header><main class="page">
+<div class="stale-bar" id="staleBar" role="status"></div>
+<section class="lede" id="overview"><div class="en-eyebrow">EUROPEAN ENERGY INTELLIGENCE</div><h1>Energy markets, <em>made clear.</em></h1><p id="lede">Power prices, electricity generation, weather, hydro storage and the fuel markets behind them.</p></section>
+<div class="en-kpis" id="enKpis" aria-label="Energy snapshot"><div class="en-kpi">Loading published energy data…</div></div>
+<p class="en-disclaimer">Wholesale prices exclude grid charges, taxes and VAT. Snapshot freshness does not certify the age of every upstream observation.</p>
+<div id="enSearchStatus" class="en-sr" role="status"></div>
 
   <section class="panel" id="prices">
     <h2>Day-ahead power across Europe</h2>
         <p class="sub">Every bidding zone from Troms&oslash; to northern Italy on one axis, in <span class="hint" tabindex="0" data-tip="The currency power actually clears in. A Norwegian krone and a Swedish krona are not the same ruler, and a German &euro;/MWh is not a Norwegian &oslash;re/kWh, so everything is converted rather than laid side by side.">euro cents per kWh</span>. <span class="hint" tabindex="0" data-tip="An isolated grid with no day-ahead market, so there is no price to publish rather than a source we failed to find.">Iceland is absent</span>.</p>
-    <div id="zones"></div>
+    <div class="en-zone-controls"><label for="enZoneSearch">Filter zones</label><input id="enZoneSearch" type="search" placeholder="e.g. NO2, Germany"><span id="enZoneCount" role="status"></span></div><div id="zones"></div>
     <div class="axis" id="zoneAxis"></div>
   </section>
 
   <section class="panel" id="day">
-    <h2>The day, hour by hour</h2>
+    <h2>Hourly electricity prices</h2>
         <p class="sub">The cheapest three-hour run is marked &mdash; the window worth moving a car charge into. <span class="hint" tabindex="0" data-tip="Nord Pool publishes the next day around 13:00 CET, so tomorrow appears in the afternoon and is empty before it.">Tomorrow arrives about 13:00 CET</span>.</p>
     <div class="curve-head">
       <div class="pills" id="zonePills"></div>
@@ -60,7 +36,7 @@
   </section>
 
   <section class="panel" id="grid">
-    <h2>The grid, right now</h2>
+    <h2>Electricity generation and cross-border flows</h2>
         <p class="sub">What is generating this minute, and which way it is flowing. <span class="hint" tabindex="0" data-tip="A zone is dear when it is exporting into a dearer neighbour and cheap when its power has nowhere to go. NO2 runs down the cables to Germany and England; NO4 sits behind constrained transmission.">The flows explain the price map above.</span></p>
     <div id="mix"></div>
     <div id="france"></div>
@@ -68,9 +44,9 @@
   </section>
 
   <section class="panel" id="weather">
-    <h2>Weather, the only thing that moves first</h2>
+    <h2>Weather and heating demand</h2>
         <p class="sub">Temperature sets demand and wind sets supply, both before the market prices either. <span class="hint" tabindex="0" data-tip="Degree-hours below 15C over the next 48 hours. A reading of 10C means nothing alone: SE1 at 10C now and 0.6C by Sunday is what puts its demand top of the list.">Heating demand</span> is the column that matters.</p>
-    <div id="weather"></div>
+    <div id="weatherRows"></div>
   </section>
 
   <section class="panel" id="hydro">
@@ -104,7 +80,7 @@
   </section>
 
   <section class="panel" id="market">
-    <h2>What this does to companies</h2>
+    <h2>Energy and company economics</h2>
     <p class="sub"><span class="hint" tabindex="0" data-tip="A margin is arithmetic, not a fitted relationship. Smelting aluminium takes about 14 MWh a tonne, so a smelter's economics ARE the metal price minus fourteen times the power price. It cannot be a coincidence, because it is the cost structure.">Margins first</span>,
        because they are arithmetic rather than association. Correlations below
        are the check on them, never the argument.</p>
@@ -114,19 +90,20 @@
   </section>
 
   <section class="panel" id="news">
-    <h2>Being built, laid and switched on</h2>
+    <h2>Energy infrastructure and projects</h2>
         <p class="sub">Projects and machines rather than share prices. <span class="hint" tabindex="0" data-tip="Searched across twenty topic terms, filtered to outlets that report rather than recycle, and merged on shared nouns - one cable factory opening reached four publications under four different headlines.">Filtered and de-duplicated</span> across twenty topics.</p>
-    <div id="news"></div>
+    <div id="newsRows"></div>
   </section>
 
-  <footer>
+  <section class="panel" id="sources"><h2>Data &amp; sources</h2><p class="sub">Availability reflects this published snapshot, not an independent real-time source check.</p><div class="en-health" id="enHealth">Loading data availability…</div><p class="en-source-links"><a href="data/energy.json">Download energy JSON ↗</a><a href="guide.html">Read methodology ↗</a><a href="https://stocks.nordl.dev/">Related market intelligence ↗</a></p></section><footer>
     <p>Spot prices via <a href="https://www.hvakosterstrommen.no">hvakosterstrommen.no</a>
        and <a href="https://www.elprisetjustnu.se">elprisetjustnu.se</a>, both over Nord
        Pool day-ahead. Reservoirs from <a href="https://www.nve.no">NVE</a>. Fuels,
        carbon and FX from Yahoo Finance. Prices exclude grid rent, taxes and VAT, so
        your bill is higher than the number here — what moves is what matters.</p>
   </footer>
-</main>
+</main></div></div>
+<script src="workspace.js" defer></script>
 
 <script>
 const $ = id => document.getElementById(id);
@@ -364,12 +341,12 @@ function renderGrid(d) {
 function renderWeather(d) {
   const w = d.weather || {};
   const keys = Object.keys(w);
-  if (!keys.length) { $("weather").innerHTML = ""; return; }
+  if (!keys.length) { $("weatherRows").innerHTML = ""; return; }
   const hdh = keys.map(k => w[k].heatingDegreeHours).filter(v => v != null);
   const maxH = Math.max(...hdh, 1);
 
   // Coldest first: that is the order demand pressure runs in.
-  $("weather").innerHTML = keys
+  $("weatherRows").innerHTML = keys
     .sort((a, b) => (w[b].heatingDegreeHours || 0) - (w[a].heatingDegreeHours || 0))
     .map(k => {
       const z = w[k];
@@ -616,12 +593,12 @@ function renderMarket(d) {
 function renderNews(d) {
   const items = d.news || [];
   if (!items.length) {
-    $("news").innerHTML = `<p class="sub">No stories this round.</p>`;
+    $("newsRows").innerHTML = `<p class="sub">No stories this round.</p>`;
     return;
   }
   const byCat = {};
   items.forEach(n => (byCat[n.category] ||= []).push(n));
-  $("news").innerHTML = Object.keys(byCat).sort().map(cat =>
+  $("newsRows").innerHTML = Object.keys(byCat).sort().map(cat =>
     `<div class="group-title">${esc(cat)}</div>
      <ul class="stories">${byCat[cat].map(n => `
        <li>
@@ -674,12 +651,12 @@ function renderLede(d) {
 /* --------------------------------------------------------- staleness */
 function renderStamp(d) {
   const stamp = $("stamp");
-  stamp.textContent = "updated " + ago(d.generated);
+  stamp.textContent = Number.isFinite(Date.parse(d.generated)) ? "updated " + ago(d.generated) : "update time unknown";
   // Scans run hourly, every day — spot prices are published at weekends too,
   // so unlike stockwatch there is no weekend gap to forgive. Three hours of
   // silence means something has stopped.
   const hours = (Date.now() - new Date(d.generated)) / 3.6e6;
-  if (hours > 3) {
+  if (!Number.isFinite(hours) || hours < -0.1 || hours > 3) {
     stamp.classList.add("stale");
     $("staleBar").innerHTML =
       `<b>These numbers are stale.</b> The last fetch finished ${ago(d.generated)},
@@ -704,17 +681,21 @@ fetch("data/energy.json?cb=" + Date.now())
   .then(r => r.ok ? r.json() : Promise.reject(r.status))
   .then(d => {
     DATA = d;
-    activeZone = (d.zones[0] || {}).zone;
+    activeZone = ((d.zones || [])[0] || {}).zone;
     renderStamp(d); renderLede(d); renderZones(d);
     renderPills(d); renderCurves(d);
     renderGrid(d); renderWeather(d);
     renderReservoirs(d); renderCommodities(d);
     renderFrance(d); renderGas(d); renderPump(d);
     renderMarket(d); renderNews(d);
+    window.dispatchEvent(new CustomEvent("energy:snapshot", {detail:d}));
     placeHints();
   })
   .catch(e => {
     $("stamp").textContent = "could not load data";
+    $("staleBar").textContent = "Energy data could not be loaded. No current values are available.";
+    $("staleBar").classList.add("show");
+    window.dispatchEvent(new Event("energy:unavailable"));
     $("stamp").classList.add("stale");
     console.error("energy.json", e);
   });
