@@ -1,0 +1,113 @@
+{
+ "schema_version": 1,
+ "generated": "2026-11-16T20:21:53.840314+00:00",
+ "requested_day": "2026-11-14",
+ "radar": {
+  "file": "radar-nordic-b2e5315256eab14b.png",
+  "retrieved": "2026-11-16T20:21:50.106569+00:00",
+  "last_modified": "Mon, 16 Nov 2026 20:16:01 GMT",
+  "source": "https://api.met.no/weatherapi/radar/2.0/?type=5level_reflectivity&area=nordic&content=image",
+  "sha256": "b2e5315256eab14bd55e0b0467d87493fa880ba9129c5b8bd90701d16b9ee4e7"
+ },
+ "snow": [
+  {
+   "id": "Finse",
+   "geometry": [
+    7.5,
+    60.6
+   ],
+   "requested_utm33": [
+    89875,
+    6741670
+   ],
+   "source_utm33": [
+    89875,
+    6741670
+   ],
+   "date": "2026-11-14",
+   "value_mm": 14.1,
+   "altitude_m": 1216,
+   "source": "https://gts.nve.no/api/GridTimeSeries/89875/6741670/2026-11-14/2026-11-14/swe.json"
+  },
+  {
+   "id": "Hjerkinn",
+   "geometry": [
+    9.54,
+    62.22
+   ],
+   "requested_utm33": [
+    216328,
+    6910660
+   ],
+   "source_utm33": [
+    216328,
+    6910660
+   ],
+   "date": "2026-11-14",
+   "value_mm": 1.4,
+   "altitude_m": 1010,
+   "source": "https://gts.nve.no/api/GridTimeSeries/216328/6910660/2026-11-14/2026-11-14/swe.json"
+  },
+  {
+   "id": "Sirdal",
+   "geometry": [
+    6.85,
+    58.91
+   ],
+   "requested_utm33": [
+    31285,
+    6558652
+   ],
+   "source_utm33": [
+    31285,
+    6558652
+   ],
+   "date": "2026-11-14",
+   "value_mm": 7.1,
+   "altitude_m": 564,
+   "source": "https://gts.nve.no/api/GridTimeSeries/31285/6558652/2026-11-14/2026-11-14/swe.json"
+  },
+  {
+   "id": "Sjusjoen",
+   "geometry": [
+    10.7,
+    61.15
+   ],
+   "requested_utm33": [
+    268645,
+    6787104
+   ],
+   "source_utm33": [
+    268645,
+    6787104
+   ],
+   "date": "2026-11-14",
+   "value_mm": 8.6,
+   "altitude_m": 838,
+   "source": "https://gts.nve.no/api/GridTimeSeries/268645/6787104/2026-11-14/2026-11-14/swe.json"
+  },
+  {
+   "id": "Kautokeino",
+   "geometry": [
+    23.04,
+    69.01
+   ],
+   "requested_utm33": [
+    820622,
+    7676523
+   ],
+   "source_utm33": [
+    820622,
+    7676523
+   ],
+   "date": "2026-11-14",
+   "value_mm": 0.5,
+   "altitude_m": 316,
+   "source": "https://gts.nve.no/api/GridTimeSeries/820622/7676523/2026-11-14/2026-11-14/swe.json"
+  }
+ ],
+ "snow_expected": 5,
+ "snow_source": "https://api.nve.no/doc/gridtimeseries-data-gts/",
+ "snow_license": "https://data.norge.no/nlod/",
+ "notice": "SWE model samples in mm water, not catchment means; radar source retrieval time is not capture time."
+}
