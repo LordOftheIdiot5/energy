@@ -16,7 +16,6 @@
   links.forEach(a=>a.addEventListener('click',()=>{active(a.hash.slice(1));closeMenu();}));
   window.addEventListener('hashchange',()=>active(location.hash.slice(1)||'overview'));
   active(location.hash.slice(1)||'overview');
-  if('IntersectionObserver'in window){const observer=new IntersectionObserver(entries=>{const e=entries.filter(x=>x.isIntersecting).sort((a,b)=>a.boundingClientRect.top-b.boundingClientRect.top)[0];if(e)active(e.target.id);},{rootMargin:'0px 0px -65% 0px'});links.forEach(a=>{const s=get(a.hash.slice(1));if(s)observer.observe(s);});}
   get('enSearch')?.addEventListener('submit',e=>{e.preventDefault();const q=get('enQuery').value.trim().toLowerCase();if(!q)return;const hit=links.find(a=>!a.hidden&&a.textContent.toLowerCase().includes(q));get('enSearchStatus').textContent=hit?'Opening '+hit.textContent:'No energy section matched '+q;if(hit){location.hash=hit.hash;active(hit.hash.slice(1));closeMenu();}else get('enQuery').focus();});
   function filterZones(){const q=(get('enZoneSearch')?.value||'').trim().toLowerCase();const rows=[...document.querySelectorAll('#zones .zone')];let n=0;rows.forEach(r=>{r.hidden=!!q&&!r.textContent.toLowerCase().includes(q);if(!r.hidden)n++;});if(get('enZoneCount'))get('enZoneCount').textContent=n+' of '+rows.length+' zones';}
   get('enZoneSearch')?.addEventListener('input',filterZones);
