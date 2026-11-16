@@ -46,6 +46,44 @@
       "path": "energy-projects-v1.json",
       "status": "curated_public_facts",
       "notes": "Selected source-linked factual records; approximate geography; not comprehensive or continuously updated. Source images and prose not included, commercial redistribution review required."
+    },
+    {
+      "id": "nve_stations",
+      "path": "nve-stations-v1.json",
+      "source": "https://gis3.nve.no/map/rest/services/Mapservices/VassdragsreguleringVannkraft/MapServer/1",
+      "license": "https://data.norge.no/nlod/",
+      "status": "pending_validated_import",
+      "notes": "Optional endpoint; NVE attributed normalized records, simplified polygon geometry."
+    },
+    {
+      "id": "nve_reservoirs",
+      "path": "nve-reservoirs-v1.json",
+      "source": "https://gis3.nve.no/map/rest/services/Mapservices/VassdragsreguleringVannkraft/MapServer/9",
+      "license": "https://data.norge.no/nlod/",
+      "status": "pending_validated_import",
+      "notes": "Optional endpoint; NVE attributed normalized records, simplified polygon geometry."
+    },
+    {
+      "id": "nve_catchments",
+      "path": "nve-catchments-v1.json",
+      "source": "https://gis3.nve.no/map/rest/services/Mapservices/VassdragsreguleringVannkraft/MapServer/8",
+      "license": "https://data.norge.no/nlod/",
+      "status": "pending_validated_import",
+      "notes": "Optional endpoint; NVE attributed normalized records, simplified polygon geometry."
+    },
+    {
+      "id": "nve_projects",
+      "path": "nve-projects-v1.json",
+      "source": "https://gis3.nve.no/map/rest/services/Mapservices/VassdragsreguleringVannkraft/MapServer/11",
+      "license": "https://data.norge.no/nlod/",
+      "status": "pending_validated_import",
+      "notes": "Optional endpoint; NVE attributed normalized records, simplified polygon geometry."
+    },
+    {
+      "id": "hydro_validation",
+      "path": "hydro-validation-v1.json",
+      "status": "derived_historical_baseline_pending_run",
+      "notes": "Rolling-origin historical seasonal model and empirical residual range; no weather input."
     }
   ],
   "sources": [
@@ -84,6 +122,26 @@
       "name": "MET Norway point precipitation",
       "status": "CC BY 4.0 / NLOD; service terms and attribution apply",
       "url": "https://docs.api.met.no/doc/License.html"
+    },
+    {
+      "name": "JRC European power plant database",
+      "url": "https://data.jrc.ec.europa.eu/dataset/9810feeb-f062-49cd-8e76-8d8cfd488a05",
+      "status": "Historical 2019 dataset; candidate import, review schema and reuse notice"
+    },
+    {
+      "name": "TYNDP scenarios",
+      "url": "https://2024.entsos-tyndp-scenarios.eu/download/",
+      "status": "CC BY 4.0 scenario inputs; not actual future outcomes"
+    },
+    {
+      "name": "NVE HydAPI",
+      "url": "https://hydapi.nve.no/",
+      "status": "Registration required; historical station series"
+    },
+    {
+      "name": "NVE VEPS",
+      "url": "https://vepsapi.nve.no/",
+      "status": "Catchment weather and model series, scope and access to verify"
     }
   ]
 }

@@ -91,7 +91,7 @@ def plant_records(raw):
         ident,name,area=r.get("VannKraftverkID"),r.get("Navn"),str(r.get("ElspotomraadeNummer"))
         if not isinstance(ident,int) or not isinstance(name,str) or not name.strip() or r.get("ErIDrift") is False: continue
         cap,prod=r.get("MaksYtelse"),r.get("MidProd_91_20")
-        result[ident]={"id":ident,"name":name,"zone":"NO"+area if area in ("1","2","3","4","5") else None,"municipality":r.get("Kommune"),"type":r.get("VannKVType"),"capacity_mw":cap if num(cap) else None,"annual_generation_gwh_1991_2020":prod if num(prod) else None}
+        result[ident]={"id":ident,"name":name,"zone":"NO"+area if area in ("1","2","3","4","5") else None,"municipality":r.get("Kommune"),"type":r.get("VannKVType"),"capacity_mw":cap if num(cap) else None,"annual_generation_gwh_1991_2020":prod if num(prod) else None,"owner":r.get("HovedEier"),"owner_orgnr":r.get("HovedEier_OrgNr"),"head_m":r.get("BruttoFallhoyde_M"),"energy_kwh_m3":r.get("EnEkv"),"catchment_id":r.get("RegineNr")}
     return [result[k] for k in sorted(result)]
 
 def refresh_plants(path,get_json):
@@ -100,7 +100,7 @@ def refresh_plants(path,get_json):
         try:
             old=json.loads(path.read_text(encoding="utf-8"))
             age=(datetime.now(timezone.utc)-datetime.fromisoformat(old["generated"])).total_seconds()
-            if 0<=age<7*86400 and len(old["rows"])>=100: return
+            if 0<=age<7*86400 and len(old["rows"])>=100 and old.get("schema_version")==1 and "owner" in old["rows"][0]: return
         except (ValueError,KeyError,TypeError):
             pass
     records=plant_records(get_json(PLANTS,timeout=40))

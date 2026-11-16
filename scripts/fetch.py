@@ -886,6 +886,8 @@ def main() -> int:
         refresh_geometry(OUT.parent / "norway-zones-v1.json", get_json)
     except Exception as e:
         print(f"  ! NVE zone geometry: {e}")
+    from energy_geography import collect_all
+    collect_all(OUT.parent, get_json)
     print("\nnews")
     try:
         import news as news_module
@@ -917,6 +919,11 @@ def main() -> int:
         f.write("\n")
     from hydro_archive import append_snapshot
     append_snapshot(OUT.parent / "hydro-v1.json", payload)
+    try:
+        from hydro_validation import refresh
+        refresh(OUT.parent)
+    except Exception as e:
+        print("  ! hydro baseline:",type(e).__name__)
     print(f"\nwrote {OUT.relative_to(ROOT)}  "
           f"{len(zones)} Nordic + {len(europe)} European zones, "
           f"{len(commodities)} instruments, "

@@ -18,6 +18,8 @@ on:
       - .github/workflows/fetch.yml
       - scripts/hydro_extended.py
       - scripts/shared_energy.py
+      - scripts/energy_geography.py
+      - scripts/hydro_validation.py
 
 permissions:
   contents: write
@@ -51,7 +53,9 @@ jobs:
         run: python scripts/fetch.py
 
       - name: Sanity check
-        run: python tests/test_payload.py
+        run: |
+          python tests/test_payload.py
+          python -m unittest discover -s tests -p test_energy_geography.py
 
       - name: Commit results
         run: |

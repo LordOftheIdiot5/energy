@@ -3,7 +3,7 @@ const $=id=>document.getElementById(id),ns='http://www.w3.org/2000/svg',finite=v
 function el(tag,value,cls){const e=document.createElement(tag);if(value!==undefined)e.textContent=String(value);if(cls)e.className=cls;return e;}
 function s(tag,attrs={},value){const e=document.createElementNS(ns,tag);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,String(v));if(value!==undefined)e.textContent=value;return e;}
 function proj([lon,lat]){return [(lon+16)*12,(73-lat)*16];}
-function base(root,view,key){root.replaceChildren();window.NordlMap.base(root,view,key);for(const d of window.energyLand||[])root.append(s('path',{d,class:'en-land'}));}
+function base(root,view,key){root.replaceChildren();window.NordlMap.base(root,view,key);for(const d of window.energyLand||[])root.append(s('path',{d,class:'en-land'}));window.nordlCountryLabels(root);}
 function link(url,label){const a=el('a',label);a.href=url;a.target='_blank';a.rel='noopener noreferrer';return a;}
 function fmt(v,unit){return finite(v)?v.toLocaleString(undefined,{maximumFractionDigits:2})+' '+unit:'Not disclosed';}
 function definition(rows){const d=el('dl');for(const [k,v] of rows){d.append(el('dt',k),el('dd',v));}return d;}
