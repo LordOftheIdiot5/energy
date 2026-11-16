@@ -1,7 +1,7 @@
 name: Weather geography validation
 on:
   push:
-    branches: [feature/v82-weather-hydrology-20261116]
+    branches: [feature/v82-weather-hydrology-20261116, feature/v82-snow-map-20261116]
 permissions:
   contents: read
 jobs:
@@ -10,7 +10,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
-      - run: node --check weather-geography.js && python -m unittest discover -s tests -v
+      - run: node --check weather-geography.js && node --check energy-atlas.js && python -m unittest discover -s tests -v
       - run: |
           python scripts/weather_geography.py data
           python - <<'PY'
