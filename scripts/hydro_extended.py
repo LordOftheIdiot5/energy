@@ -106,3 +106,42 @@ def refresh_plants(path,get_json):
     records=plant_records(get_json(PLANTS,timeout=40))
     if len(records)<100: raise ValueError("Incomplete NVE plant register")
     write_json(path,{"schema_version":1,"generated":datetime.now(timezone.utc).isoformat(),"source":PLANTS,"license":LICENSE,"attribution":"NVE; Nordl normalization","rows":records})
+
+# NVE public map layer N5000; explicit geographic coordinates requested.
+ZONE_LAYER = "https://gis3.nve.no/map/rest/services/Mapservices/Omradekonsesjoner/MapServer/0/query"
+def normalize_zone_geometry(raw):
+    if raw.get("type")!="FeatureCollection" or raw.get("exceededTransferLimit"):
+        raise ValueError("Incomplete zone response")
+    features=[]
+    seen=set()
+    for item in raw.get("features",[]):
+        raw_id=str(item.get("properties",{}).get("ElSpotOmr","")).strip().upper().replace(" ","")
+        zone="NO"+raw_id if raw_id in ("1","2","3","4","5") else raw_id
+        if zone not in ("NO1","NO2","NO3","NO4","NO5"): continue
+        geo=item.get("geometry") or {}
+        if geo.get("type") not in ("Polygon","MultiPolygon"): continue
+        polys=geo["coordinates"] if geo["type"]=="MultiPolygon" else [geo["coordinates"]]
+        rings=[]
+        for poly in polys:
+            for ring in poly:
+                if len(ring)<4 or not all(isinstance(p,list) and len(p)>=2 and num(p[0]) and num(p[1]) and -1<=p[0]<=35 and 56<=p[1]<=72 for p in ring): raise ValueError("Invalid Norwegian geographic coordinates")
+                rings.append([[round(p[0],5),round(p[1],5)] for p in ring])
+        if not rings: continue
+        features.append({"zone":zone,"rings":rings})
+        seen.add(zone)
+    if seen!={"NO1","NO2","NO3","NO4","NO5"}: raise ValueError("Missing Norwegian price areas")
+    return features
+
+def refresh_geometry(path,get_json):
+    import urllib.parse
+    path=Path(path)
+    if path.exists():
+        try:
+            old=json.loads(path.read_text(encoding="utf-8"))
+            age=(datetime.now(timezone.utc)-datetime.fromisoformat(old["generated"])).total_seconds()
+            if 0<=age<30*86400 and len({f["zone"] for f in old["features"]})==5: return
+        except (ValueError,KeyError,TypeError): pass
+    query=urllib.parse.urlencode({"where":"1=1","outFields":"ElSpotOmr","returnGeometry":"true","outSR":4326,"f":"geojson","maxAllowableOffset":"0.015"})
+    raw=get_json(ZONE_LAYER+"?"+query,timeout=40)
+    features=normalize_zone_geometry(raw)
+    write_json(path,{"schema_version":1,"generated":datetime.now(timezone.utc).isoformat(),"source":ZONE_LAYER,"license":LICENSE,"attribution":"NVE; simplified boundaries for overview visualization","features":features})

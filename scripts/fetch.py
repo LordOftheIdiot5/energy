@@ -890,6 +890,11 @@ def main() -> int:
         refresh_plants(OUT.parent / "hydro-plants-v1.json", get_json)
     except Exception as e:
         print(f"  ! NVE plant database: {e}")
+    try:
+        from hydro_extended import refresh_geometry
+        refresh_geometry(OUT.parent / "norway-zones-v1.json", get_json)
+    except Exception as e:
+        print(f"  ! NVE zone geometry: {e}")
     print("\nnews")
     try:
         import news as news_module
