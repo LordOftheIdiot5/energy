@@ -84,6 +84,18 @@
       "path": "hydro-validation-v1.json",
       "status": "derived_historical_baseline_pending_run",
       "notes": "Rolling-origin historical seasonal model and empirical residual range; no weather input."
+    },
+    {
+      "id": "economic_reference",
+      "path": "economic-reference-v1.json",
+      "status": "display_only_pending_review",
+      "notes": "Six dated EIA/FRED series via Stockwatch; preserve series-specific attribution and verify reuse rights."
+    },
+    {
+      "id": "weather_vintages",
+      "path": "weather-vintages-v1.json",
+      "status": "pending_first_snapshot",
+      "notes": "Collector-retrieved point weather; original forecast issue time and catchment forecasts not included."
     }
   ],
   "sources": [
@@ -142,6 +154,16 @@
       "name": "NVE VEPS",
       "url": "https://vepsapi.nve.no/",
       "status": "Catchment weather and model series, scope and access to verify"
+    },
+    {
+      "name": "WRI Global Power Plant Database v1.3.0",
+      "url": "https://datasets.wri.org/datasets/global-power-plant-database",
+      "status": "CC BY 4.0 historical 2021 release; next European import candidate"
+    },
+    {
+      "name": "Kartverket terrain",
+      "url": "https://www.kartverket.no/api-og-data/terrengdata",
+      "status": "Terrain candidate; verify service and projection before use"
     }
   ]
 }

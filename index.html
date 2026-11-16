@@ -8,13 +8,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="style.css?v=35"/>
-<link rel="stylesheet" href="workspace.css?v=35"/>
-<link rel="stylesheet" href="portal.css?v=35"/>
-<link rel="stylesheet" href="energy-map.css?v=35"/>
-<link rel="stylesheet" href="research-tools.css?v=35"/>
-<link rel="stylesheet" href="premium.css?v=35"/>
-<link rel="stylesheet" href="terminal.css?v=35"/><link rel="stylesheet" href="geography.css?v=35"/>
+<link rel="stylesheet" href="style.css?v=35.1"/>
+<link rel="stylesheet" href="workspace.css?v=35.1"/>
+<link rel="stylesheet" href="portal.css?v=35.1"/>
+<link rel="stylesheet" href="energy-map.css?v=35.1"/>
+<link rel="stylesheet" href="research-tools.css?v=35.1"/>
+<link rel="stylesheet" href="premium.css?v=35.1"/>
+<link rel="stylesheet" href="terminal.css?v=35.1"/><link rel="stylesheet" href="geography.css?v=35.1"/>
 <meta name="theme-color" content="#080e18"/>
 </head>
 <body data-theme="dark"><a class="en-skip" href="#overview">Skip to content</a><div class="en-layout"><aside class="en-side" id="enNav" aria-label="Energy navigation"><a class="en-logo" href="index.html" aria-label="Energy home"><span class="en-mark" aria-hidden="true">ϟ</span><span>energy<b>.nordl</b><small>ENERGY INTELLIGENCE</small></span></a><nav class="en-nav"><div class="en-group"><div class="en-label">WORKSPACE</div><a class="en-link active" href="#overview" aria-current="location"><span aria-hidden="true">◫</span>Overview</a><a class="en-link" href="#energyMap"><span aria-hidden="true">◎</span>European energy map</a><a class="en-link" href="#prices"><span aria-hidden="true">▥</span>European power prices</a><a class="en-link" href="#day"><span aria-hidden="true">◷</span>Hourly electricity</a></div><div class="en-group"><div class="en-label">ENERGY SYSTEM</div><a class="en-link" href="#grid"><span aria-hidden="true">⇄</span>Generation &amp; flows</a><a class="en-link" href="#weather"><span aria-hidden="true">☀</span>Weather &amp; demand</a><a class="en-link" href="#hydroLab"><span aria-hidden="true">≋</span>Norwegian hydro intelligence</a><a class="en-link" href="#hydro"><span aria-hidden="true">≋</span>Hydro reservoirs</a><a class="en-link" href="#fuels"><span aria-hidden="true">◈</span>Fuels, carbon &amp; FX</a><a class="en-link" href="#gas" id="gasNav" hidden><span aria-hidden="true">▤</span>Gas storage</a><a class="en-link" href="#pump"><span aria-hidden="true">◉</span>Pump prices</a></div><div class="en-group"><div class="en-label">MARKET INTELLIGENCE</div><a class="en-link" href="#market"><span aria-hidden="true">↗</span>Company economics</a><a class="en-link" href="#news"><span aria-hidden="true">▧</span>Energy projects</a></div><div class="en-group"><div class="en-label">PLATFORM</div><a class="en-link" href="#calculators"><span aria-hidden="true">⊞</span>Energy calculators</a><a class="en-link" href="#history"><span aria-hidden="true">↶</span>Historical data</a><a class="en-link" href="#countries"><span aria-hidden="true">◎</span>Country dashboard</a><a class="en-link" href="#demand"><span aria-hidden="true">☀</span>Demand scenarios</a><a class="en-link" href="#analyst"><span aria-hidden="true">✦</span>Research assistant</a><a class="en-link" href="#plants"><span aria-hidden="true">▥</span>Power plants</a><a class="en-link" href="#datasets"><span aria-hidden="true">▦</span>Datasets &amp; API</a><a class="en-link" href="#sources"><span aria-hidden="true">◇</span>Data &amp; sources</a></div><a class="en-link" href="guide.html"><span aria-hidden="true">?</span>Methodology guide</a></nav><div class="en-sidefoot"><a href="https://stocks.nordl.dev/">Stockwatch ↗</a><a href="https://leivro.com/">Leivro ↗</a><p>Independent energy intelligence</p></div></aside><div class="en-main"><div class="en-tape"><strong>ENERGY MARKETS</strong><span id="enTape">Loading latest published snapshot…</span></div><header class="en-top"><button class="en-button en-mobile" id="enMenu" aria-label="Toggle navigation" aria-controls="enNav" aria-expanded="false" type="button">☰</button><div class="en-crumb">Energy <span>/</span> Dashboard</div><form class="en-search" id="enSearch" role="search"><label class="en-sr" for="enQuery">Find an energy section</label><input id="enQuery" type="search" placeholder="Find prices, hydro, gas…" autocomplete="off"><button type="submit" aria-label="Go to section">⌕</button></form><span class="stamp" id="stamp" role="status">Loading data…</span><button class="en-button" id="enTheme" aria-label="Switch light and dark theme" type="button">☾</button></header><main class="page">
@@ -69,7 +69,7 @@
   <section class="panel" id="fuels">
     <h2>Fuels, carbon and currency</h2>
         <p class="sub">What the marginal plant burns, what it pays to emit, and the rates between the price that is set and the bill that is paid. <span class="hint" tabindex="0" data-tip="The thin bar under each card. A price can fall on the day and still sit near the top of where it has been for six months, which the daily change alone will not tell you.">Range position</span> is the bar beneath each.</p>
-    <div id="commodityKpis" class="terminal-kpis"></div><div class="terminal-commodity"><article class="terminal-chart"><div class="terminal-heading"><h3>Market history</h3><select id="commoditySelect" aria-label="Select commodity"></select></div><div id="commodityHistory"></div></article><article id="commodityDetail" class="infra-detail"></article></div><div id="commodities"></div>
+    <div id="commodityKpis" class="terminal-kpis"></div><div class="terminal-commodity"><article class="terminal-chart"><div class="terminal-heading"><h3>Market history</h3><select id="commoditySelect" aria-label="Select commodity"></select></div><div id="commodityHistory"></div></article><article id="commodityDetail" class="infra-detail"></article></div><div id="commodities"></div><article class="terminal-chart"><div class="terminal-heading"><h3>Official market and macro observations</h3><select id="referenceSeries" aria-label="Select official series"></select></div><div id="referenceChart"></div><p class="sub">EIA and FRED via Stockwatch. Dated observations, not futures or live trading quotes.</p></article>
   </section>
 
   <section class="panel" id="gas" hidden>
@@ -122,16 +122,16 @@
        your bill is higher than the number here — what moves is what matters.</p>
   </footer>
 </main></div></div>
-<script src="workspace.js?v=35" defer></script>
-<script src="portal.js?v=35" defer></script>
-<script src="energy-land.js?v=35" defer></script>
-<script src="map-navigation.js?v=35" defer></script>
-<script src="terminal.js?v=35" defer></script>
-<script src="geo-labels.js?v=35" defer></script><script src="energy-map.js?v=35" defer></script>
-<script src="research-tools.js?v=35" defer></script>
-<script src="hydro-intelligence.js?v=35" defer></script>
-<script src="shared-energy.js?v=35" defer></script>
-<script src="infrastructure.js?v=35" defer></script><script src="geography.js?v=35" defer></script>
+<script src="workspace.js?v=35.1" defer></script>
+<script src="portal.js?v=35.1" defer></script>
+<script src="energy-land.js?v=35.1" defer></script>
+<script src="map-navigation.js?v=35.1" defer></script>
+<script src="terminal.js?v=35.1" defer></script>
+<script src="geo-labels.js?v=35.1" defer></script><script src="energy-map.js?v=35.1" defer></script>
+<script src="research-tools.js?v=35.1" defer></script>
+<script src="hydro-intelligence.js?v=35.1" defer></script>
+<script src="shared-energy.js?v=35.1" defer></script>
+<script src="infrastructure.js?v=35.1" defer></script><script src="geography.js?v=35.1" defer></script><script src="market-reference.js?v=35.1" defer></script>
 
 <script>
 const $ = id => document.getElementById(id);

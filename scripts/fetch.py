@@ -888,6 +888,11 @@ def main() -> int:
         print(f"  ! NVE zone geometry: {e}")
     from energy_geography import collect_all
     collect_all(OUT.parent, get_json)
+    try:
+        from economic_reference import refresh
+        refresh(OUT.parent,get_json)
+    except Exception as e:
+        print("  ! economic reference:",type(e).__name__)
     print("\nnews")
     try:
         import news as news_module
@@ -919,6 +924,11 @@ def main() -> int:
         f.write("\n")
     from hydro_archive import append_snapshot
     append_snapshot(OUT.parent / "hydro-v1.json", payload)
+    try:
+        from economic_reference import archive_weather
+        archive_weather(OUT.parent,payload)
+    except Exception as e:
+        print("  ! weather vintage:",type(e).__name__)
     try:
         from hydro_validation import refresh
         refresh(OUT.parent)
