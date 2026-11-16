@@ -11,11 +11,11 @@ Keep this file current with PRs, test runs, deployment evidence and known blocke
 | V83 | Expanded European infrastructure database | Rights review; permission draft PR #22 | TYNDP reconciliation, geometry and redistribution rights; retain source exceptions |
 | V84 | Individual power-plant research pages | Live; production smoke passed | Stable IDs, source links, coverage and historical/current distinction |
 | V85 | Weather-based hydropower forecasting | Retrospective benchmark validated; weather uplift marginal; operational forecast blocked | Historical catchment and inflow data, time-aware holdout benchmark against seasonal/persistence baselines |
-| V86 | Electricity price forecasting | NO2 benchmark initial unit mismatch; corrected in PR #26, live rerun pending | Issue-time features, price/load history, rolling-origin evaluation and calibrated errors |
-| V87 | Stockwatch company and ownership integration | Direct legal-entity pilot AFK with source links; wider parent/issuer matching pending | Verified legal identifiers, dated ownership, no inferred equity exposures |
-| V88 | Professional interactive graphs across all workspaces | Shared history chart performance/plant context and benchmark dashboard in release validation; further coverage audit remains | Units, axes, dates, legends, interactive inspection, source and missing-data handling |
-| V89 | Commercial datasets and API | Selected open catalog and tested loopback API service; production authentication/billing not deployed | Rights register, versioned schemas, access control, quotas, exports and documentation |
-| V90 | Full design, data quality and performance audit | Consolidated release audit under validation; open risks retained | Mobile/desktop tests, accessibility, data freshness, source coverage and performance budgets |
+| V86 | Electricity price forecasting | NO2 retrospective benchmark validated; 365 test days; median baseline wins MAE; operational forecast blocked | Issue-time features, price/load history, rolling-origin evaluation and calibrated errors |
+| V87 | Stockwatch company and ownership integration | Direct legal-entity pilot AFK browser tested; wider parent/issuer matching pending | Verified legal identifiers, dated ownership, no inferred equity exposures |
+| V88 | Professional interactive graphs across all workspaces | Shared history chart performance/plant context and model comparisons tested; further chart migration remains | Units, axes, dates, legends, interactive inspection, source and missing-data handling |
+| V89 | Commercial datasets and API | Seven open endpoints and tested loopback API; production hosting/authentication/billing not deployed | Rights register, versioned schemas, access control, quotas, exports and documentation |
+| V90 | Full design, data quality and performance audit | Initial desktop/mobile and map regression passed; final integrated validation pending | Mobile/desktop tests, accessibility, data freshness, source coverage and performance budgets |
 
 ## Release discipline
 - Preserve V77 full-context maps, visible markers/clusters, fallback overview, zoom, pan, fullscreen and asset inspection.
@@ -56,3 +56,6 @@ Keep this file current with PRs, test runs, deployment evidence and known blocke
 - V85 benchmark: https://github.com/LordOftheIdiot5/energy/actions/runs/43952611956. 17 tests passed, 15 series x 5,145 daily values, 1,295 test transitions. Weather beats all comparators in NO3 and NO4 only, marginally; interval coverage below 80% in all zones. Preserve results in docs/v85-benchmark-results.json; no operational forecast. Catchment-weighted weather, actual inflow/generation and forecast vintages remain required.
 
 - V90 release consolidates V87 direct identity pilot, V88 chart improvements, V89 explicit seven-dataset catalogue/API service, V90 audit; excludes restricted FI/ES Energy-Charts rows. No operational forecasts, paid hosted API, or comprehensive parent/equity links claimed. See docs/V90-AUDIT.md.
+
+- V86: 1,461 complete UTC price days, 365 test days. Monthly median MAE 17.1361 EUR/MWh, ridge 18.3019; nominal 80% range achieved 75.07%. Validated run https://github.com/LordOftheIdiot5/energy/actions/runs/43955243429. Report docs/v86-price-benchmark-results.json.
+- V90 initial validation: https://github.com/LordOftheIdiot5/energy/actions/runs/43955547548, 21 Python tests, 7 open datasets, direct issuer link, 12 route checks each on desktop and mobile, zero page errors; real NVE/WRI profiles and zoom regression passed. Final changes add V86 public research report, exact filename API gate, lazy research loading, and source pacing.

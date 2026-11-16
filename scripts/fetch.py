@@ -63,7 +63,7 @@ EUROPE_ZONES = [
 # energy-charts throttles hard - a tight loop gets 429 after three or four
 # calls - so requests are spaced and retried. A zone that still fails keeps
 # its previous value rather than blanking, which would read as "free power".
-EUROPE_GAP_SECONDS = 6.5
+EUROPE_GAP_SECONDS = 31
 
 # NVE's EL areas map one-to-one onto the Norwegian price zones.
 RESERVOIR_AREAS = {1: "NO1", 2: "NO2", 3: "NO3", 4: "NO4", 5: "NO5"}
@@ -319,7 +319,9 @@ def _euro_zone(code: str, name: str, country: str) -> dict | None:
             if attempt:
                 print(f"  ! {code}: {e}")
                 return None
-            time.sleep(EUROPE_GAP_SECONDS * 2)
+            retry = getattr(e,"headers",None)
+            raw_wait = retry.get("Retry-After","") if retry else ""
+            time.sleep(max(EUROPE_GAP_SECONDS * 2,int(raw_wait)) if raw_wait.isdigit() else EUROPE_GAP_SECONDS * 2)
     else:
         return None
 
@@ -395,6 +397,8 @@ def collect_europe() -> list[dict]:
     previous = _previous_europe()
     out, reused = [], 0
     for code, name, country in EUROPE_ZONES:
+        if code not in OPEN_ZONES:
+            continue
         row = _euro_zone(code, name, country)
         if row is None and code in previous and permitted(code,previous[code].get("licenseInfo")):
             row = dict(previous[code], stale=True)

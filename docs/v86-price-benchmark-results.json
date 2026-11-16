@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "status": "retrospective_research_only",
+  "zone": "NO2",
+  "unit": "EUR/MWh",
+  "generated": "2026-11-16T21:00:24.564021+00:00",
+  "attribution": "Energy-Charts.info / Bundesnetzagentur | SMARD.de; Nordl daily duration-weighted means and model evaluation",
+  "sources": [
+    {
+      "year": 2022,
+      "days": 365,
+      "rejected_days": 0,
+      "source": "https://api.energy-charts.info/price?bzn=NO2&start=2022-01-01T00:00Z&end=2022-12-31T23:59Z",
+      "sha256": "6da687a995c525049626ccbe626f25da5e694edd927c990f53bc6d06d50bb932",
+      "license": "CC BY 4.0 (creativecommons.org/licenses/by/4.0) from Bundesnetzagentur | SMARD.de"
+    },
+    {
+      "year": 2023,
+      "days": 365,
+      "rejected_days": 0,
+      "source": "https://api.energy-charts.info/price?bzn=NO2&start=2023-01-01T00:00Z&end=2023-12-31T23:59Z",
+      "sha256": "96eac8d1fccb764d394b59cebd087d27bb0aa6c91324b8c0cb6142c157745b1c",
+      "license": "CC BY 4.0 (creativecommons.org/licenses/by/4.0) from Bundesnetzagentur | SMARD.de"
+    },
+    {
+      "year": 2024,
+      "days": 366,
+      "rejected_days": 0,
+      "source": "https://api.energy-charts.info/price?bzn=NO2&start=2024-01-01T00:00Z&end=2024-12-31T23:59Z",
+      "sha256": "d4eef14b4c1cca21fb6aba444f011497358045ac765b284124109397082f464b",
+      "license": "CC BY 4.0 (creativecommons.org/licenses/by/4.0) from Bundesnetzagentur | SMARD.de"
+    },
+    {
+      "year": 2025,
+      "days": 365,
+      "rejected_days": 0,
+      "source": "https://api.energy-charts.info/price?bzn=NO2&start=2025-01-01T00:00Z&end=2025-12-31T23:59Z",
+      "sha256": "67595ff0b8dc5d2071c83a686a7fce46067e35f03547ac6485c534e3db319769",
+      "license": "CC BY 4.0 (creativecommons.org/licenses/by/4.0) from Bundesnetzagentur | SMARD.de"
+    }
+  ],
+  "train": "2022–2023",
+  "calibration": "2024",
+  "test": "2025",
+  "metrics": {
+    "train": 701,
+    "calibration": 366,
+    "test": 365,
+    "mae_eur_mwh": {
+      "lag_2d": 19.650369292237443,
+      "lag_7d": 21.68216523972603,
+      "median_28d": 17.13606578196347,
+      "ridge": 18.301896427032194
+    },
+    "rmse_eur_mwh": {
+      "lag_2d": 27.381695649161745,
+      "lag_7d": 31.642929529289667,
+      "median_28d": 25.046703625140655,
+      "ridge": 24.445134247915426
+    },
+    "ridge_beats_all": false,
+    "nominal_coverage": 0.8,
+    "test_interval_coverage": 0.7506849315068493,
+    "residual_interval_eur_mwh": [
+      -30.567548068505147,
+      17.34561533051687
+    ],
+    "negative_price_days": 0
+  },
+  "notice": "Daily average day-ahead price, not intraday prices. Historical revised prices, no archived publication times. No load/weather/commodity forecast vintages or live recommendation. Negative prices preserved."
+}

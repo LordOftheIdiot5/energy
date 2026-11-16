@@ -23,6 +23,9 @@ class ReleaseTests(unittest.TestCase):
             self.assertGreater(item["total"],0);self.assertLessEqual(len(item["rows"]),2);self.assertTrue(item["license"]);self.assertEqual(len(item["source_sha256"]),64)
         with self.assertRaises(KeyError):page(root,"mixed-energy")
         with self.assertRaises(ValueError):page(root,"hydro-weekly",0,201)
+        with tempfile.TemporaryDirectory() as td:
+            p=Path(td);bad=json.loads((root/"commercial-catalog-v1.json").read_text());bad["datasets"][0]["path"]="energy.json";(p/"commercial-catalog-v1.json").write_text(json.dumps(bad))
+            with self.assertRaises(ValueError):catalog(p)
     def test_http_auth_and_limits(self):
         key="x"*40
         server=ThreadingHTTPServer(("127.0.0.1",0),handler(ROOT/"data",key,2))

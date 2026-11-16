@@ -6,13 +6,14 @@ import argparse,collections,hashlib,hmac,json,os,re,threading,time
 from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs,urlsplit
-ALLOWED=frozenset(("hydro-weekly","hydro-plants","hydro-stations","hydro-reservoirs","hydro-catchments","hydro-owners","europe-plants"))
+FILES={"hydro-weekly":"hydro-v1.json","hydro-plants":"hydro-plants-v1.json","hydro-stations":"nve-stations-v1.json","hydro-reservoirs":"nve-reservoirs-v1.json","hydro-catchments":"nve-catchments-v1.json","hydro-owners":"hydro-owners-v1.json","europe-plants":"europe-plants-v1.json"}
+ALLOWED=frozenset(FILES)
 def catalog(root):
     d=json.loads((root/"commercial-catalog-v1.json").read_text(encoding="utf-8"))
     rows=d["datasets"];ids={x["id"] for x in rows}
     if d["schema_version"]!=1 or ids!=ALLOWED or len(rows)!=len(ALLOWED):raise ValueError("Invalid export allowlist")
     for x in rows:
-        if not re.fullmatch(r"[a-z0-9-]+\.json",x["path"]) or x["access"]!="open_with_attribution" or not x["license"].startswith(("https://data.norge.no/nlod/","https://creativecommons.org/licenses/by/4.0/")):raise ValueError("Invalid rights gate")
+        if x["path"]!=FILES[x["id"]] or x["access"]!="open_with_attribution" or not x["license"].startswith(("https://data.norge.no/nlod/","https://creativecommons.org/licenses/by/4.0/")):raise ValueError("Invalid rights gate")
     return rows
 def page(root,dataset,offset=0,limit=100):
     if dataset not in ALLOWED:raise KeyError(dataset)
