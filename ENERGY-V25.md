@@ -6,3 +6,5 @@ Use https://energy.nordl.dev/data/hydro-v1.json for weekly NVE observations, pre
 
 ## Next validation gates
 Run python -m unittest discover -s tests -p test_hydro_extended.py, existing payload validation, a real collector run, verify archive coverage and all five boundary shapes, and visually inspect dark/light modes on desktop and mobile. Model gate: verified point-in-time weather/catchment inflow, SWE, storage and generation forecasts; time-ordered train/test, comparison with persistence and seasonal baselines; calibrated uncertainty.
+
+V16–V18 additional catchment scenario: user-supplied basin rainfall, SWE, positive degree-days, melt factor, contributing area, effective runoff fraction and kWh/m³ energy equivalent. Snowmelt is capped by available SWE; runoff converts to TWh and may be transferred to the storage scenario. No automatic catchment data or trained model. Six arithmetic and invalid-input checks passed.
