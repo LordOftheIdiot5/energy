@@ -1,0 +1,1 @@
+const a=require('node:assert/strict'),{plantFeatures}=require('../regional-atlas.js');const out=plantFeatures([{id:'one',name:'Hydro',geometry:[10,60],fuel:'Hydro',mw:10},{id:'bad',geometry:[0,99]}]);a.equal(out.features.length,1);a.equal(out.features[0].properties.mw,10);a.equal(out.features[0].properties.fuel,'Hydro');console.log('European plant data conversion passed');
