@@ -888,8 +888,8 @@ def main() -> int:
         print(f"  ! NVE zone geometry: {e}")
     from energy_geography import collect_all
     collect_all(OUT.parent, get_json)
-    from asset_reference import europe, owners
-    for task in (owners, europe):
+    from asset_reference import europe as refresh_european_plants, owners
+    for task in (owners, refresh_european_plants):
         try:
             task(OUT.parent)
         except Exception as e:
@@ -926,9 +926,10 @@ def main() -> int:
         "news": stories,
     }
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    with open(OUT, "w", encoding="utf-8", newline="\n") as f:
-        json.dump(payload, f, indent=1, ensure_ascii=False)
-        f.write("\n")
+    # Serialize before replacing the last good snapshot. A bad source must
+    # never leave a truncated or non-standard JSON file on the VPS.
+    from hydro_extended import write_json
+    write_json(OUT, payload)
     from hydro_archive import append_snapshot
     append_snapshot(OUT.parent / "hydro-v1.json", payload)
     try:
