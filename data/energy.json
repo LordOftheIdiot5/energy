@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-16T22:11:24+00:00",
+ "generated": "2026-11-16T22:27:37+00:00",
  "zones": [
   {
    "zone": "NO1",
@@ -2872,58 +2872,59 @@
    "zone": "GB",
    "name": "Great Britain",
    "country": "GB",
-   "points": 44,
+   "points": 45,
    "cents": [
-    21.816,
-    22.549,
-    22.634,
-    22.715,
-    22.763,
-    25.324,
-    24.895,
-    25.738,
-    26.374,
-    27.184,
-    29.635,
-    29.939,
-    29.466,
-    29.522,
-    27.563,
-    26.678,
-    24.716,
-    23.542,
-    22.091,
-    21.928,
-    21.933,
-    22.634,
-    24.702,
+    22.25,
+    21.824,
+    22.556,
+    22.641,
+    22.723,
+    22.771,
+    25.332,
+    24.903,
+    25.747,
+    26.383,
+    27.193,
+    29.645,
+    29.949,
+    29.476,
+    29.531,
+    27.572,
+    26.687,
+    24.724,
+    23.55,
+    22.098,
+    21.935,
+    21.94,
+    22.641,
+    24.71,
+    26.208,
+    26.907,
+    27.274,
     26.199,
-    26.898,
-    27.264,
-    26.19,
-    23.819,
-    24.36,
-    22.036,
-    20.759,
-    21.591,
-    20.88,
-    19.751,
-    18.773,
-    18.032,
-    18.197,
-    17.931,
-    18.53,
-    18.908,
-    18.835,
-    20.173,
-    21.385,
-    21.078
+    23.827,
+    24.368,
+    22.043,
+    20.766,
+    21.598,
+    20.887,
+    19.758,
+    18.779,
+    18.038,
+    18.204,
+    17.937,
+    18.536,
+    18.915,
+    18.841,
+    20.18,
+    21.392,
+    21.085
    ],
-   "min": 17.931,
-   "max": 29.939,
-   "mean": 23.362,
+   "min": 17.937,
+   "max": 29.949,
+   "mean": 23.345,
    "unit": "eurocent/kWh",
-   "fx": 1.1987
+   "fx": 1.1991
   }
  ],
  "market": {
@@ -2933,7 +2934,7 @@
    {
     "key": "smelter",
     "name": "Aluminium smelter margin",
-    "value": 110.0,
+    "value": 111.0,
     "unit": "$/tonne",
     "parts": [
      {
@@ -2943,7 +2944,7 @@
      },
      {
       "label": "Power (14 MWh/t)",
-      "value": -2946.0,
+      "value": -2945.0,
       "unit": "$/t"
      }
     ],
@@ -3212,12 +3213,12 @@
  },
  "grid": {
   "mix": {
-   "hydro": 33041,
-   "wind": 9881,
-   "thermal": 4292,
+   "hydro": 32705,
+   "wind": 9848,
+   "thermal": 4291,
    "nuclear": 5103,
-   "other": 2740,
-   "consumption": 57409
+   "other": 2725,
+   "consumption": 57251
   },
   "byCountry": {
    "SE": {
@@ -3236,11 +3237,11 @@
     "consumption": 4067
    },
    "NO": {
-    "hydro": 19772,
-    "wind": 430,
-    "thermal": 186,
-    "other": 67,
-    "consumption": 18987
+    "hydro": 19436,
+    "wind": 411,
+    "thermal": 185,
+    "other": 66,
+    "consumption": 18853
    },
    "FI": {
     "hydro": 2049,
@@ -3259,10 +3260,10 @@
    },
    "LT": {
     "hydro": 24,
-    "wind": 1653,
+    "wind": 1639,
     "thermal": 161,
-    "other": 45,
-    "consumption": 1437
+    "other": 31,
+    "consumption": 1413
    },
    "LV": {
     "hydro": 101,
@@ -3272,13 +3273,13 @@
     "consumption": 806
    }
   },
-  "generation": 55057,
-  "renewableShare": 78.0,
+  "generation": 54672,
+  "renewableShare": 77.8,
   "flows": [
    {
     "from": "SE2",
     "to": "SE3",
-    "mw": 7641
+    "mw": 7719
    },
    {
     "from": "NO5",
@@ -3286,29 +3287,29 @@
     "mw": 2250
    },
    {
-    "from": "SE3",
-    "to": "NO1",
-    "mw": 2065
-   },
-   {
     "from": "SE1",
     "to": "FI",
-    "mw": 2058
+    "mw": 2071
+   },
+   {
+    "from": "SE3",
+    "to": "NO1",
+    "mw": 2003
    },
    {
     "from": "NO1",
     "to": "NO2",
-    "mw": 1968
+    "mw": 1950
    },
    {
     "from": "SE1",
     "to": "SE2",
-    "mw": 1501
+    "mw": 1569
    },
    {
     "from": "NO2",
     "to": "DE",
-    "mw": 1446
+    "mw": 1443
    },
    {
     "from": "DK1",
@@ -3318,42 +3319,42 @@
    {
     "from": "NO2",
     "to": "DK1",
-    "mw": 1179
+    "mw": 1174
    },
    {
     "from": "NO4",
     "to": "NO3",
-    "mw": 1132
+    "mw": 1165
    },
    {
     "from": "NO2",
     "to": "EN",
-    "mw": 1048
-   },
-   {
-    "from": "NO5",
-    "to": "NO2",
-    "mw": 886
+    "mw": 1047
    },
    {
     "from": "SE3",
     "to": "FI",
-    "mw": 873
+    "mw": 910
    },
    {
     "from": "FI",
     "to": "EE",
-    "mw": 862
+    "mw": 901
+   },
+   {
+    "from": "NO5",
+    "to": "NO2",
+    "mw": 885
+   },
+   {
+    "from": "DE",
+    "to": "DK1",
+    "mw": 835
    },
    {
     "from": "EE",
     "to": "LV",
-    "mw": 774
-   },
-   {
-    "from": "DK1",
-    "to": "NL",
-    "mw": 700
+    "mw": 771
    },
    {
     "from": "SE4",
@@ -3361,24 +3362,19 @@
     "mw": 700
    },
    {
-    "from": "LV",
-    "to": "LT",
-    "mw": 521
+    "from": "DK1",
+    "to": "NL",
+    "mw": 618
    },
    {
     "from": "SE3",
     "to": "SE4",
-    "mw": 502
+    "mw": 600
    },
    {
-    "from": "NO3",
-    "to": "NO1",
-    "mw": 446
-   },
-   {
-    "from": "DE",
-    "to": "DK1",
-    "mw": 439
+    "from": "LV",
+    "to": "LT",
+    "mw": 531
    },
    {
     "from": "DK1",
@@ -3386,49 +3382,54 @@
     "mw": 430
    },
    {
-    "from": "SE2",
-    "to": "NO3",
-    "mw": 279
-   },
-   {
-    "from": "SE1",
-    "to": "NO4",
-    "mw": 233
+    "from": "NO3",
+    "to": "NO1",
+    "mw": 427
    },
    {
     "from": "DK2",
     "to": "DE",
-    "mw": 212
+    "mw": 402
    },
    {
-    "from": "NO3",
-    "to": "NO5",
-    "mw": 137
+    "from": "SE2",
+    "to": "NO3",
+    "mw": 272
    },
    {
-    "from": "DK2",
-    "to": "DK1",
-    "mw": 117
-   },
-   {
-    "from": "SE4",
-    "to": "DK2",
-    "mw": 84
+    "from": "SE1",
+    "to": "NO4",
+    "mw": 159
    },
    {
     "from": "PL",
     "to": "LT",
-    "mw": 66
+    "mw": 134
+   },
+   {
+    "from": "NO3",
+    "to": "NO5",
+    "mw": 131
+   },
+   {
+    "from": "DK2",
+    "to": "DK1",
+    "mw": 85
    },
    {
     "from": "NO4",
     "to": "SE2",
-    "mw": 29
+    "mw": 35
+   },
+   {
+    "from": "DK2",
+    "to": "SE4",
+    "mw": 20
    },
    {
     "from": "FI",
     "to": "NO4",
-    "mw": 18
+    "mw": 17
    },
    {
     "from": "PL",
@@ -3492,7 +3493,7 @@
   "status": "ok"
  },
  "fuel": {
-  "usdnok": 9.6391,
+  "usdnok": 9.6437,
   "note": "Norwegian duty as published for 2025 - verify against skatteetaten.no before relying on the total",
   "vatPct": 25,
   "fuels": [
@@ -3599,19 +3600,19 @@
  "weather": {
   "NO1": {
    "place": "Oslo",
-   "tempNow": 2.1,
-   "windNow": 1.3,
-   "tempMin": -1.6,
+   "tempNow": 1.9,
+   "windNow": 1.2,
+   "tempMin": -1.7,
    "tempMax": 4.1,
    "windMean": 2.0,
-   "heatingDegreeHours": 679.2,
+   "heatingDegreeHours": 683.0,
    "hours": 48,
-   "forecastStart": "2026-11-16T21:00:00+00:00",
+   "forecastStart": "2026-11-16T22:00:00+00:00",
    "forecastEnd": "2026-11-23T18:00:00+00:00",
-   "precipCoverageHours": 165,
+   "precipCoverageHours": 164,
    "precipMm": 0.0,
    "coldPrecipMm": 0.0,
-   "positiveDegreeHours": 78.7,
+   "positiveDegreeHours": 76.6,
    "method": "MET Norway point forecasts; nonoverlapping precipitation intervals; cold precipitation and positive degree-hours are proxies, not snow water equivalent or melt volume."
   },
   "NO2": {
@@ -3633,33 +3634,33 @@
   },
   "NO3": {
    "place": "Trondheim",
-   "tempNow": 1.8,
-   "windNow": 2.7,
+   "tempNow": 1.6,
+   "windNow": 2.8,
    "tempMin": -3.6,
    "tempMax": 2.1,
    "windMean": 1.9,
-   "heatingDegreeHours": 751.7,
+   "heatingDegreeHours": 754.5,
    "hours": 48,
-   "forecastStart": "2026-11-16T21:00:00+00:00",
+   "forecastStart": "2026-11-16T22:00:00+00:00",
    "forecastEnd": "2026-11-23T18:00:00+00:00",
-   "precipCoverageHours": 165,
+   "precipCoverageHours": 164,
    "precipMm": 28.0,
    "coldPrecipMm": 0.0,
-   "positiveDegreeHours": 150.1,
+   "positiveDegreeHours": 148.3,
    "method": "MET Norway point forecasts; nonoverlapping precipitation intervals; cold precipitation and positive degree-hours are proxies, not snow water equivalent or melt volume."
   },
   "NO4": {
    "place": "Tromsø",
    "tempNow": -3.7,
-   "windNow": 1.7,
+   "windNow": 1.6,
    "tempMin": -3.7,
-   "tempMax": 0.9,
-   "windMean": 3.1,
-   "heatingDegreeHours": 810.3,
+   "tempMax": 1.3,
+   "windMean": 3.2,
+   "heatingDegreeHours": 805.3,
    "hours": 48,
-   "forecastStart": "2026-11-16T21:00:00+00:00",
+   "forecastStart": "2026-11-16T22:00:00+00:00",
    "forecastEnd": "2026-11-23T18:00:00+00:00",
-   "precipCoverageHours": 165,
+   "precipCoverageHours": 164,
    "precipMm": 5.9,
    "coldPrecipMm": 1.5,
    "positiveDegreeHours": 64.1,
@@ -3718,36 +3719,36 @@
   },
   "SE3": {
    "place": "Stockholm",
-   "tempNow": 4.7,
-   "windNow": 4.0,
+   "tempNow": 4.6,
+   "windNow": 5.0,
    "tempMin": 1.5,
    "tempMax": 5.0,
    "windMean": 3.4,
-   "heatingDegreeHours": 557.4,
+   "heatingDegreeHours": 560.6,
    "hours": 48,
-   "forecastStart": "2026-11-16T21:00:00+00:00",
+   "forecastStart": "2026-11-16T22:00:00+00:00",
    "forecastEnd": "2026-11-23T18:00:00+00:00",
-   "precipCoverageHours": 165,
-   "precipMm": 2.5,
+   "precipCoverageHours": 164,
+   "precipMm": 1.7,
    "coldPrecipMm": 0.0,
-   "positiveDegreeHours": 221.5,
+   "positiveDegreeHours": 216.8,
    "method": "MET Norway point forecasts; nonoverlapping precipitation intervals; cold precipitation and positive degree-hours are proxies, not snow water equivalent or melt volume."
   },
   "SE4": {
    "place": "Malmö",
-   "tempNow": 7.0,
-   "windNow": 8.8,
+   "tempNow": 6.6,
+   "windNow": 7.4,
    "tempMin": 4.6,
-   "tempMax": 7.0,
-   "windMean": 4.9,
-   "heatingDegreeHours": 444.9,
+   "tempMax": 6.8,
+   "windMean": 4.8,
+   "heatingDegreeHours": 446.1,
    "hours": 48,
-   "forecastStart": "2026-11-16T21:00:00+00:00",
+   "forecastStart": "2026-11-16T22:00:00+00:00",
    "forecastEnd": "2026-11-23T18:00:00+00:00",
-   "precipCoverageHours": 165,
+   "precipCoverageHours": 164,
    "precipMm": 13.5,
    "coldPrecipMm": 0.0,
-   "positiveDegreeHours": 683.5,
+   "positiveDegreeHours": 676.5,
    "method": "MET Norway point forecasts; nonoverlapping precipitation intervals; cold precipitation and positive degree-hours are proxies, not snow water equivalent or melt volume."
   }
  },
@@ -4127,12 +4128,12 @@
    "name": "EUR/NOK",
    "unit": "",
    "group": "fx",
-   "last": 10.6155,
-   "changePct": 0.45,
+   "last": 10.614,
+   "changePct": 0.44,
    "changeSixMonthPct": -1.9,
    "low": 10.2793,
    "high": 11.3334,
-   "rangePos": 31.9,
+   "rangePos": 31.8,
    "spark": [
     10.849,
     10.8743,
@@ -4193,7 +4194,7 @@
     10.6163,
     10.5995,
     10.568,
-    10.6155
+    10.614
    ]
   },
   {
@@ -4201,12 +4202,12 @@
    "name": "USD/NOK",
    "unit": "",
    "group": "fx",
-   "last": 9.6391,
-   "changePct": 0.79,
+   "last": 9.6437,
+   "changePct": 0.84,
    "changeSixMonthPct": 3.5,
    "low": 9.1951,
    "high": 9.9325,
-   "rangePos": 60.2,
+   "rangePos": 60.8,
    "spark": [
     9.2976,
     9.3148,
@@ -4267,7 +4268,7 @@
     9.5043,
     9.5529,
     9.5638,
-    9.6391
+    9.6437
    ]
   },
   {
@@ -4722,7 +4723,7 @@
    "publisher": "European Commission DG Energy",
    "category": "Official energy updates",
    "topic": "EU energy",
-   "ageHours": 23.2,
+   "ageHours": 23.5,
    "published": "2026-11-16T00:00:00+01:00",
    "score": 4
   },
@@ -4732,7 +4733,7 @@
    "publisher": "European Commission DG Energy",
    "category": "Official energy updates",
    "topic": "EU energy",
-   "ageHours": 95.2,
+   "ageHours": 95.5,
    "published": "2026-11-13T00:00:00+01:00",
    "score": 4
   },
@@ -4742,7 +4743,7 @@
    "publisher": "European Commission DG Energy",
    "category": "Official energy updates",
    "topic": "EU energy",
-   "ageHours": 95.2,
+   "ageHours": 95.5,
    "published": "2026-11-13T00:00:00+01:00",
    "score": 4
   },
@@ -4752,7 +4753,7 @@
    "publisher": "European Commission DG Energy",
    "category": "Official energy updates",
    "topic": "EU energy",
-   "ageHours": 95.2,
+   "ageHours": 95.5,
    "published": "2026-11-13T00:00:00+01:00",
    "score": 4
   },
@@ -4762,7 +4763,7 @@
    "publisher": "European Commission DG Energy",
    "category": "Official energy updates",
    "topic": "EU energy",
-   "ageHours": 119.2,
+   "ageHours": 119.5,
    "published": "2026-11-12T00:00:00+01:00",
    "score": 4
   },
@@ -4772,9 +4773,19 @@
    "publisher": "European Commission DG Energy",
    "category": "Official energy updates",
    "topic": "EU energy",
-   "ageHours": 119.2,
+   "ageHours": 119.5,
    "published": "2026-11-12T00:00:00+01:00",
    "score": 4
+  },
+  {
+   "title": "TotalEnergies abandons $16 billion green hydrogen project in Chile",
+   "publisher": "Upstream Online",
+   "url": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxOS0NtMXFTN29sYTQ5SmFUZGt4SmN1XzE0UEEtaUN5d1lwNUZvdUZJNGNvMFNlNERSa25HanBhQmlWdDFJVjVhOEpjYkNLRC0wRFRUZFI4VlhQTllkcjZLdndrdXo2UFF6QURRVlpYRFJqRFNDSTdTX2hnWklCcVFCVDEwOTg2VmJjN2FRVVNJbHI2VS1rdUtCNzFLZ0VhaDJvVGNTbHBDSURGcWFRR29UOHRYX0FMY09K?oc=5",
+   "topic": "green hydrogen project",
+   "category": "Hydrogen & fuels",
+   "ageHours": 1.4,
+   "published": "2026-11-16T21:02:32+00:00",
+   "score": 3
   },
   {
    "title": "New spodumene-bearing lithium discovery expands Victory Project's exploration trend to 16 km in Ontario.",
@@ -4782,48 +4793,18 @@
    "url": "https://news.google.com/rss/articles/CBMioAFBVV95cUxNYTdVSXd4NHhtZ2JEaXNlQ1B4ejdOMjRmaW5ZSHdjUkpZMGdmVmxrRlZMQ1FWdno1LW96TGZ1alN4MXcwR25ZZjR2RnJ4MGJhWW1nQmU4UHUtaklMZXRjMU1SQmVSV21qejA2OUQ0b2c2VUdfR2lqdldlSHdkMWwtQjdDa3cwUTA2S2dOYzR6aGZIUGZfdGc3ZldvQk5zVVkt?oc=5",
    "topic": "lithium discovery",
    "category": "Discovery & resources",
-   "ageHours": 7.1,
+   "ageHours": 7.4,
    "published": "2026-11-16T15:06:06+00:00",
    "score": 3
   },
   {
-   "title": "Seaway 7 installs first inter-array cable at Hornsea 3 offshore wind farm",
-   "publisher": "TGS 4C Offshore",
-   "url": "https://news.google.com/rss/articles/CBMitAFBVV95cUxQVE5ZMDByc1N1WHIxTVJBSXFyWkNlYUNEc051VXA2OWpXWEVlN0VKWGJJakZjRlhPRXlhV3VVaWVWSE85VWlZQUgyS3ZFbTFQRFhOMzNmT21tb2hseE1HZnc1S3g5emVxXy1GTDNEREV2QWlPLVRHaXR0SjRXZVpidC1CNVd0bjhHQnVfaE11b1lvbFRaUXY4dzFadHB6SnBfRHEtVUg0bGNOODdsZ2oxQWlzQm8?oc=5",
-   "topic": "offshore wind farm",
-   "category": "Wind & solar",
-   "ageHours": 10.5,
-   "published": "2026-11-16T11:43:27+00:00",
-   "score": 3
-  },
-  {
-   "title": "Greenpeace boulders may delay building of £12bn windfarms in North Sea",
-   "publisher": "The Guardian",
-   "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxNbmFIdHVyOVNFeWJ1ZDBzSFEzbjlaNjQ4YmJCMVlHc2tXbTdHRnFIaTBBMU8wOHFyUlV0UjRwcGFIOFdJdjhBWXdVMjVEMVR4ZmQzQ2RsTmJCNlZ5ZW1ubWZrX2FLOTQyanI5U2M0d2FFYkxadlkxWjNOMVlhUW9WMnVWYXF3ekdGWkYwOC1obXFxMHFoMFRvdFhWbEJCMDg?oc=5",
-   "topic": "offshore wind farm",
-   "category": "Wind & solar",
-   "ageHours": 19.7,
-   "published": "2026-11-16T02:30:00+00:00",
-   "score": 3
-  },
-  {
-   "title": "Greece-Cyprus interconnector to be complete by end of 2031, Admie says",
-   "publisher": "Cyprus Mail",
-   "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxOQVpkamhlVEY1d3BhVjRfdU1TNkszYTctWnNUOGJNMmNHOGtvc3dyU01OaG9oSmFzQlBoemRwaTdyT1V0SmJrUzVwWTNJV25LbWxDQlVoTjRNdDN3NThSTy01M1FvS2l1cU45eGFwQWpITE5Ybk5IUExrSEZjTFVFbG5SZGVqMlpWZGNTclctTWM2RVdFLTFrQklmQkU2bG1lRTJIdTlmaw?oc=5",
-   "topic": "interconnector",
-   "category": "Grids & cables",
-   "ageHours": 58.8,
-   "published": "2026-11-14T11:25:28+00:00",
-   "score": 3
-  },
-  {
-   "title": "A 426-foot ship built to lay internet cable across oceans can now carry about 4,400 tons of power cable on two giant turntables, and it has started unspooling 311 miles of it across the seabed of a British wind farm to plug 197 turbines into two converter stations",
-   "publisher": "Autonocion",
-   "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxONlc0R2VuVzk4VFZjQXVQNk5vTFE4enpfbHllQ0t6TlN2QmUzeGxiWGxBSUlhRnhqdm5IbWdtbGtja1pTMmNQdEJPRTlPS1lhQ3dPdVNfM2JJcXlCRnJYWXpZRHJtTVVocUhoVXZkb2RfRnRCTlUycWtTZm1QTnh6TzZLcVNqaW1uNDJVdWtTRUxFS1NvNS03X2NOYmQ4cFlMLW9XVlZQMA?oc=5",
-   "topic": "offshore wind farm",
-   "category": "Wind & solar",
-   "ageHours": 73.4,
-   "published": "2026-11-13T20:45:00+00:00",
+   "title": "Repsol Approves 150 MW Tarragona Green Hydrogen Project",
+   "publisher": "Rigzone",
+   "url": "https://news.google.com/rss/articles/CBMisgFBVV95cUxNd2FtTWVFRnQtNkVldnctWXJGZUZtY1AxdjdDSDZTZ1lsRF9KclJEYWstOUtlUlpLNTdoR1dLUjZFNHZoaWVDakhKZWtEZE5SUkIzWWxqS3NTcUE5ZzY0RFpDMlpBR2t5QnAzMDhSRksyUGZTMGpnOExERElEVzR1aUxIMWlQRlpSMTl5eVhQVF85NHlXRndpMmpoT0U0aUhvTlZfcWhvZV9ZY29UVlFYZE1R?oc=5",
+   "topic": "green hydrogen project",
+   "category": "Hydrogen & fuels",
+   "ageHours": 34.5,
+   "published": "2026-11-15T12:00:00+00:00",
    "score": 3
   },
   {
@@ -4832,8 +4813,18 @@
    "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTFBzeENzWVc2RktmVDVheWpzZ1ZqaVl4Rm8wTTFjRG9mZ25IeHNodUdpT1AxZ1A2TTFITVI5bUJlRVZNYlJidW5zdy1walAta3pyRjJkRVR4aVdXdld4NXBCUkJiNHQyMERRVm9iZ1RrRlZaWFd5Uzh5VWdkbw?oc=5",
    "topic": "HVDC",
    "category": "Grids & cables",
-   "ageHours": 78.3,
+   "ageHours": 78.5,
    "published": "2026-11-13T15:54:37+00:00",
+   "score": 3
+  },
+  {
+   "title": "Oman awards 2 green hydrogen projects in Duqm, Round 4 launched",
+   "publisher": "Quantum Commodity Intelligence",
+   "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxOSzRrQ3lQNFY4R1VSdmhFRTNpRjl5RmNVNk5iZlR1SFVkUjdSNkNGNVpjS3NJRFRyNG1oUjlCdERjZ25mUDNhWENDOFM1ekJXeWZDS0xhTHlNUWs0U2lrZlRXaE96LUpjUkxDeVN1a3YyN29ndFFZbEV3ZDdBNUpBaEJpMV9fRGhyLXg3aG1xRXNyT3g2b3R0bzM5MHFPUHUzUkdLajZXeEkxQktqV0NZUUVFYw?oc=5",
+   "topic": "green hydrogen project",
+   "category": "Hydrogen & fuels",
+   "ageHours": 83.0,
+   "published": "2026-11-13T11:25:14+00:00",
    "score": 3
   },
   {
@@ -4842,7 +4833,7 @@
    "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxNdDdadVRtMm1TdDhNMnlBZGZrcENtLWdnRzExeExSdVc1UlN5YU9pTlQ2NXVXcHMxQWFwVEdXTVdabnZrMlI0QmI0b3Q0VmJUZ0tTenZybXF2Z05FZUQ2V1l2bUZFNEhGZVhCTzd5UGpsNnNiRjNGdkpOcllGWmF6R3BaaktOS0pidzFiU0VxUVBFMDVseVphd3NHYzhFczF5YzFSWUU3ajFKYjhKdnBR?oc=5",
    "topic": "HVDC",
    "category": "Grids & cables",
-   "ageHours": 92.6,
+   "ageHours": 92.9,
    "published": "2026-11-13T01:35:28+00:00",
    "score": 3
   },
@@ -4852,8 +4843,28 @@
    "url": "https://news.google.com/rss/articles/CBMivgFBVV95cUxNTHZ5S1NSR296MEVSaklLWTBoTHJzVXRxWVBfWEJTS3FfSVUtcnVTcmxXazF1VXZodGJvR3FCSXFnS3F0cWpjTHpMX05wbWdvZ3lOa3pHQU5DOGxMZG1PamNVMjBscjJnODAyZFNyWmFZV3pSVmJ5VFN4aGh6SHlKQmNzTWwwZ0hkdWRsWGh5cDY2dE1aMVN1ekFUVGtyTFQtVzZrdWtFb0tpdUpQTjB2LUUtZkRpQng4VG11Q2tn0gG-AUFVX3lxTE5LRmEyV3hReVpoSU84a2lJYm1ic3pBOFJhRzlzRXVBZEkxM1YzQUdkS1QxVDlmVktVTnJLVzBPWElvQk0zZjBhNk1oMktyOFc2VEVBT3hRZ21CVURJcU9HRVhkdUVhbHJ6by00T2JXWTd6M0dnTUloVnBKRXJibmplUDZwUWtfaU8yaVdnNVdkR1VYck1qTGp3VHM3LThyZFNKZW1salNmZjFycTEtVTBSOWhXTGNMLWtkdDk0cFE?oc=5",
    "topic": "small modular reactor",
    "category": "Nuclear",
-   "ageHours": 117.2,
+   "ageHours": 117.5,
    "published": "2026-11-12T01:00:05+00:00",
+   "score": 3
+  },
+  {
+   "title": "RWE and KKR take FID on $16bn UK offshore wind projects",
+   "publisher": "Recharge News",
+   "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxPTXotcDlHZUFYZUFRMEc5Q3RMUlp5QUFNOFVrdVBTMzJHZHpHcFhjcW02Vm1feUd5ckJ0VWVCakw0Y2FpcTFHdkFpMVhpVF9WaW00N1VTdmo5VzZVbVBDVm5LOFE4X29qRXFSaW93QkxtVlgyX0Fta0NSbWd6cDN2V09idE1fU201OUNqbl8xb2YydmM3NG10VHlYa1I5eC1TNlVOcXpUTE1oWjdKUXc?oc=5",
+   "topic": "floating offshore wind",
+   "category": "Wind & solar",
+   "ageHours": 136.5,
+   "published": "2026-11-11T05:57:40+00:00",
+   "score": 3
+  },
+  {
+   "title": "Province Awards Contracts to Eastern Ontario Manufacturers to Build G7’s First Small Modular Reactor",
+   "publisher": "ontario.ca",
+   "url": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxNX2xta2p3MWh4Q2kyN2dXMFB5VmZOT2VqSDBaRlVab2hnTkNwc3haNExrYVNqYTlVamQ2UXVzSlgyeHNEQW1uSGFWeEdUV0JfWklyNUJlM0hUNDVZb09zR1RLSmVFZzZMclpvRUhzTjJwYUJsQWRQcndZZzdQeW5PcXZyaE5xWnY0R2k2Rm12MlIyRjJHRTlFSEVNdnAwOVFPaXlITnMwU3hLVXpWTlN4emdmVjBrRnpjTWRueTR6ZTl1cENneURfNjhrU2ZuWXhnd3pQNGlCa3hlZw?oc=5",
+   "topic": "small modular reactor",
+   "category": "Nuclear",
+   "ageHours": 173.6,
+   "published": "2026-11-09T16:53:55+00:00",
    "score": 3
   },
   {
@@ -4862,7 +4873,7 @@
    "url": "https://news.google.com/rss/articles/CBMidkFVX3lxTE41OHFuV0xvMmJNTkxpVGZxaDJTbWI0YzdWVUVmTkUtLVl4Nmp3MXVnSWVSNEtBNVhNdXhjMUhrZXV0UE9ycU1kWGNNdGJqd0JFbWZNWDBZV3c2ZGxISHlpTDdNYkt5YVVvbG5hYmtVRzhpV3BLQ0E?oc=5",
    "topic": "grid connection queue",
    "category": "Grids & cables",
-   "ageHours": 278.2,
+   "ageHours": 278.5,
    "published": "2026-11-05T08:00:00+00:00",
    "score": 3
   },
@@ -4872,9 +4883,19 @@
    "url": "https://news.google.com/rss/articles/CBMinAFBVV95cUxORUFLQTB0U21uNVNBbVpxb2VzVjhScGRiQ1lCRVd4azZCNTFQWmMxQ0toTUhlbUNJV0IxRTVGakNaZnh1UzBlVmxDRTZIb0xYY3Z5cDZPSEtBdC05aTFyTEVQTVE2R3ZlZjBMYUppOVBzT1FvVkh4Skd6UUhhbXRISnZkV3RIOHhyU0dtM1VBSG5Qc25VaGJleS1kREM?oc=5",
    "topic": "subsea power cable",
    "category": "Grids & cables",
-   "ageHours": 347.8,
+   "ageHours": 348.1,
    "published": "2026-11-02T10:22:54+00:00",
    "score": 3
+  },
+  {
+   "title": "Cornish Lithium awards Marriott Drilling Cross Lanes Geothermal Lithium contract",
+   "publisher": "Global Mining Review",
+   "url": "https://news.google.com/rss/articles/CBMizgFBVV95cUxNc29VdjUxaHdCMnM4Nm40OXNkX0ZWUGRZTDVsWGROR0F4Y1phbkJOd1hMUHZ6OGhvSUFVazhLbGRBWHBiUnE2VGR3YndGSzJSc05kdDBtb25PSnNWVG53alZUbGNuS3VER2YzcWJkNy0zbWt5Rk9VUV9UNlJGTzd0YUVKSVVzM1pSNTFqRzItd1lHTjNGb2cycE9tYkE0VFY2MEpYdmo5dzhvSnF5WTJtd1lIZkRNTXBQdDJ5X3QxcHM0Q24zSWRuUnd4SkpqZw?oc=5",
+   "topic": "geothermal drilling",
+   "category": "Discovery & resources",
+   "ageHours": 5.7,
+   "published": "2026-11-16T16:45:15+00:00",
+   "score": 2
   },
   {
    "title": "Asso.subsea Wins Subcontract For IPTO Kos–Corinth HVDC Cable Project",
@@ -4882,8 +4903,48 @@
    "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxPdlh5N0dNd19qM1pTcENkM1otZG1xUnA4bHBZUzBIRW10blFwYnE2a2lmNlpMUXVLaUpvYlRKM3BhOWNLZGllSmJzYlYtOFVVVFFLZ1RIRFpsc1ZuVjlGMF9RWjMwWkNyNGRFaEtRdjMzMmw5dGc2LUU0NjJEenZSUDNYTzhYQkNiT3EzTjR3YUpISkpmNGIwTkZEX2g2ZGQ1WjNUTFFzc2Nnd3AzYWc?oc=5",
    "topic": "HVDC",
    "category": "Grids & cables",
-   "ageHours": 7.6,
+   "ageHours": 7.8,
    "published": "2026-11-16T14:37:42+00:00",
+   "score": 2
+  },
+  {
+   "title": "IX Renewables and TWD sign agreement to support Taiwan’s offshore wind development",
+   "publisher": "TGS 4C Offshore",
+   "url": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxQUm5FZ2dCZEFLY2VOU2xteHJRYklXZWdHOGJCblpacGxuNkdaYjlOaEhoSEJpSWdiVWZPeHVrMVVjenUyWUtEaXFBa3M3cHpwanFqblhsaVVWWEk1akFEdG9kNGVUTjIzeUgxM0R4MnN0WTZqalVhVGI1eUdzLXVJV3JkbkJ6bGhWcEp0Z2lIOTlxaTVVLUdzUlhzMUZFak5mTTlQcmE2QnFsd1l2SXJmVGNIUnhyY3o4aGFjVkVsTFoxQQ?oc=5",
+   "topic": "floating offshore wind",
+   "category": "Wind & solar",
+   "ageHours": 13.2,
+   "published": "2026-11-16T09:17:27+00:00",
+   "score": 2
+  },
+  {
+   "title": "NKT completes specially engineered power cable delivery for river crossing in Germany",
+   "publisher": "Cyprus Shipping News",
+   "url": "https://news.google.com/rss/articles/CBMixwFBVV95cUxQZ2FCaGdkTFhpcm5zZTRldUlna2tDUFIxNEl5SlpDMjBIZ0NYRU1vSEpIRVFqUzlnUklRRmFqanNrRXBCb0h3cXdkYUUtQXhVdW5yRUZJUjJEcUZtLW1fem9hc0k3SnZJYjljYzBaU0x5MUZGQ2JzbkdFRGVaTzlBUURUZGJQZklrRmd6Zk1QMXZNNUFIenUzOTk2Y0JRMHBZVVBiNzg1OW9iYy1LWThqN3lOcDNSQnNXUGRzbnRCdmxlRVhDTVU0?oc=5",
+   "topic": "HVDC",
+   "category": "Grids & cables",
+   "ageHours": 18.4,
+   "published": "2026-11-16T04:04:13+00:00",
+   "score": 2
+  },
+  {
+   "title": "Pathways carbon capture agreement faces deadline delay, but talks remain on track",
+   "publisher": "Toronto Star",
+   "url": "https://news.google.com/rss/articles/CBMigAJBVV95cUxQOVhGWmQ5dWlnWHlZWGVBTFJXUFlGMExaRkMzVXE0WG83LTVZWVQ3MndEYWxpbDlDcmZCSjJmRnFfaTFERDdJOGsxQ19XM1JZdVRQdFRITzRZX1JLYTFKLUZSUUhjZXMyOTJRcGNZVkExX2lBcGJDbjlIUlhLNlV1dTRMYll2OGVDTi1WZ3BEcjBzVWFJVDNkRDViaEotQ3lFZ200UkZ6b3JUZlhncy1ZaGsyUjltTHlqb0RsLTRpcnB2Z3Bfb0JhM19GMlRPTW1XU3NYTjE2NjF0TmUtcFZzVm9hWHRqbXpqOUpFcXJOZklFSVlBODM3bWtNYjRDd2Iz?oc=5",
+   "topic": "carbon capture project",
+   "category": "Hydrogen & fuels",
+   "ageHours": 59.4,
+   "published": "2026-11-14T11:01:37+00:00",
+   "score": 2
+  },
+  {
+   "title": "Sodium-ion batteries close gap with lithium-ion as utility-scale storage opportunities grow",
+   "publisher": "pv magazine Global",
+   "url": "https://news.google.com/rss/articles/CBMiywFBVV95cUxOUmJhRXBna1BaVFdtWE1ESmgyWXB6STdpckR4d3pmRk5lamdPdjZncUpoSFBpVW1sd2dRc3RZWDQ3YmVqOVFnR2JseEc2RGRhWTdsVFBCMlNic2lGZjlISHVSMDQ1ejltSmlyQjBBTzVSUVpUd1ZmT1F5N01FRU9pT3plbWJ3OVNNMHA2VlV3UTJQS1pfTU5WSThIbTNnX09zLTdVZW9ZTjd2WU5UMlhNSjhVWXBzODJTVUptMmhsT2hBYXdjM3lFNmVhOA?oc=5",
+   "topic": "sodium ion battery",
+   "category": "Storage",
+   "ageHours": 82.8,
+   "published": "2026-11-13T11:38:56+00:00",
    "score": 2
   },
   {
@@ -4892,9 +4953,29 @@
    "url": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxNWmV6NDJMYndDWF81M1Z2REFKdnlKdXJvUktQajE1SWpCT1pKYXRhTHlZZHhYc204UlBDVjlhRjhKaTZxUm1KSFJEdXU0bi1TTllWblQ3cFRuUm5EQklxSWp6U083UFBWcklmaTdOeVVMaFZJaWljZmlHbWxZRDlFTkV3TWJPeTRHc1EycGVDWWg3LUlFMjRKMlZpYlVFaVF6TGVXRklmNEgzdVE?oc=5",
    "topic": "small modular reactor",
    "category": "Nuclear",
-   "ageHours": 142.3,
+   "ageHours": 142.6,
    "published": "2026-11-10T23:52:35+00:00",
    "score": 2
+  },
+  {
+   "title": "Hy2Gen inks €140m European Hydrogen Bank subsidy agreement",
+   "publisher": "gasworld",
+   "url": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxPeFM5bHJNeGJ5QVA2ZDY2amRfajRJX2JDRUFrWE11MzNnUTVsNTZCczZ0RTNhVFNSSEJVZjBKbng4YnJGaXYyNHdzUmd2OXRyeWFzRDhITlpDcGJoN2JlMkR5Wjh5dWdQUlctWDVBYjZIQ3RfanBrOHFrS3Q3MUwyOXlUdlpib1plWDRKNkRkdG13aTNldF8xeDV0cjE3RmJ6bENIbHFHN2dPQQ?oc=5",
+   "topic": "green hydrogen project",
+   "category": "Hydrogen & fuels",
+   "ageHours": 6.8,
+   "published": "2026-11-16T15:41:53+00:00",
+   "score": 1
+  },
+  {
+   "title": "Bedrock Energy raises $24 million to build more automated geothermal drilling rigs for buildings",
+   "publisher": "MLQ.ai",
+   "url": "https://news.google.com/rss/articles/CBMitwFBVV95cUxQQXJiaVBoQlhwN25uTjV0Q0REVURvbTd3VEhzRkF6R0x1QW1xNDJfYmVkcXl1cHFrNVVTZkZDNER1UGx6bXNKM0ZvbnlaMDRTZFRVR2dnbnRaOGw4RHQ2WGZzS01UMHdwT1c5NVVIYmZRWUJOa0tQMUtTaFNGTnMtUDY2SER4Zmd4c1dZWkY4RlpIWk9kQ0F5UnFaQjJId0pwMGFPa1hZM0E3ZllHRXZaV1M1UlZ4X1U?oc=5",
+   "topic": "geothermal drilling",
+   "category": "Discovery & resources",
+   "ageHours": 7.9,
+   "published": "2026-11-16T14:31:58+00:00",
+   "score": 1
   },
   {
    "title": "OPG Targets Mid-2027 For Darlington BWRX-300 Project Updated Budget And Schedule",
@@ -4902,28 +4983,18 @@
    "url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxPcV9Nd2JtVDNFRDhLZFlUYjZvVV9sZmw4S0hlWkFpZXpUWHA2d083UjQtVXlvMnpGWGVUV1hraEVaaUxaSEowNDV2Q2JSeklPckJzWHJ6cnRXa3VNamF3Nk5fUmlSbTBheDJHODFHWFF5ZEhJMjIxRktoc0lYa3pqVThHYUhvbjlKbWZjTVREQy1kMjVHbWxsYmNGbW4xUDNkTHY2eWdSczlnbjMtUktOaTJQaUQ3Zk44b2c?oc=5",
    "topic": "small modular reactor",
    "category": "Nuclear",
-   "ageHours": 8.7,
+   "ageHours": 8.9,
    "published": "2026-11-16T13:30:56+00:00",
    "score": 1
   },
   {
-   "title": "First Monopiles, Turbine Towers Delivered for 315 MW Japanese Offshore Wind Farm Ahead of 2027 Construction",
-   "publisher": "Offshore Wind",
-   "url": "https://news.google.com/rss/articles/CBMi3wFBVV95cUxPaG1MLUs5WGJZNGhlQjUtdkNjSWFiZ1p3TXVYbm0xRGtEaWxRMVlDZ3oxNnc0Y2k5WW1USlZZSXFfRk5iaThlbEdOb1h4N0ZaTFVTTDQ4cHhyR0c0SERXZDkzS09pZEFFZGM0dmNfWXdNc3k0bXV4OHdyV25Nc3FUcE1OVS1mWG10Z3BQenNnNlJoQl90WlMtUEZ1Q2xOdC15YkFJa3pUYjREcjdoRzk4SEF4ZlRfTjJsRzRERkJOSmJybkZqcTNFVm9ZelBYQWw3bWR4YXlhZnotUmEzS19v?oc=5",
-   "topic": "offshore wind farm",
-   "category": "Wind & solar",
-   "ageHours": 8.7,
-   "published": "2026-11-16T13:30:22+00:00",
-   "score": 1
-  },
-  {
-   "title": "Nearly £100bn of offshore wind projects ‘under threat’ from Labour, SNP warn",
-   "publisher": "The National Scot",
-   "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxNVzM1cE5SeUFfemxlbjUxbkdlMnVGcjRmeGtWQ2sybkZ0VVI2cnlyZEdLbVJOYUpYdEpXRndwN3dkeXhBaGtKVHVEUzVfUVpUZkNBUkZTTDBSdVlSSFNpS2tMSEJ0Ukp0WXJKQWI5MTl4NFczT19welo2dTJHSHFUZzI3cjVzUE5lMlhrU3h2bnNTUXZZSFFvTkhUQnlPekN5QkJn?oc=5",
-   "topic": "offshore wind farm",
-   "category": "Wind & solar",
-   "ageHours": 53.4,
-   "published": "2026-11-14T16:48:35+00:00",
+   "title": "Destination Cabinet Set To Bring Rs 11,500 Crore Energy Storage Project in MP Into Focus",
+   "publisher": "Deccan Chronicle",
+   "url": "https://news.google.com/rss/articles/CBMizwFBVV95cUxQemJWMzUwMkpSdVY4LWtIT1I4Slc0cmMzbjd1bjk2SlhjOEdMbE9UWmJkTXFybGV2OU5Hb1ZLNXp5TkoyYkNydVRKb2swX01wdE9vaXdqdzFvb0x2anRWMlZjZk9xd1czWTFfRTdZU25kOXZ1d1pfSUlmZXpHWTJ2X29tNVh4T25kZTh1aGNVSjhKUFJ3OUtmZlUxekVmcjZ2V1JIZnNLRmFCVkVDd3NLdGlPdFJFUV9jdkN5MjVrV2pJdlV3aDAtQ1BNeGJ5STjSAdQBQVVfeXFMUFNQaEc0VVRCUnNwQUstdzZEc1J0ZDFsUXI1bzJyaWFlb2M3dDU1ZGRUM3JlWlc1VzRieE5JMkZiT2NYU0twS1RsM0lkeDBQdjRRWmxqa2tnaHFWV01KRHROMG5XdGdGR3BZa2l3ZVBnNWw0RlhiVmNCMFQ3WGpUWThNOUEycmtJX0NiaEVSY183RzMyN0MtNGVfYmUzNm1VNTFkRnExNXNFNWdvQ1dsOW1GbC16Nkp2TFpteGVCUzJhdld3UFl0Si0tWVFCQzNSOGFvZ0E?oc=5",
+   "topic": "pumped hydro storage",
+   "category": "Storage",
+   "ageHours": 31.2,
+   "published": "2026-11-15T15:16:02+00:00",
    "score": 1
   },
   {
@@ -4932,38 +5003,18 @@
    "url": "https://news.google.com/rss/articles/CBMikgFBVV95cUxOazZNSko1VzF0TzcwS2ZlSXRCbkJLYlhWN2IyZWg2bmJaQU1zVGRJYXkxbXNvTEtvYlNyLW1VX0M3UTd1V09pSnZlSVNGUlZYeEJHdTJ3Y1U0OElCRG84RlR5V3c1SDRwV0tEcE1IMUhjMHgxMjFwWTdDMjlDcTF0MkhvZ3d3SnJfdko3cXd6bTUtUQ?oc=5",
    "topic": "grid scale battery",
    "category": "Storage",
-   "ageHours": 77.6,
+   "ageHours": 77.9,
    "published": "2026-11-13T16:34:02+00:00",
    "score": 1
   },
   {
-   "title": "IAEA publishes 2026 World Fusion Outlook",
-   "publisher": "American Nuclear Society",
-   "url": "https://news.google.com/rss/articles/CBMihgFBVV95cUxPV0Q5bGNOa1BCbEYyRlNRemhTOVdWZjFDblpDOV9xRzhkNW1yUm10eV9JTjNmNVRMVUdYYWdWWmU1cmREaHVRTldsNHlib3p4Z0hnSUdoZFVETmhCeklhM2tvdXREeDhQV2dNdElnVnQ0dFd3ZlcxVEtVM0tXYnpZczhkem9IZw?oc=5",
-   "topic": "fusion energy",
-   "category": "Nuclear",
-   "ageHours": 79.5,
-   "published": "2026-11-13T14:38:59+00:00",
-   "score": 1
-  },
-  {
-   "title": "Leading small modular nuclear reactor will be late and over budget",
-   "publisher": "Canary Media",
-   "url": "https://news.google.com/rss/articles/CBMijwFBVV95cUxOSng4VFRSdl80Tl9vUkRkQ3k0SXRHTDdLajhtRU5Ydi10MVYzczBEbHlqbmY3dHhPOVJlSjFha2p4bnFCSWRlZXRwSjdiMUJ5bC1MWjV1WUhHNGFNUXJ3YWtOeFZEV1h0Z25DXzRNSUE1Y1FpVEJxS3NvcGl1czFkVFdiMnU2WmhYd3pBTndHUQ?oc=5",
-   "topic": "small modular reactor",
-   "category": "Nuclear",
-   "ageHours": 123.2,
-   "published": "2026-11-11T19:00:00+00:00",
-   "score": 1
-  },
-  {
-   "title": "Physicists Revived a Nuclear Fusion Technique From the 1980s",
-   "publisher": "Gizmodo",
-   "url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxQTDJhNXluQ1FLNlNuNFN1dEh6NkJCWmIwX1lyOE5pNlNjSEQwMXQ0YWJuYm5wQUhxVEF1UUxVVWRyTVZzSXAyZEJ1N3hPaFFPMjcyUUpDbnQyWXJZMmRJN1lucDNkQ1RSejV1WnFGVnhwdC1DRG44eDJJYjFuSzl4cWdTT2NDNmV1SmRQVy1saXpVMDlWUjlJaWptbmFIY3BPZURpcWFR?oc=5",
-   "topic": "fusion energy",
-   "category": "Nuclear",
-   "ageHours": 169.0,
-   "published": "2026-11-09T21:10:04+00:00",
+   "title": "CleanMax Plans INR 50,000 Crore Investment for 3 GW RE, 1 GW PSP in Andhra Pradesh",
+   "publisher": "Energetica India Magazine",
+   "url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxOWl9pQjVzYUd6NjNXU3ZjZEdFS2F4OEpZSXp3Z0ZvX3NNNGE2blg3OC1tUlMzNWY2M0FSYlN0a3V5d0hLYXpjUEExZW1jcVJ2RElWbk1TZWw4clQ2ZTdkYU1NUE5INzBMdzMxUEFvQ2FqMEpoZXVrTjBzbG44TmpwNlFIaVd6aDI0NG55WlpaQmZOODRQdDBGcWNuWGptaVd4Zl9ieldOd0lYSVhOUkd0QzVPUkZmOW5SRVE?oc=5",
+   "topic": "pumped hydro storage",
+   "category": "Storage",
+   "ageHours": 106.9,
+   "published": "2026-11-12T11:31:16+00:00",
    "score": 1
   }
  ]
