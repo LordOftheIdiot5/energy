@@ -1,0 +1,32 @@
+name: Plant map browser validation
+on:
+  push:
+    branches: [feature/v72-plant-topographic-map-20261116]
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - run: node --check geography.js && node --check plant-tile-map.js && node tests/test_plant_map.cjs
+      - run: python -m unittest discover -s tests -v
+      - run: npm install --no-save --no-package-lock playwright@1.56.1 leaflet@1.9.4 && npx playwright install --with-deps chromium
+      - run: |
+          python -m http.server 8765 --bind 127.0.0.1 >/tmp/energy-http.log 2>&1 &
+          node tests/test_plant_map_browser.cjs
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - run: |
+          python - <<'PY'
+          import urllib.request
+          u="https://cache.kartverket.no/v1/wmts/1.0.0/topo/default/webmercator/8/72/137.png"
+          req=urllib.request.Request(u,headers={"User-Agent":"Nordl Energy (https://energy.nordl.dev/)"})
+          with urllib.request.urlopen(req,timeout=30) as f:
+              raw=f.read(1000000)
+              assert raw.startswith(b"\x89PNG\r\n\x1a\n"),"Expected PNG tile"
+              print("Kartverket live tile verified:",len(raw),"bytes")
+          PY
