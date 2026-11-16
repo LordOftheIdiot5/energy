@@ -8,8 +8,8 @@ Keep this file current with PRs, test runs, deployment evidence and known blocke
 | V80 | Satellite and aerial imagery | Historical Sentinel-2 merged; real imagery/elevation tile browser test passed; aerial pending | Verified commercial display permissions and coverage; preserve labels and overlays |
 | V81 | Actual transmission lines and substations | Norwegian direct-display merged; 23 actual map images tested; European coverage pending | Source-linked real geometry, voltage and provenance; distinguish schematic routes |
 | V82 | Geographical weather, precipitation and snow layers | Radar and 5-cell SWE pilot merged, source/browser tests passed; optional map markers merged and browser tested; continuous gridded map and forecasts pending | Dated, unit-labelled gridded observations/forecasts; coverage and uncertainty |
-| V83 | Expanded European infrastructure database | Pending | TYNDP reconciliation, geometry and redistribution rights; retain source exceptions |
-| V84 | Individual power-plant research pages | Pending | Stable IDs, source links, coverage and historical/current distinction |
+| V83 | Expanded European infrastructure database | Rights review; permission draft PR #22 | TYNDP reconciliation, geometry and redistribution rights; retain source exceptions |
+| V84 | Individual power-plant research pages | Stable-ID research profiles in browser validation | Stable IDs, source links, coverage and historical/current distinction |
 | V85 | Weather-based hydropower forecasting | Pending | Historical catchment and inflow data, time-aware holdout benchmark against seasonal/persistence baselines |
 | V86 | Electricity price forecasting | Pending | Issue-time features, price/load history, rolling-origin evaluation and calibrated errors |
 | V87 | Stockwatch company and ownership integration | Pending | Verified legal identifiers, dated ownership, no inferred equity exposures |
@@ -46,3 +46,6 @@ Keep this file current with PRs, test runs, deployment evidence and known blocke
 - V82.2: main atlas historical plant marker repair, grid scale guidance; validated and deployed; test real selected overlays together rather than just the basemap.
 
 - V82.3: scale-aware grid overview from source-rendered imagery; detail scale limits, persistent on-map coverage/focus control, zoom regression test. No synthetic physical lines or override of provider render scale.
+
+- V82.3: 01235eb5a5aebb1fb01f30375cebc310af442482; zoom persistence validated and deployed. https://github.com/LordOftheIdiot5/energy/actions/runs/43949944498.
+- V84: client-side shareable profiles use original NVE plant IDs and WRI IDs, explicit registry/geography joins and zone-level reservoir context; no inferred asset output, shareholding or WRI current status.
