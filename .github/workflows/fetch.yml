@@ -16,6 +16,8 @@ on:
     branches: [main]
     paths:
       - .github/workflows/fetch.yml
+      - scripts/fetch.py
+      - tests/test_asset_reference.py
       - scripts/hydro_extended.py
       - scripts/shared_energy.py
       - scripts/energy_geography.py
@@ -44,6 +46,9 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
+
+      - name: Offline regression tests
+        run: python -m unittest discover -s tests -v
 
       - name: Fetch
         env:
