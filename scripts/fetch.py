@@ -475,37 +475,16 @@ GAS_AREAS = [("type", "eu", "Europe"), ("country", "de", "Germany"),
 
 
 def _gas_rows(key: str, param: str, value: str) -> tuple[list, str]:
-    """AGSI for one country. Returns (rows, why-it-failed).
-
-    The reason matters: the first run got Germany and nothing else, and a
-    bare "no data" cannot distinguish a wrong country code from a throttle
-    from an expired key. Guessing between those wastes a deploy each time.
-    """
     url = f"https://agsi.gie.eu/api?{param}={value}&size=2"
-    last = "no attempt"
-    for use_header in (True, False):
-        try:
-            if use_header:
-                req = urllib.request.Request(
-                    url, headers={"User-Agent": UA, "x-key": key})
-            else:
-                req = urllib.request.Request(
-                    url + f"&apikey={urllib.parse.quote(key)}",
-                    headers={"User-Agent": UA})
-            with urllib.request.urlopen(req, timeout=25) as r:
-                payload = json.loads(r.read())
-        except Exception as e:
-            last = f"{type(e).__name__}: {str(e)[:60]}"
-            continue
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": UA, "x-key": key})
+        with urllib.request.urlopen(req, timeout=25) as r:
+            payload = json.loads(r.read())
         if payload.get("error"):
-            last = f"api error: {str(payload.get('message'))[:70]}"
-            continue
-        rows = payload.get("data") or []
-        if rows:
-            return rows, ""
-        last = (f"empty data (keys {sorted(payload)[:4]}, "
-                f"total {payload.get('total')})")
-    return [], last
+            return [], "authentication rejected" if "key" in str(payload.get("message","")).lower() else "provider error"
+        return payload.get("data") or [], ""
+    except Exception as e:
+        return [], type(e).__name__
 
 
 def collect_gas_storage() -> dict:
@@ -521,6 +500,8 @@ def collect_gas_storage() -> dict:
         rows, why = _gas_rows(key, param, code)
         if not rows:
             print(f"  ! {name} ({param}={code}): {why}")
+            if why == "authentication rejected":
+                break
             continue
         now = rows[0]
 
@@ -865,6 +846,10 @@ def collect_weather() -> dict:
 
 
 def main() -> int:
+    try:
+        previous = json.loads(OUT.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        previous = {}
     print("spot prices")
     zones = collect_spot()
     print("\nreservoirs")
@@ -875,6 +860,12 @@ def main() -> int:
     market = collect_market(zones)
     print("\ngas storage")
     gas = collect_gas_storage()
+    from shared_energy import retain_gas, retain_news, refresh_shared
+    gas = retain_gas(gas, previous.get("gasStorage") or {})
+    try:
+        refresh_shared(OUT.parent / "entsoe-open.json", get_json)
+    except Exception as e:
+        print(f"  ! shared ENTSO-E: {type(e).__name__}")
     print("\nfuel at the pump")
     fuel = collect_fuel()
     print("\nthe French fleet")
@@ -905,6 +896,7 @@ def main() -> int:
         print(f"  ! news unavailable: {e}")
         stories = []
 
+    stories = retain_news(stories, previous.get("news") or [])
     payload = {
         "generated": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
         "zones": zones,

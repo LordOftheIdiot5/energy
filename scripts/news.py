@@ -191,8 +191,26 @@ def fetch_topic(topic: str, category: str, count: int = 12) -> list[dict]:
             "topic": topic,
             "category": category,
             "ageHours": round(age, 1),
+            "published": parsedate_to_datetime(published).isoformat(),
             "score": score,
         })
+    return out
+
+
+def official_eu():
+    """Official DG Energy RSS. Titles, dates and links only."""
+    out=[]
+    try:
+        root=ET.fromstring(_get("https://energy.ec.europa.eu/node/2/rss_en"))
+        for item in root.findall(".//item")[:20]:
+            title=(item.findtext("title") or "").strip()
+            link=(item.findtext("link") or "").strip()
+            published=(item.findtext("pubDate") or "").strip()
+            age=_age_hours(published)
+            if title and link.startswith("https://") and age is not None and 0<=age<=24*21:
+                out.append({"title":title,"url":link,"publisher":"European Commission DG Energy","category":"Official energy updates","topic":"EU energy","ageHours":round(age,1),"published":parsedate_to_datetime(published).isoformat(),"score":4})
+    except Exception as e:
+        print("  ! official EU energy RSS:",type(e).__name__)
     return out
 
 
@@ -200,7 +218,7 @@ def collect(limit: int = 30) -> list[dict]:
     with ThreadPoolExecutor(max_workers=8) as pool:
         batches = list(pool.map(lambda t: fetch_topic(*t), TOPICS))
 
-    flat = [it for batch in batches for it in batch]
+    flat = official_eu() + [it for batch in batches for it in batch]
     # Rank before de-duplicating, so when the same story is carried by four
     # outlets the surviving copy is the best-sourced one rather than whichever
     # happened to be fetched first.

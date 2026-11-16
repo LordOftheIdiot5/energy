@@ -89,7 +89,7 @@ def plant_records(raw):
     result={}
     for r in raw:
         ident,name,area=r.get("VannKraftverkID"),r.get("Navn"),str(r.get("ElspotomraadeNummer"))
-        if not isinstance(ident,int) or not isinstance(name,str) or not name.strip() or r.get("ErIDrift") is not True: continue
+        if not isinstance(ident,int) or not isinstance(name,str) or not name.strip() or r.get("ErIDrift") is False: continue
         cap,prod=r.get("MaksYtelse"),r.get("MidProd_91_20")
         result[ident]={"id":ident,"name":name,"zone":"NO"+area if area in ("1","2","3","4","5") else None,"municipality":r.get("Kommune"),"type":r.get("VannKVType"),"capacity_mw":cap if num(cap) else None,"annual_generation_gwh_1991_2020":prod if num(prod) else None}
     return [result[k] for k in sorted(result)]

@@ -12,6 +12,12 @@ on:
   schedule:
     - cron: "20 */6 * * *"
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/fetch.yml
+      - scripts/hydro_extended.py
+      - scripts/shared_energy.py
 
 permissions:
   contents: write
@@ -53,7 +59,18 @@ jobs:
           git config user.email "actions@github.com"
           git add data/
           git diff --staged --quiet || git commit -m "fetch: $(date -u '+%Y-%m-%d %H:%M UTC')"
-          git push
+          for attempt in 1 2 3; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              git rebase --abort
+              echo "::warning::Concurrent data changes; refusing to overwrite remote observations"
+              exit 1
+            fi
+            if git push origin HEAD:main; then exit 0; fi
+            sleep 5
+          done
+          echo "::error::Unable to publish after three safe retries"
+          exit 1
 
   # A push made with the built-in GITHUB_TOKEN deliberately does not start
   # another workflow, so a Deploy job listening for pushes would never hear
