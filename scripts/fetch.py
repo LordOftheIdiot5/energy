@@ -905,6 +905,8 @@ def main() -> int:
     with open(OUT, "w", encoding="utf-8", newline="\n") as f:
         json.dump(payload, f, indent=1, ensure_ascii=False)
         f.write("\n")
+    from hydro_archive import append_snapshot
+    append_snapshot(OUT.parent / "hydro-v1.json", payload)
     print(f"\nwrote {OUT.relative_to(ROOT)}  "
           f"{len(zones)} Nordic + {len(europe)} European zones, "
           f"{len(commodities)} instruments, "

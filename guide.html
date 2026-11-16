@@ -9,13 +9,14 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="style.css"/>
+<link rel="stylesheet" href="workspace.css"/>
 </head>
-<body>
+<body data-theme="dark">
 <main class="page">
   <header class="masthead">
     <span class="wordmark">energy<span>.nordl</span></span>
     <span class="stamp"><a href="index.html" style="color:var(--accent);text-decoration:none">&larr; back to the numbers</a></span>
-  </header>
+  <button class="en-button" id="enTheme" type="button" aria-label="Switch light and dark theme">☾</button></header>
 
   <section class="lede">
     <h1>How to read this.</h1>
@@ -175,5 +176,6 @@
     <p><a href="index.html">&larr; Back to the numbers</a></p>
   </footer>
 </main>
+<script src="workspace.js" defer></script>
 </body>
 </html>

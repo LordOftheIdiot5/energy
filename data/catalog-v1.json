@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "endpoint_type": "static JSON; no authentication, payment, service guarantee or commercial rights transfer",
+  "datasets": [
+    {
+      "id": "norway_hydro_reservoir_weekly",
+      "path": "hydro-v1.json",
+      "source": "https://api.nve.no/doc/magasinstatistikk/",
+      "license": "https://data.norge.no/nlod/",
+      "attribution": "Norwegian Water Resources and Energy Directorate (NVE); Nordl processing",
+      "status": "open_with_attribution",
+      "notes": "Selected weekly NVE records, processed by Nordl. Preserve attribution and license."
+    },
+    {
+      "id": "mixed_energy_snapshot",
+      "path": "energy.json",
+      "status": "display_only_pending_review",
+      "notes": "Existing published mixed-source snapshot; not a commercially cleared dataset."
+    }
+  ],
+  "sources": [
+    {
+      "name": "NVE hydro",
+      "status": "NLOD; attribution required",
+      "url": "https://api.nve.no/doc/magasinstatistikk/"
+    },
+    {
+      "name": "Natural Earth",
+      "status": "Public domain basemap",
+      "url": "https://www.naturalearthdata.com/about/terms-of-use/"
+    },
+    {
+      "name": "Power-market feeds / ENTSO-E",
+      "status": "Commercial redistribution not verified"
+    },
+    {
+      "name": "GIE gas storage",
+      "status": "Commercial redistribution not verified"
+    },
+    {
+      "name": "Commodity / equity market feeds",
+      "status": "Commercial redistribution not verified"
+    },
+    {
+      "name": "Weather feeds and project news",
+      "status": "Source-specific terms review required"
+    }
+  ]
+}
