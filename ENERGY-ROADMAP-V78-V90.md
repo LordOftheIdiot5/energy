@@ -9,8 +9,8 @@ Keep this file current with PRs, test runs, deployment evidence and known blocke
 | V81 | Actual transmission lines and substations | Norwegian direct-display merged; 23 actual map images tested; European coverage pending | Source-linked real geometry, voltage and provenance; distinguish schematic routes |
 | V82 | Geographical weather, precipitation and snow layers | Radar and 5-cell SWE pilot merged, source/browser tests passed; optional map markers merged and browser tested; continuous gridded map and forecasts pending | Dated, unit-labelled gridded observations/forecasts; coverage and uncertainty |
 | V83 | Expanded European infrastructure database | Rights review; permission draft PR #22 | TYNDP reconciliation, geometry and redistribution rights; retain source exceptions |
-| V84 | Individual power-plant research pages | Stable-ID research profiles in browser validation | Stable IDs, source links, coverage and historical/current distinction |
-| V85 | Weather-based hydropower forecasting | Pending | Historical catchment and inflow data, time-aware holdout benchmark against seasonal/persistence baselines |
+| V84 | Individual power-plant research pages | Merged after real-record browser validation; deployment pending | Stable IDs, source links, coverage and historical/current distinction |
+| V85 | Weather-based hydropower forecasting | Retrospective lagged-weather benchmark under validation; issue-time forecast model pending | Historical catchment and inflow data, time-aware holdout benchmark against seasonal/persistence baselines |
 | V86 | Electricity price forecasting | Pending | Issue-time features, price/load history, rolling-origin evaluation and calibrated errors |
 | V87 | Stockwatch company and ownership integration | Pending | Verified legal identifiers, dated ownership, no inferred equity exposures |
 | V88 | Professional interactive graphs across all workspaces | Pending | Units, axes, dates, legends, interactive inspection, source and missing-data handling |
@@ -49,3 +49,6 @@ Keep this file current with PRs, test runs, deployment evidence and known blocke
 
 - V82.3: 01235eb5a5aebb1fb01f30375cebc310af442482; zoom persistence validated and deployed. https://github.com/LordOftheIdiot5/energy/actions/runs/43949944498.
 - V84: client-side shareable profiles use original NVE plant IDs and WRI IDs, explicit registry/geography joins and zone-level reservoir context; no inferred asset output, shareholding or WRI current status.
+
+- V84: f4c00acc7f8afb377bfda026fb3038b4840773e1; real plant profile validation https://github.com/LordOftheIdiot5/energy/actions/runs/43951765223.
+- V85: fixed chronological benchmark, 5 research cells x 3 weather themes, persistence/seasonal/hydro-only ablation. Revised history only, no live forecast. See docs/V85-HYDRO-RESEARCH.md.
