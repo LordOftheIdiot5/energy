@@ -1,0 +1,28 @@
+name: Visual terminal validation
+on:
+  push:
+    branches: [feature/energy-v53-visual-terminal-20261116]
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - run: node --check visual-terminal.js && node tests/test_visual_terminal.cjs
+      - run: python -m unittest discover -s tests -v
+      - run: |
+          python - <<'PY'
+          from html.parser import HTMLParser
+          from collections import Counter
+          class Page(HTMLParser):
+              def __init__(self):
+                  super().__init__(); self.ids=[]
+              def handle_starttag(self,tag,attrs):
+                  self.ids.extend(v for k,v in attrs if k=='id')
+          p=Page(); p.feed(open('index.html').read())
+          assert not [k for k,v in Counter(p.ids).items() if v>1]
+          for k in ['visualTitle','visualZone','visualPrice','visualHydro','visualStamp','visualReadout','visualPriceTable','visualPriceStats']:
+              assert k in p.ids,k
+          print('HTML IDs validated')
+          PY
