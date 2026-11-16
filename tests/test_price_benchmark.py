@@ -10,6 +10,7 @@ class PriceBenchmarkTests(unittest.TestCase):
     def test_price_intervals(self):
         day=dt.date(2025,9,30);start=int(dt.datetime.combine(day,dt.time(),dt.timezone.utc).timestamp());ts=[start+i*3600 for i in range(22)]+[start+22*3600+i*900 for i in range(8)]
         d={"license_info":"CC BY 4.0","unit":"EUR/MWh","unix_seconds":ts,"price":[-10]*22+[20]*8}
+        self.assertEqual(day_prices(dict(d,unit="€/MWh"),day,day)[1],0)
         out,bad=day_prices(d,day,day);self.assertEqual(bad,0);self.assertAlmostEqual(out[day],-7.5)
         out,bad=day_prices(dict(d,price=[None]+d["price"][1:]),day,day);self.assertEqual((out,bad),({},1))
         with self.assertRaises(ValueError):day_prices(dict(d,license_info="private"),day,day)

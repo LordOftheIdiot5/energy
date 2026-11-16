@@ -17,7 +17,7 @@ def open_license(s):
     return ("cc by 4.0" in s or "creativecommons.org/licenses/by/4.0" in s) and not any(x in s for x in ("private and internal","private use","non-commercial","prohibited","not permitted"))
 def day_prices(d,start,end):
     if not open_license(d.get("license_info")):raise ValueError("Price reuse not confirmed: "+str(d.get("license_info"))[:200])
-    if d.get("unit")!="EUR/MWh":raise ValueError("Unexpected price unit")
+    if str(d.get("unit") or "").replace(" ","").replace("€","EUR").lower()!="eur/mwh":raise ValueError("Unexpected price unit: "+repr(d.get("unit")))
     ts,ps=d.get("unix_seconds"),d.get("price")
     if not isinstance(ts,list) or not isinstance(ps,list) or len(ts)!=len(ps):raise ValueError("Price array mismatch")
     groups={};seen=set()
