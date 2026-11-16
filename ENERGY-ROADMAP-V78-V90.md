@@ -11,7 +11,7 @@ Keep this file current with PRs, test runs, deployment evidence and known blocke
 | V83 | Expanded European infrastructure database | Rights review; permission draft PR #22 | TYNDP reconciliation, geometry and redistribution rights; retain source exceptions |
 | V84 | Individual power-plant research pages | Merged after real-record browser validation; deployment pending | Stable IDs, source links, coverage and historical/current distinction |
 | V85 | Weather-based hydropower forecasting | Retrospective benchmark validated; weather uplift marginal; operational forecast blocked | Historical catchment and inflow data, time-aware holdout benchmark against seasonal/persistence baselines |
-| V86 | Electricity price forecasting | Pending | Issue-time features, price/load history, rolling-origin evaluation and calibrated errors |
+| V86 | Electricity price forecasting | NO2 retrospective price-only benchmark in validation; issue-time driver inputs pending | Issue-time features, price/load history, rolling-origin evaluation and calibrated errors |
 | V87 | Stockwatch company and ownership integration | Pending | Verified legal identifiers, dated ownership, no inferred equity exposures |
 | V88 | Professional interactive graphs across all workspaces | Pending | Units, axes, dates, legends, interactive inspection, source and missing-data handling |
 | V89 | Commercial datasets and API | Pending | Rights register, versioned schemas, access control, quotas, exports and documentation |
@@ -54,3 +54,5 @@ Keep this file current with PRs, test runs, deployment evidence and known blocke
 - V85: fixed chronological benchmark, 5 research cells x 3 weather themes, persistence/seasonal/hydro-only ablation. Revised history only, no live forecast. See docs/V85-HYDRO-RESEARCH.md.
 
 - V85 benchmark: https://github.com/LordOftheIdiot5/energy/actions/runs/43952611956. 17 tests passed, 15 series x 5,145 daily values, 1,295 test transitions. Weather beats all comparators in NO3 and NO4 only, marginally; interval coverage below 80% in all zones. Preserve results in docs/v85-benchmark-results.json; no operational forecast. Catchment-weighted weather, actual inflow/generation and forecast vintages remain required.
+
+- V86: Energy-Charts API https://api.energy-charts.info/ has per-zone price rights. NO2 pilot requires explicit CC BY 4.0 response; duration-weighted complete UTC days, hourly/quarter-hour transition, negative prices retained. Existing European collector currently has no response licence gate; separate production remediation required for restricted or unverified series (including cached data). No commercial price forecast cleared merely by this research.

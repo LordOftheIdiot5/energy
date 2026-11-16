@@ -1,0 +1,21 @@
+name: Electricity price benchmark
+on:
+  push:
+    branches: [research/v86-price-benchmark-20261116]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  research:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v7
+      - run: python -m unittest discover -s tests -v
+      - run: python scripts/price_benchmark.py --output research-output/v86-price-benchmark.json
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: v86-price-benchmark
+          path: research-output/
+          retention-days: 30
