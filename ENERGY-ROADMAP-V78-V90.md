@@ -7,7 +7,7 @@ Keep this file current with PRs, test runs, deployment evidence and known blocke
 | V79 | Topography and shaded terrain | Merged; real source and interaction tests passed, production visual test pending | Optional real elevation relief, preserve full context and overlays; verify actual tiles and rendered map |
 | V80 | Satellite and aerial imagery | Historical Sentinel-2 merged; real imagery/elevation tile browser test passed; aerial pending | Verified commercial display permissions and coverage; preserve labels and overlays |
 | V81 | Actual transmission lines and substations | Norwegian direct-display merged; 23 actual map images tested; European coverage pending | Source-linked real geometry, voltage and provenance; distinguish schematic routes |
-| V82 | Geographical weather, precipitation and snow layers | Radar and 5-cell SWE pilot merged, source/browser tests passed; optional map markers in validation; continuous gridded map and forecasts pending | Dated, unit-labelled gridded observations/forecasts; coverage and uncertainty |
+| V82 | Geographical weather, precipitation and snow layers | Radar and 5-cell SWE pilot merged, source/browser tests passed; optional map markers merged and browser tested; continuous gridded map and forecasts pending | Dated, unit-labelled gridded observations/forecasts; coverage and uncertainty |
 | V83 | Expanded European infrastructure database | Pending | TYNDP reconciliation, geometry and redistribution rights; retain source exceptions |
 | V84 | Individual power-plant research pages | Pending | Stable IDs, source links, coverage and historical/current distinction |
 | V85 | Weather-based hydropower forecasting | Pending | Historical catchment and inflow data, time-aware holdout benchmark against seasonal/persistence baselines |
@@ -41,3 +41,6 @@ Keep this file current with PRs, test runs, deployment evidence and known blocke
 - V82: MET radar image (https://api.met.no/weatherapi/radar/2.0/documentation) and NVE GTS SWE (https://api.nve.no/doc/gridtimeseries-data-gts/). Uses explicit historical dates and sample grid coordinates, no catchment-wide estimates. Continuous forecast grids and basin aggregation require separate validated imports.
 
 - V82 pilot: 4e5892784730a61aa6a75c104a4af4d9732f1bb7; real radar image and all five SWE cells dated 2026-11-14 validated; 14 regression tests passed: https://github.com/LordOftheIdiot5/energy/actions/runs/43948248753. First collector deployment still to verify.
+
+- V82.1: bc4ca2eaca0398a317bb84f732302d5b3b069e72; five SWE markers and popup validation https://github.com/LordOftheIdiot5/energy/actions/runs/43948546527.
+- V82.2: main atlas historical plant marker repair, grid scale guidance; validation pending. Test real selected overlays together rather than just the basemap.
