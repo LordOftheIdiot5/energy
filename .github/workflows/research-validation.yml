@@ -29,3 +29,5 @@ jobs:
         with:
           python-version: "3.12"
       - run: python scripts/research_audit.py ${{ matrix.source }}
+      - if: matrix.source == 'portfolio'
+        run: python scripts/tyndp_portfolio.py
