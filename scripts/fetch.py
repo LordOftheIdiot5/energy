@@ -887,7 +887,10 @@ def main() -> int:
         print(f"  ! news unavailable: {e}")
         stories = []
 
+    from entsoe_shared import collect_shared
+    shared = collect_shared()
     payload = {
+        "entsoeOpen": shared,
         "generated": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
         "zones": zones,
         "reservoirs": reservoirs,

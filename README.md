@@ -45,3 +45,7 @@ python scripts/news.py       # news on its own, for tuning the filters
 The hourly fetch runs on GitHub Actions and publishes its own results — a push
 made with the built-in `GITHUB_TOKEN` does not trigger other workflows, so a
 deploy job waiting for that push would never fire.
+
+## Shared ENTSO-E feed
+
+`entsoe_shared.py` consumes the single Stockwatch feed at `https://stocks.nordl.dev/data/entsoe-open.json`. No second API token. Only approved load forecasts and directed physical flows, validated at import. Stale/unavailable shared source leaves all existing energy sources unchanged. This is an initial historical snapshot, not a live reading or a complete time series.
