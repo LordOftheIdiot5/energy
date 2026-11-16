@@ -96,6 +96,22 @@
       "path": "weather-vintages-v1.json",
       "status": "pending_first_snapshot",
       "notes": "Collector-retrieved point weather; original forecast issue time and catchment forecasts not included."
+    },
+    {
+      "id": "hydro_owner_groups",
+      "path": "hydro-owners-v1.json",
+      "source": "NVE hydro-plants-v1.json",
+      "license": "https://data.norge.no/nlod/",
+      "status": "derived_open_data",
+      "notes": "Main-owner organisation numbers; non-equity-adjusted capacity; no ticker mapping."
+    },
+    {
+      "id": "europe_plant_archive",
+      "path": "europe-plants-v1.json",
+      "source": "https://datasets.wri.org/datasets/global-power-plant-database",
+      "license": "https://creativecommons.org/licenses/by/4.0/",
+      "status": "pending_validated_import",
+      "notes": "2021 historical archive, not operational status."
     }
   ],
   "sources": [
@@ -164,6 +180,16 @@
       "name": "Kartverket terrain",
       "url": "https://www.kartverket.no/api-og-data/terrengdata",
       "status": "Terrain candidate; verify service and projection before use"
+    },
+    {
+      "name": "Kartverket DTM shaded relief",
+      "url": "https://data.norge.no/nb/data-services/8cf50db2-aa33-3320-b5f9-dc47adb080b3/hoydedata-laser-digital-terrengmodell-wms",
+      "status": "CC BY 4.0; optional WMS view, live availability pending"
+    },
+    {
+      "name": "ENTSO-E TYNDP 2024 project portfolio",
+      "url": "https://www.entsoe.eu/outlooks/tyndp/2024/",
+      "status": "Official transmission/storage project workbooks; import schema and project-specific reuse rights pending"
     }
   ]
 }

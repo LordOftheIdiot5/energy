@@ -20,6 +20,7 @@ on:
       - scripts/shared_energy.py
       - scripts/energy_geography.py
       - scripts/hydro_validation.py
+      - scripts/asset_reference.py
 
 permissions:
   contents: write
@@ -56,6 +57,7 @@ jobs:
         run: |
           python tests/test_payload.py
           python -m unittest discover -s tests -p test_energy_geography.py
+          python -m unittest discover -s tests -p test_asset_reference.py
 
       - name: Commit results
         run: |

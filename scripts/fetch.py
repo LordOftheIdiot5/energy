@@ -888,6 +888,13 @@ def main() -> int:
         print(f"  ! NVE zone geometry: {e}")
     from energy_geography import collect_all
     collect_all(OUT.parent, get_json)
+    from asset_reference import europe, owners
+    for task in (owners, europe):
+        try:
+            task(OUT.parent)
+        except Exception as e:
+            print('  ! asset reference:', task.__name__, type(e).__name__)
+
     try:
         from economic_reference import refresh
         refresh(OUT.parent,get_json)
