@@ -1,0 +1,2 @@
+# V28 shared intelligence terminal
+Map pan/zoom/reset and keyboard navigation, layer KPIs, project search and breakdown charts, disclosed contribution metrics, gas KPIs and selectable commodity history. Existing SVG engine retained, no new tile provider or collector changes. Commodity sequence does not supply individual dates. Missing capacities are not shown as zero. Static JavaScript syntax, actual HTML ID/anchor and arithmetic checks passed. Real-browser pointer interaction and visual tests remain outstanding.
