@@ -31,6 +31,8 @@ jobs:
       - if: matrix.source != 'catchment'
         run: python scripts/research_audit.py ${{ matrix.source }}
       - if: matrix.source == 'catchment'
+        run: python scripts/probe_nve_endpoints.py
+      - if: matrix.source == 'catchment'
         run: python scripts/probe_catchment.py
       - if: matrix.source == 'portfolio'
         run: python scripts/tyndp_portfolio.py
