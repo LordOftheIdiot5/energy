@@ -1,0 +1,2 @@
+# V27 infrastructure register
+Six source-linked manually reviewed projects; approximate location markers and schematic lines. Not an exhaustive or automated project register. Installed generation, enabled MW, transfer MW and kV are distinct. Separate gas view and country indicators, V27 bounded width and historical hydro chart with seasonal baseline where sufficient observations exist. JS syntax and ID/anchor checks passed; real-browser interaction/visual tests outstanding.

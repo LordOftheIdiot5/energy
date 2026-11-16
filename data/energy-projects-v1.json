@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "reviewed": "2026-11-16",
+  "coverage": "Selected source-checked projects, not a comprehensive register. Geographic markers represent named localities/approximate offshore centre; lines are schematic and not surveyed routes.",
+  "rows": [
+    {
+      "id": "skaidi-hammerfest",
+      "name": "Skaidi–Hammerfest",
+      "type": "Grid",
+      "country": "Norway",
+      "developer": "Statnett",
+      "status": "Construction",
+      "location": "Hammerfest municipality",
+      "points": [
+        [
+          24.51,
+          70.44
+        ],
+        [
+          23.68,
+          70.66
+        ]
+      ],
+      "voltage_kv": 420,
+      "length_km": 54,
+      "investment_nok_million": [
+        3900,
+        4600
+      ],
+      "investment_asof": "2025 estimate",
+      "target": "Construction planned through 2028",
+      "impact": "Increases internal grid capacity in Finnmark, improves supply security and enables the proposed electrification of Melkøya. No generation MW or price impact claimed.",
+      "source": "https://www.statnett.no/vare-prosjekter/region-nord/skaidi-hammerfest/",
+      "status_source": "https://www.statnett.no/om-statnett/nyheter-og-pressemeldinger/nyhetsarkiv-2026/halvveis-i-arbeidet-pa-den-viktige-forbindelsen-skaidihammerfest/"
+    },
+    {
+      "id": "skaidi-lebesby",
+      "name": "Skaidi–Lebesby",
+      "type": "Grid",
+      "country": "Norway",
+      "developer": "Statnett",
+      "status": "Licensing",
+      "location": "Skaidi via Lakselv to Lebesby municipality",
+      "points": [
+        [
+          24.51,
+          70.44
+        ],
+        [
+          24.97,
+          70.05
+        ],
+        [
+          26.8,
+          70.56
+        ]
+      ],
+      "voltage_kv": 420,
+      "length_km": 131,
+      "impact": "Proposed reinforcement of the eastern Finnmark grid. Provides scope for future network connections; no claimed incremental MW.",
+      "source": "https://www.statnett.no/vare-prosjekter/region-nord/skaidi-varangerbotn/skaidi-lebesby/"
+    },
+    {
+      "id": "namsos-afjord",
+      "name": "Namsos–Åfjord",
+      "type": "Grid",
+      "country": "Norway",
+      "developer": "Statnett",
+      "status": "Operational",
+      "location": "Namsos and Åfjord; first stage only",
+      "points": [
+        [
+          11.5,
+          64.47
+        ],
+        [
+          10.22,
+          63.96
+        ]
+      ],
+      "voltage_kv": 420,
+      "enabled_mw": 800,
+      "target": "First stage completed September 2019",
+      "impact": "Grid reinforcement provides connection headroom for approximately 800 MW of wind power according to Statnett; this is enabled capacity, not generation or a measured increase in transfer capacity.",
+      "source": "https://www.statnett.no/vare-prosjekter/region-midt/namsos-afjord/"
+    },
+    {
+      "id": "lyse-fagrafjell",
+      "name": "Lyse–Fagrafjell",
+      "type": "Grid",
+      "country": "Norway",
+      "developer": "Statnett",
+      "status": "Operational",
+      "location": "Lysebotn and Sandnes/Time area",
+      "points": [
+        [
+          6.65,
+          59.05
+        ],
+        [
+          5.73,
+          58.81
+        ]
+      ],
+      "voltage_kv": 420,
+      "length_km": 67,
+      "investment_nok_million": [
+        2220,
+        2340
+      ],
+      "investment_asof": "Q4 2024 estimate, not final outturn",
+      "target": "In operation June 2023",
+      "impact": "Reinforces electricity supply to southern Rogaland and enables growth in demand. Additional transfer MW not specified.",
+      "source": "https://www.statnett.no/vare-prosjekter/region-sor/lyse-fagrafjell/"
+    },
+    {
+      "id": "hywind-tampen",
+      "name": "Hywind Tampen",
+      "type": "Offshore wind",
+      "country": "Norway",
+      "developer": "Equinor and partners",
+      "status": "Operational",
+      "location": "Tampen area, North Sea",
+      "points": [
+        [
+          2.26,
+          61.33
+        ]
+      ],
+      "generation_mw": 94.6,
+      "target": "Full operation summer 2023",
+      "impact": "Floating offshore wind supplies offshore oil and gas platforms; the developer estimates it meets around 35% of their annual electricity needs. It does not directly represent new mainland-grid generation.",
+      "source": "https://www.equinor.com/energy/hywind-tampen",
+      "location_source": "https://tethys.pnnl.gov/wind-project-sites/hywind-tampen"
+    },
+    {
+      "id": "nordlink",
+      "name": "NordLink",
+      "type": "Interconnector",
+      "country": "Norway / Germany",
+      "developer": "Statnett, TenneT and KfW",
+      "status": "Operational",
+      "location": "Tonstad to Schleswig-Holstein",
+      "points": [
+        [
+          6.72,
+          58.66
+        ],
+        [
+          9.37,
+          53.92
+        ]
+      ],
+      "transfer_mw": 1400,
+      "length_km": 623,
+      "target": "Official opening May 2021",
+      "impact": "Two-way electricity exchange between Norway and Germany. Can support imports during renewable surpluses and exports during shortages; actual flows and price effects vary.",
+      "source": "https://www.statnett.no/om-statnett/nyheter-og-pressemeldinger/nyhetsarkiv-2021/solberg-og-merkel-apnet-nordlink/"
+    }
+  ]
+}
