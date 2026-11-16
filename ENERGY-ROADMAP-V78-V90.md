@@ -4,8 +4,8 @@ Keep this file current with PRs, test runs, deployment evidence and known blocke
 | Version | Objective | Status | Acceptance gate |
 |---|---|---|---|
 | V78 | Automated visual quality checks | Merged; production smoke passed | Real basemap, actual overlays, zero page errors, screenshots; run after deployments |
-| V79 | Topography and shaded terrain | In progress | Optional real elevation relief, preserve full context and overlays; verify actual tiles and rendered map |
-| V80 | Satellite and aerial imagery | Pending | Verified commercial display permissions and coverage; preserve labels and overlays |
+| V79 | Topography and shaded terrain | Merged; real source and interaction tests passed, production visual test pending | Optional real elevation relief, preserve full context and overlays; verify actual tiles and rendered map |
+| V80 | Satellite and aerial imagery | Historical Sentinel-2 pilot in validation; high-resolution aerial pending | Verified commercial display permissions and coverage; preserve labels and overlays |
 | V81 | Actual transmission lines and substations | Pending | Source-linked real geometry, voltage and provenance; distinguish schematic routes |
 | V82 | Geographical weather, precipitation and snow layers | Pending | Dated, unit-labelled gridded observations/forecasts; coverage and uncertainty |
 | V83 | Expanded European infrastructure database | Pending | TYNDP reconciliation, geometry and redistribution rights; retain source exceptions |
@@ -30,3 +30,6 @@ Keep this file current with PRs, test runs, deployment evidence and known blocke
 - V78 live smoke: https://github.com/LordOftheIdiot5/energy/actions/runs/43943335361 (10,212 European records, 69 visible clusters/markers, 3,092 catchments, 2,104 rendered polygon fragments, 54 actual vector tiles, zero page errors).
 - V78 merge: aa8efc3ac368321ec8652a2e0dd56911a636055a.
 - Earlier research PR #6: TYNDP parser and catchment/forecast experiments; unresolved source and commercial rights checks remain. Do not label the forecasting system trained.
+
+- V79: 39d9936a09f3ed3a1fbc24a462440bb18dc66a3b; test https://github.com/LordOftheIdiot5/energy/actions/runs/43944443661. Optional 2D hillshade, not 3D.
+- V80: EOX 2016 vintage (2016–17 acquisitions) CC BY 4.0, commercial public tiles with reasonable traffic and attribution. https://cloudless.eox.at/documentation/faq and https://cloudless.eox.at/license-non-commercial. Newer vintages require paid license; Norwegian detailed aerial photography remains rights-gated. No sale of raw imagery.
