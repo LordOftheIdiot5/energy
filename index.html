@@ -59,7 +59,7 @@
   <section class="panel" id="weather">
     <h2>Weather and heating demand</h2>
         <p class="sub">Temperature sets demand and wind sets supply, both before the market prices either. <span class="hint" tabindex="0" data-tip="Degree-hours below 15C over the next 48 hours. A reading of 10C means nothing alone: SE1 at 10C now and 0.6C by Sunday is what puts its demand top of the list.">Heating demand</span> is the column that matters.</p>
-    <div id="weatherRows"></div>
+    <div id="weatherRows"></div><section id="weatherGeography" class="terminal-chart"><h3>Nordic precipitation radar</h3><p class="sub">MET Norway’s published regional radar composite. This is a separate source image, not a geographically aligned overlay or numerical rainfall forecast. Radar gaps can occur.</p><div id="radarStatus" role="status" class="terminal-hint">Awaiting source data.</div><img id="radarImage" hidden alt="MET Norway Nordic radar composite with source map and precipitation colours" style="max-width:100%;height:auto;display:block;margin:12px auto;border-radius:8px"><p><a href="https://api.met.no/weatherapi/radar/2.0/?type=5level_reflectivity&amp;area=nordic&amp;content=image" target="_blank" rel="noopener noreferrer">Latest source image ↗</a> · <a href="https://api.met.no/weatherapi/radar/2.0/documentation">MET Norway radar documentation</a></p><h3>Snow water equivalent — research cells</h3><p class="sub">NVE / seNorge modelled snow water equivalent (mm of stored water) at five selected research locations. No interpolation between samples. Used to investigate future hydro forecast inputs, not as an operational forecast.</p><p id="snowStatus" role="status">Awaiting source data.</p><div style="overflow:auto"><table><thead><tr><th>Research point</th><th>Source date</th><th>Water equivalent</th><th>Grid altitude</th></tr></thead><tbody id="snowSamples"></tbody></table></div><p><a href="https://www.senorge.no/">Full seNorge maps ↗</a> · <a href="https://api.nve.no/doc/gridtimeseries-data-gts/">NVE grid service</a> · NLOD 1.0</p></section>
   </section>
 
   <section class="panel" id="hydro">
@@ -714,10 +714,11 @@ fetch("data/energy.json?cb=" + Date.now())
   });
 </script>
 <script src="visual-terminal.js?v=53" defer></script>
-<script src="public-grid-map.js?v=81" defer></script><script src="energy-atlas.js?v=81" defer></script>
+<script src="public-grid-map.js?v=81" defer></script><script src="energy-atlas.js?v=82" defer></script>
 <script src="energy-topo.js?v=73" defer></script>
 <script src="plant-tile-map.js?v=77" defer></script>
 <script src="project-atlas.js?v=73" defer></script>
 <script src="terrain-relief.js?v=79" defer></script><script src="satellite-layer.js?v=80" defer></script><script src="regional-atlas.js?v=80" defer></script>
+<script src="weather-geography.js?v=82" defer></script>
 </body>
 </html>
