@@ -1,0 +1,18 @@
+name: Energy atlas overlay validation
+on:
+  push:
+    branches: [fix/v73-atlas-data-projects-20261116]
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - run: node --check energy-map.js && node --check energy-atlas.js && node --check energy-topo.js && node --check infrastructure.js && node --check project-atlas.js && node tests/test_atlas.cjs
+      - run: python -m unittest discover -s tests -v
+      - run: npm install --no-save --no-package-lock playwright@1.56.1 maplibre-gl@5.6.1 && npx playwright install chromium
+      - run: |
+          python -m http.server 8765 --bind 127.0.0.1 >/tmp/energy-http.log 2>&1 &
+          node tests/test_atlas_overlays_browser.cjs
