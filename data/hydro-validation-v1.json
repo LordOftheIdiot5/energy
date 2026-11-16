@@ -1,0 +1,62 @@
+{
+ "schema_version": 1,
+ "source": "hydro-v1.json",
+ "method": "Rolling historical seasonal-change baseline with preceding residual quantiles; retrospective revised observations, not archived forecast vintages; no weather inputs.",
+ "zones": {
+  "NO1": {
+   "evaluated": 1290,
+   "seasonal_mae_pp": 1.6112945736434108,
+   "persistence_mae_pp": 3.1818062015503874,
+   "interval_coverage": 0.7844961240310078,
+   "origin_year": 2026,
+   "origin_week": 45,
+   "baseline_pct": 77.69000000000001,
+   "low_pct": 75.76500000000001,
+   "high_pct": 80.513
+  },
+  "NO2": {
+   "evaluated": 1296,
+   "seasonal_mae_pp": 1.3015779320987653,
+   "persistence_mae_pp": 2.064884259259259,
+   "interval_coverage": 0.7754629629629629,
+   "origin_year": 2026,
+   "origin_week": 45,
+   "baseline_pct": 53.7,
+   "low_pct": 52.017500000000005,
+   "high_pct": 56.091
+  },
+  "NO3": {
+   "evaluated": 1296,
+   "seasonal_mae_pp": 1.4774729938271607,
+   "persistence_mae_pp": 2.709398148148148,
+   "interval_coverage": 0.7908950617283951,
+   "origin_year": 2026,
+   "origin_week": 45,
+   "baseline_pct": 70.03999999999999,
+   "low_pct": 68.10849999999999,
+   "high_pct": 72.69200000000001
+  },
+  "NO4": {
+   "evaluated": 1296,
+   "seasonal_mae_pp": 0.8976736111111109,
+   "persistence_mae_pp": 1.7847067901234568,
+   "interval_coverage": 0.7924382716049383,
+   "origin_year": 2026,
+   "origin_week": 45,
+   "baseline_pct": 90.66999999999999,
+   "low_pct": 89.56599999999997,
+   "high_pct": 92.51549999999999
+  },
+  "NO5": {
+   "evaluated": 1296,
+   "seasonal_mae_pp": 1.3568171296296299,
+   "persistence_mae_pp": 2.74099537037037,
+   "interval_coverage": 0.7847222222222222,
+   "origin_year": 2026,
+   "origin_week": 45,
+   "baseline_pct": 69.22,
+   "low_pct": 67.428,
+   "high_pct": 71.416
+  }
+ }
+}
