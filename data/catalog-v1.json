@@ -22,16 +22,16 @@
       "path": "hydro-plants-v1.json",
       "source": "https://api.nve.no/doc/vannkraftdatabase/",
       "license": "https://data.norge.no/nlod/",
-      "status": "collector_pending_first_validated_import",
-      "notes": "NVE plant register, not available until successful first import."
+      "status": "optional_endpoint_after_validated_import",
+      "notes": "NVE plant register, not available until successful first import. Check endpoint availability and generated timestamp."
     },
     {
       "id": "norwegian_bidding_boundaries",
       "path": "norway-zones-v1.json",
       "source": "https://gis3.nve.no/map/rest/services/Mapservices/Omradekonsesjoner/MapServer/0",
       "license": "https://data.norge.no/nlod/",
-      "status": "collector_pending_first_validated_import",
-      "notes": "Simplified NVE boundaries; do not use for legal surveying."
+      "status": "optional_endpoint_after_validated_import",
+      "notes": "Simplified NVE boundaries; do not use for legal surveying. Check endpoint availability and generated timestamp."
     }
   ],
   "sources": [
