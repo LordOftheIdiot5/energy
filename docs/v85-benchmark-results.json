@@ -1,0 +1,275 @@
+{
+  "schema_version": 1,
+  "generated": "2026-11-16T20:43:18.437769+00:00",
+  "status": "retrospective_research_only",
+  "train": "2012–2017",
+  "calibration": "2018–2020",
+  "test": "2021–2025",
+  "weather_lag_days": "14–8 before origin ISO Monday",
+  "hydro_sha256": "802528ab41c806b1dc70f950f5e49a03e16581d49fb427acf012f0c5298e2b10",
+  "weather_sources": [
+    {
+      "point": "Finse",
+      "theme": "rr",
+      "days": 5145,
+      "source": "https://gts.nve.no/api/GridTimeSeries/89875/6741670/2011-12-01/2025-12-31/rr.json",
+      "sha256": "4019832efde18b07981e179c85de5ca1d1ad3c8d052255903c1f4b294bcf45d9",
+      "source_utm33": [
+        89875,
+        6741670
+      ]
+    },
+    {
+      "point": "Finse",
+      "theme": "tm",
+      "days": 5145,
+      "source": "https://gts.nve.no/api/GridTimeSeries/89875/6741670/2011-12-01/2025-12-31/tm.json",
+      "sha256": "cc735b62e9a27b0122c315fbb6e747c3db6cac6817eaf59f13535770d1714927",
+      "source_utm33": [
+        89875,
+        6741670
+      ]
+    },
+    {
+      "point": "Finse",
+      "theme": "swe",
+      "days": 5145,
+      "source": "https://gts.nve.no/api/GridTimeSeries/89875/6741670/2011-12-01/2025-12-31/swe.json",
+      "sha256": "b92ef338052a153aeec58547056af5d911ec1890d34d4a63753e0222f9e6f4b6",
+      "source_utm33": [
+        89875,
+        6741670
+      ]
+    },
+    {
+      "point": "Hjerkinn",
+      "theme": "rr",
+      "days": 5145,
+      "source": "https://gts.nve.no/api/GridTimeSeries/216328/6910660/2011-12-01/2025-12-31/rr.json",
+      "sha256": "bf81a335a1740d805d59607ef3e481e8d2185dd01ebae648651067010d9ea185",
+      "source_utm33": [
+        216328,
+        6910660
+      ]
+    },
+    {
+      "point": "Hjerkinn",
+      "theme": "tm",
+      "days": 5145,
+      "source": "https://gts.nve.no/api/GridTimeSeries/216328/6910660/2011-12-01/2025-12-31/tm.json",
+      "sha256": "fc55837b7e54e38a80becf12683e70fdb26732f313d6deec6451c745e3f2166b",
+      "source_utm33": [
+        216328,
+        6910660
+      ]
+    },
+    {
+      "point": "Hjerkinn",
+      "theme": "swe",
+      "days": 5145,
+      "source": "https://gts.nve.no/api/GridTimeSeries/216328/6910660/2011-12-01/2025-12-31/swe.json",
+      "sha256": "8e7c545aedd22d33a550ad8ced67523ebe30ebe97e47eac3d16b53c70361d965",
+      "source_utm33": [
+        216328,
+        6910660
+      ]
+    },
+    {
+      "point": "Sirdal",
+      "theme": "rr",
+      "days": 5145,
+      "source": "https://gts.nve.no/api/GridTimeSeries/31285/6558652/2011-12-01/2025-12-31/rr.json",
+      "sha256": "d213bbf995e27455533a0104f68288ac8cbd90b909b793daa71dcd837a023c7d",
+      "source_utm33": [
+        31285,
+        6558652
+      ]
+    },
+    {
+      "point": "Sirdal",
+      "theme": "tm",
+      "days": 5145,
+      "source": "https://gts.nve.no/api/GridTimeSeries/31285/6558652/2011-12-01/2025-12-31/tm.json",
+      "sha256": "48a10e4f88cd309b413ef3cdf640a67e7aa0fd4a82fab36735d4843944b674e9",
+      "source_utm33": [
+        31285,
+        6558652
+      ]
+    },
+    {
+      "point": "Sirdal",
+      "theme": "swe",
+      "days": 5145,
+      "source": "https://gts.nve.no/api/GridTimeSeries/31285/6558652/2011-12-01/2025-12-31/swe.json",
+      "sha256": "ac652d0c3f89cd62b324295e3a77a04f63661f654b8a8bf0b491d6b4dfd92155",
+      "source_utm33": [
+        31285,
+        6558652
+      ]
+    },
+    {
+      "point": "Sjusjoen",
+      "theme": "rr",
+      "days": 5145,
+      "source": "https://gts.nve.no/api/GridTimeSeries/268645/6787104/2011-12-01/2025-12-31/rr.json",
+      "sha256": "e049f92347407e209a31a17db5f098295fe02454e67ce34747714c49ce14ca71",
+      "source_utm33": [
+        268645,
+        6787104
+      ]
+    },
+    {
+      "point": "Sjusjoen",
+      "theme": "tm",
+      "days": 5145,
+      "source": "https://gts.nve.no/api/GridTimeSeries/268645/6787104/2011-12-01/2025-12-31/tm.json",
+      "sha256": "e2762f77d2119f0717bf76228d42295249675c029d988abe9ab16a5457ec21a4",
+      "source_utm33": [
+        268645,
+        6787104
+      ]
+    },
+    {
+      "point": "Sjusjoen",
+      "theme": "swe",
+      "days": 5145,
+      "source": "https://gts.nve.no/api/GridTimeSeries/268645/6787104/2011-12-01/2025-12-31/swe.json",
+      "sha256": "9ac2d607fb226cde63c05f3773a37f9c7f7639206020c9fe97f8ad839191a595",
+      "source_utm33": [
+        268645,
+        6787104
+      ]
+    },
+    {
+      "point": "Kautokeino",
+      "theme": "rr",
+      "days": 5145,
+      "source": "https://gts.nve.no/api/GridTimeSeries/820622/7676523/2011-12-01/2025-12-31/rr.json",
+      "sha256": "7656fdf27975ce3c1fc771c255c3f08394abd525a6e62628aec1572da17081dd",
+      "source_utm33": [
+        820622,
+        7676523
+      ]
+    },
+    {
+      "point": "Kautokeino",
+      "theme": "tm",
+      "days": 5145,
+      "source": "https://gts.nve.no/api/GridTimeSeries/820622/7676523/2011-12-01/2025-12-31/tm.json",
+      "sha256": "b8564226661a2d48d4581c79038750754bac8b7cdf6facb66eb6d586adca1e08",
+      "source_utm33": [
+        820622,
+        7676523
+      ]
+    },
+    {
+      "point": "Kautokeino",
+      "theme": "swe",
+      "days": 5145,
+      "source": "https://gts.nve.no/api/GridTimeSeries/820622/7676523/2011-12-01/2025-12-31/swe.json",
+      "sha256": "e89aaa7972311d8c6f802c833cc38fa75eaefa71af65e01149e36fbbd7cb6e75",
+      "source_utm33": [
+        820622,
+        7676523
+      ]
+    }
+  ],
+  "zones": {
+    "NO1": {
+      "status": "retrospective_evaluated",
+      "train": 312,
+      "calibration": 156,
+      "test": 255,
+      "mae_pp": {
+        "persistence": 3.2486,
+        "seasonal": 1.5778,
+        "hydro_only": 1.6546,
+        "weather_lagged": 1.653
+      },
+      "weather_improves_all": false,
+      "nominal_interval_coverage": 0.8,
+      "test_interval_coverage": 0.7569,
+      "calibration_residual_pp": [
+        -2.205,
+        2.782
+      ]
+    },
+    "NO2": {
+      "status": "retrospective_evaluated",
+      "train": 312,
+      "calibration": 156,
+      "test": 260,
+      "mae_pp": {
+        "persistence": 2.0101,
+        "seasonal": 1.3675,
+        "hydro_only": 1.4071,
+        "weather_lagged": 1.4027
+      },
+      "weather_improves_all": false,
+      "nominal_interval_coverage": 0.8,
+      "test_interval_coverage": 0.6692,
+      "calibration_residual_pp": [
+        -1.744,
+        1.996
+      ]
+    },
+    "NO3": {
+      "status": "retrospective_evaluated",
+      "train": 312,
+      "calibration": 156,
+      "test": 260,
+      "mae_pp": {
+        "persistence": 2.7469,
+        "seasonal": 1.6155,
+        "hydro_only": 1.518,
+        "weather_lagged": 1.5158
+      },
+      "weather_improves_all": true,
+      "nominal_interval_coverage": 0.8,
+      "test_interval_coverage": 0.75,
+      "calibration_residual_pp": [
+        -1.952,
+        2.376
+      ]
+    },
+    "NO4": {
+      "status": "retrospective_evaluated",
+      "train": 312,
+      "calibration": 156,
+      "test": 260,
+      "mae_pp": {
+        "persistence": 1.898,
+        "seasonal": 0.9795,
+        "hydro_only": 0.8959,
+        "weather_lagged": 0.8908
+      },
+      "weather_improves_all": true,
+      "nominal_interval_coverage": 0.8,
+      "test_interval_coverage": 0.7885,
+      "calibration_residual_pp": [
+        -1.267,
+        1.373
+      ]
+    },
+    "NO5": {
+      "status": "retrospective_evaluated",
+      "train": 312,
+      "calibration": 156,
+      "test": 260,
+      "mae_pp": {
+        "persistence": 2.8226,
+        "seasonal": 1.436,
+        "hydro_only": 1.4132,
+        "weather_lagged": 1.4173
+      },
+      "weather_improves_all": false,
+      "nominal_interval_coverage": 0.8,
+      "test_interval_coverage": 0.6808,
+      "calibration_residual_pp": [
+        -1.612,
+        2.006
+      ]
+    }
+  },
+  "notice": "Revised historical NVE storage and lagged seNorge research-cell values. Not as-of forecast vintages, catchment means or live predictions. Fixed chronological splits; no operational forecast authorized. MAE in percentage points."
+}
