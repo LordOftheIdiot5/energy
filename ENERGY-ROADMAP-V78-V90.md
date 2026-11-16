@@ -43,4 +43,6 @@ Keep this file current with PRs, test runs, deployment evidence and known blocke
 - V82 pilot: 4e5892784730a61aa6a75c104a4af4d9732f1bb7; real radar image and all five SWE cells dated 2026-11-14 validated; 14 regression tests passed: https://github.com/LordOftheIdiot5/energy/actions/runs/43948248753. First collector deployment still to verify.
 
 - V82.1: bc4ca2eaca0398a317bb84f732302d5b3b069e72; five SWE markers and popup validation https://github.com/LordOftheIdiot5/energy/actions/runs/43948546527.
-- V82.2: main atlas historical plant marker repair, grid scale guidance; validation pending. Test real selected overlays together rather than just the basemap.
+- V82.2: main atlas historical plant marker repair, grid scale guidance; validated and deployed; test real selected overlays together rather than just the basemap.
+
+- V82.3: scale-aware grid overview from source-rendered imagery; detail scale limits, persistent on-map coverage/focus control, zoom regression test. No synthetic physical lines or override of provider render scale.

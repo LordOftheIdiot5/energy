@@ -1,0 +1,23 @@
+name: Atlas zoom persistence validation
+on:
+  push:
+    branches: [fix/v82-3-zoom-persistent-atlas-20261116]
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - run: node --check public-grid-map.js && node --check energy-atlas.js && node tests/test_public_grid_map.cjs && node tests/test_atlas.cjs && python -m unittest discover -s tests -v
+      - run: npm install --no-save --no-package-lock playwright@1.56.1 && npx playwright install chromium
+      - run: |
+          python -m http.server 8765 --bind 127.0.0.1 >/tmp/energy-http.log 2>&1 &
+          node tests/test_atlas_zoom_browser.cjs
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: atlas-zoom-overview
+          path: atlas-zoom-overview.png
+          retention-days: 7
