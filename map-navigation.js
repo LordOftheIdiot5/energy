@@ -1,9 +1,14 @@
 (()=>{'use strict';
 const states=new WeakMap();
 function clamp(v,b){const [x,y,w,h]=v,[bx,by,bw,bh]=b;return [Math.max(bx,Math.min(bx+bw-w,x)),Math.max(by,Math.min(by+bh-h,y)),w,h];}
-function zoomed(v,b,f){const w=Math.max(b[2]/8,Math.min(b[2],v[2]*f)),h=w*b[3]/b[2];return clamp([v[0]+(v[2]-w)/2,v[1]+(v[3]-h)/2,w,h],b);}
+function zoomed(v,b,f,anchor){const w=Math.max(b[2]/32,Math.min(b[2],v[2]*f)),h=w*b[3]/b[2];const [x,y]=anchor||[v[0]+v[2]/2,v[1]+v[3]/2];return clamp([x-(x-v[0])*w/v[2],y-(y-v[1])*h/v[3],w,h],b);}
 function apply(root,state,v){state.view=clamp(v,state.base);root.setAttribute('viewBox',state.view.join(' '));}
 function setup(root,state){let drag=null,suppress=false;
+function at(e){try{return new DOMPoint(e.clientX,e.clientY).matrixTransform(root.getScreenCTM().inverse());}catch{return null;}}
+function zoomAt(e,f){const p=at(e);apply(root,state,zoomed(state.view,state.base,f,p?[p.x,p.y]:null));}
+root.addEventListener('wheel',e=>{e.preventDefault();zoomAt(e,Math.exp(Math.max(-.4,Math.min(.4,e.deltaY*.002))));},{passive:false});
+root.addEventListener('dblclick',e=>{e.preventDefault();zoomAt(e,e.shiftKey?1.5:1/1.5);});
+
 root.addEventListener('pointerdown',e=>{if(e.button!==0||!e.isPrimary)return;suppress=false;const matrix=root.getScreenCTM();if(!matrix)return;let inv;try{inv=matrix.inverse();}catch{return;}drag={id:e.pointerId,x:e.clientX,y:e.clientY,view:[...state.view],inv,active:false};});
 root.addEventListener('pointermove',e=>{if(!drag||drag.id!==e.pointerId)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(!drag.active&&Math.hypot(dx,dy)<6)return;if(!drag.active){drag.active=true;root.setPointerCapture(e.pointerId);root.classList.add('map-dragging');}const a=new DOMPoint(0,0).matrixTransform(drag.inv),b=new DOMPoint(dx,dy).matrixTransform(drag.inv);apply(root,state,[drag.view[0]-(b.x-a.x),drag.view[1]-(b.y-a.y),drag.view[2],drag.view[3]]);});
 function end(e){if(!drag||e.pointerId!==drag.id)return;suppress=drag.active;drag=null;root.classList.remove('map-dragging');}
