@@ -16,6 +16,14 @@
       "path": "energy.json",
       "status": "display_only_pending_review",
       "notes": "Existing published mixed-source snapshot; not a commercially cleared dataset."
+    },
+    {
+      "id": "norway_hydro_plants",
+      "path": "hydro-plants-v1.json",
+      "source": "https://api.nve.no/doc/vannkraftdatabase/",
+      "license": "https://data.norge.no/nlod/",
+      "status": "collector_pending_first_validated_import",
+      "notes": "NVE plant register, not available until successful first import."
     }
   ],
   "sources": [
@@ -44,6 +52,16 @@
     {
       "name": "Weather feeds and project news",
       "status": "Source-specific terms review required"
+    },
+    {
+      "name": "NVE hydrological balance and inflow",
+      "status": "NLOD; weekly source identified, automated importer not connected",
+      "url": "https://www.nve.no/energi/analyser-og-statistikk/hydrologiske-data-til-kraftsituasjonsrapporten/"
+    },
+    {
+      "name": "MET Norway point precipitation",
+      "status": "CC BY 4.0 / NLOD; service terms and attribution apply",
+      "url": "https://docs.api.met.no/doc/License.html"
     }
   ]
 }
