@@ -14,3 +14,43 @@ class AssetTests(unittest.TestCase):
         self.assertEqual(d["rows"][0]["reported_capacity_mw"],12)
         self.assertEqual(d["rows"][0]["plant_ids"],[1,2])
         self.assertEqual(d["rows"][0]["capacity_records"],1)
+
+class CollectorRegressionTests(unittest.TestCase):
+    def test_european_prices_survive_plant_refresh(self):
+        import json
+        import tempfile
+        from contextlib import ExitStack
+        from unittest.mock import patch
+        import fetch
+        import asset_reference
+        prices = [{"zone": "DE-LU", "cents": [5.0]}]
+        with tempfile.TemporaryDirectory() as directory, ExitStack() as stack:
+            root = Path(directory)
+            out = root / "data" / "energy.json"
+            stack.enter_context(patch.object(fetch, "ROOT", root))
+            stack.enter_context(patch.object(fetch, "OUT", out))
+            for name, value in {
+                "collect_spot": [], "collect_reservoirs": {},
+                "collect_europe": prices, "collect_market": {},
+                "collect_gas_storage": {}, "collect_fuel": {},
+                "collect_france": {}, "collect_grid": {},
+                "collect_weather": {}, "collect_commodities": [],
+            }.items():
+                stack.enter_context(patch.object(fetch, name, return_value=value))
+            for target in (
+                "shared_energy.refresh_shared", "hydro_extended.refresh_plants",
+                "hydro_extended.refresh_geometry", "energy_geography.collect_all",
+                "asset_reference.owners", "economic_reference.refresh",
+                "news.collect", "hydro_archive.append_snapshot",
+                "economic_reference.archive_weather", "hydro_validation.refresh",
+            ):
+                stack.enter_context(patch(target, return_value=[]))
+            plant_refresh = stack.enter_context(patch.object(asset_reference, "europe"))
+            self.assertEqual(fetch.main(), 0)
+            plant_refresh.assert_called_once_with(out.parent)
+            self.assertEqual(json.loads(out.read_text(encoding="utf-8"))["europe"], prices)
+            previous = out.read_bytes()
+            fetch.collect_europe.return_value = lambda: None
+            with self.assertRaises(TypeError):
+                fetch.main()
+            self.assertEqual(out.read_bytes(), previous)
