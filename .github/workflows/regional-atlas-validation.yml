@@ -1,0 +1,18 @@
+name: Unified map coverage validation
+on:
+  push:
+    branches: [feature/v74-unified-map-coverage-20261116]
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - run: node --check regional-atlas.js && node --check geography.js && node --check plant-tile-map.js && node --check infrastructure.js && node tests/test_regional_atlas.cjs && node tests/test_plant_map.cjs && node tests/test_atlas.cjs
+      - run: python -m unittest discover -s tests -v
+      - run: npm install --no-save --no-package-lock playwright@1.56.1 maplibre-gl@5.6.1 leaflet@1.9.4 && npx playwright install chromium
+      - run: |
+          python -m http.server 8765 --bind 127.0.0.1 >/tmp/energy-http.log 2>&1 &
+          node tests/test_regional_atlas_browser.cjs
