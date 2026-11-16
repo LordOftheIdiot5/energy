@@ -6,8 +6,8 @@ Keep this file current with PRs, test runs, deployment evidence and known blocke
 | V78 | Automated visual quality checks | Merged; production smoke passed | Real basemap, actual overlays, zero page errors, screenshots; run after deployments |
 | V79 | Topography and shaded terrain | Merged; real source and interaction tests passed, production visual test pending | Optional real elevation relief, preserve full context and overlays; verify actual tiles and rendered map |
 | V80 | Satellite and aerial imagery | Historical Sentinel-2 merged; real imagery/elevation tile browser test passed; aerial pending | Verified commercial display permissions and coverage; preserve labels and overlays |
-| V81 | Actual transmission lines and substations | Norwegian direct-display overlay in validation; European coverage pending | Source-linked real geometry, voltage and provenance; distinguish schematic routes |
-| V82 | Geographical weather, precipitation and snow layers | Pending | Dated, unit-labelled gridded observations/forecasts; coverage and uncertainty |
+| V81 | Actual transmission lines and substations | Norwegian direct-display merged; 23 actual map images tested; European coverage pending | Source-linked real geometry, voltage and provenance; distinguish schematic routes |
+| V82 | Geographical weather, precipitation and snow layers | Radar and 5-cell SWE pilot under validation; continuous gridded map and forecasts pending | Dated, unit-labelled gridded observations/forecasts; coverage and uncertainty |
 | V83 | Expanded European infrastructure database | Pending | TYNDP reconciliation, geometry and redistribution rights; retain source exceptions |
 | V84 | Individual power-plant research pages | Pending | Stable IDs, source links, coverage and historical/current distinction |
 | V85 | Weather-based hydropower forecasting | Pending | Historical catchment and inflow data, time-aware holdout benchmark against seasonal/persistence baselines |
@@ -36,3 +36,6 @@ Keep this file current with PRs, test runs, deployment evidence and known blocke
 
 - V80: b1d820537ed4fac2543fa80b6fd5fe07380ad55d; browser real tiles (4 terrain, 7 satellite): https://github.com/LordOftheIdiot5/energy/actions/runs/43945619631.
 - V81: NVE public Nettanlegg5 direct display, NLOD 1.0: https://data.norge.no/en/data-services/f109b2a7-1693-3c84-bd02-b06c0fad83f8/nettanlegg-utbygd-wms. No new asset inventory or raw geometry export; source scale and freshness limitations apply; distribution and underground land cables excluded.
+
+- V81: e0e3a6660a7a3f2d02dfed315080ef02d8eaa1ad; validated real NVE images and flow data https://github.com/LordOftheIdiot5/energy/actions/runs/43947002157.
+- V82: MET radar image (https://api.met.no/weatherapi/radar/2.0/documentation) and NVE GTS SWE (https://api.nve.no/doc/gridtimeseries-data-gts/). Uses explicit historical dates and sample grid coordinates, no catchment-wide estimates. Continuous forecast grids and basin aggregation require separate validated imports.

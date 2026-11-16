@@ -874,6 +874,11 @@ def main() -> int:
     grid = collect_grid()
     print("\nweather")
     weather = collect_weather()
+    try:
+        from weather_geography import refresh as refresh_weather_geography
+        refresh_weather_geography(OUT.parent)
+    except Exception as e:
+        print("  ! weather geography:",type(e).__name__)
     print("\ncommodities")
     commodities = collect_commodities()
     try:
