@@ -10,7 +10,7 @@ Keep this file current with PRs, test runs, deployment evidence and known blocke
 | V82 | Geographical weather, precipitation and snow layers | Radar and 5-cell SWE pilot merged, source/browser tests passed; optional map markers merged and browser tested; continuous gridded map and forecasts pending | Dated, unit-labelled gridded observations/forecasts; coverage and uncertainty |
 | V83 | Expanded European infrastructure database | Rights review; permission draft PR #22 | TYNDP reconciliation, geometry and redistribution rights; retain source exceptions |
 | V84 | Individual power-plant research pages | Merged after real-record browser validation; deployment pending | Stable IDs, source links, coverage and historical/current distinction |
-| V85 | Weather-based hydropower forecasting | Retrospective lagged-weather benchmark under validation; issue-time forecast model pending | Historical catchment and inflow data, time-aware holdout benchmark against seasonal/persistence baselines |
+| V85 | Weather-based hydropower forecasting | Retrospective benchmark validated; weather uplift marginal; operational forecast blocked | Historical catchment and inflow data, time-aware holdout benchmark against seasonal/persistence baselines |
 | V86 | Electricity price forecasting | Pending | Issue-time features, price/load history, rolling-origin evaluation and calibrated errors |
 | V87 | Stockwatch company and ownership integration | Pending | Verified legal identifiers, dated ownership, no inferred equity exposures |
 | V88 | Professional interactive graphs across all workspaces | Pending | Units, axes, dates, legends, interactive inspection, source and missing-data handling |
@@ -52,3 +52,5 @@ Keep this file current with PRs, test runs, deployment evidence and known blocke
 
 - V84: f4c00acc7f8afb377bfda026fb3038b4840773e1; real plant profile validation https://github.com/LordOftheIdiot5/energy/actions/runs/43951765223.
 - V85: fixed chronological benchmark, 5 research cells x 3 weather themes, persistence/seasonal/hydro-only ablation. Revised history only, no live forecast. See docs/V85-HYDRO-RESEARCH.md.
+
+- V85 benchmark: https://github.com/LordOftheIdiot5/energy/actions/runs/43952611956. 17 tests passed, 15 series x 5,145 daily values, 1,295 test transitions. Weather beats all comparators in NO3 and NO4 only, marginally; interval coverage below 80% in all zones. Preserve results in docs/v85-benchmark-results.json; no operational forecast. Catchment-weighted weather, actual inflow/generation and forecast vintages remain required.
