@@ -60,7 +60,12 @@ def fetch_catchment(identifier, get=request_json):
 
 def parse_source_date(value):
     # NVE documents day-first date strings, including the reference time.
-    return datetime.strptime(value, "%d.%m.%Y %H:%M:%S")
+    for fmt in ("%d.%m.%Y %H:%M:%S", "%d.%m.%Y %H:%M"):
+        try:
+            return datetime.strptime(value, fmt)
+        except ValueError:
+            pass
+    raise ValueError("Unexpected source date")
 
 def normalize(theme, response, start, end):
     if theme not in THEMES or response.get("Theme") != theme:
@@ -78,6 +83,8 @@ def normalize(theme, response, start, end):
     if not finite(missing):
         raise ValueError("Unexpected missing-value marker")
     cells = response["CellTimeSeries"]
+    if isinstance(cells, dict):
+        cells = [cells]
     if not isinstance(cells, list) or not 1 <= len(cells) <= 100:
         raise ValueError("Unexpected cell count")
     ids = set()

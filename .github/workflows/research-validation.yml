@@ -22,12 +22,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        source: [plants, portfolio]
+        source: [plants, portfolio, catchment]
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
-      - run: python scripts/research_audit.py ${{ matrix.source }}
+      - if: matrix.source != 'catchment'
+        run: python scripts/research_audit.py ${{ matrix.source }}
+      - if: matrix.source == 'catchment'
+        run: python scripts/probe_catchment.py
       - if: matrix.source == 'portfolio'
         run: python scripts/tyndp_portfolio.py

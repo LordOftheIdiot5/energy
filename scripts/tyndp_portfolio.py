@@ -79,14 +79,16 @@ def normalize(raw):
                 raise ValueError("Invalid investment parent or duplicate")
             investments.add((key,ident))
             result[key]["investments"].append({"source_id":ident,"name":row.get("D"),"commissioning_as_reported":row.get("F"),"status_reported":row.get("G")})
+        unresolved_borders = []
         for row in parse_table(z,7,{"B":"TransmissionProject_Id","C":"Border"},shared):
             key="transmission:"+row["B"]
             if key not in result or not row.get("C"):
-                raise ValueError("Invalid border parent")
+                unresolved_borders.append({"source_id":row["B"],"border":row.get("C"),"reason":"unmatched_project_or_missing_border"})
+                continue
             if row["C"] not in result[key]["borders"]:
                 result[key]["borders"].append(row["C"])
     return {"schema_version":1,"source":PORTFOLIO,"observed_at":datetime.now(timezone.utc).isoformat(),
-        "source_sha256":hashlib.sha256(raw).hexdigest(),"complete":True,"counts":counts,"investment_count":len(investments),
+        "source_sha256":hashlib.sha256(raw).hexdigest(),"complete":not unresolved_borders,"unresolved_borders":unresolved_borders,"counts":counts,"investment_count":len(investments),
         "rights_status":"review_required","notice":"Reported portfolio entries; not independently verified operational status. No source descriptions copied. Not cleared for commercial republication.","rows":list(result.values())}
 
 def collect():
