@@ -1,0 +1,24 @@
+name: Combined atlas overlays validation
+on:
+  push:
+    branches: [fix/v82-atlas-visible-overlays-20261116]
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - run: node --check energy-atlas.js && node tests/test_atlas.cjs && python -m unittest discover -s tests -v
+      - run: python scripts/weather_geography.py data
+      - run: npm install --no-save --no-package-lock playwright@1.56.1 && npx playwright install chromium
+      - run: |
+          python -m http.server 8765 --bind 127.0.0.1 >/tmp/energy-http.log 2>&1 &
+          node tests/test_combined_atlas_browser.cjs
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: combined-atlas-screenshot
+          path: atlas-combined.png
+          retention-days: 7
