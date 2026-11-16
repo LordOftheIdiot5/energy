@@ -44,6 +44,9 @@ jobs:
           GIE_API_KEY: ${{ secrets.GIE_API_KEY }}
         run: python scripts/fetch.py
 
+      - name: Test shared ENTSO-E feed contract
+        run: python -m unittest discover -s tests -p test_entsoe_shared.py
+
       - name: Sanity check
         run: python tests/test_payload.py
 

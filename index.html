@@ -126,6 +126,13 @@
        carbon and FX from Yahoo Finance. Prices exclude grid rent, taxes and VAT, so
        your bill is higher than the number here — what moves is what matters.</p>
   </footer>
+  <section class="panel" id="entsoe-open">
+    <h2>European power demand and physical flows</h2>
+    <p class="sub">ENTSO-E day-ahead demand forecasts and reported cross-border flows. Separate from current grid readings and electricity prices.</p>
+    <p id="entsoe-status" role="status">Shared source not yet loaded.</p>
+    <div id="entsoe-series"></div>
+    <p class="sub">Source: <a href="https://transparency.entsoe.eu/">ENTSO-E Transparency Platform</a> · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Selected series, UTC timestamps, explicit reported points only; gaps and block curves are not expanded. <a href="https://stocks.nordl.dev/data/entsoe-open.json">Shared JSON</a>.</p>
+  </section>
 </main>
 
 <script>
@@ -672,6 +679,23 @@ function renderLede(d) {
 }
 
 /* --------------------------------------------------------- staleness */
+function renderEntsoe(d) {
+  const status=document.getElementById("entsoe-status"), target=document.getElementById("entsoe-series");
+  target.replaceChildren();
+  const feed=d.entsoeOpen;
+  if(!feed||feed.status!=="ok"||!Array.isArray(feed.series)){
+    status.textContent="Shared ENTSO-E source unavailable or stale. Existing energy data remains separate.";return;
+  }
+  status.textContent="Source snapshot: "+feed.generated+" · "+feed.series.length+" available series. Historical observations / forecasts, not live readings.";
+  const table=document.createElement("table");table.style.width="100%";
+  const row=(values,head=false)=>{const tr=document.createElement("tr");for(const value of values){const cell=document.createElement(head?"th":"td");cell.textContent=String(value);tr.append(cell);}table.append(tr);};
+  row(["Series","Latest explicit point (UTC)","MW","Reported points"],true);
+  for(const s of feed.series){
+    const last=s.points.at(-1);if(!last)continue;
+    row([s.kind==="day_ahead_load_forecast"?s.zone+" demand forecast":s.from+" to "+s.to,last.startUtc,last.mw.toLocaleString("en-GB"),s.points.length]);
+  }
+  target.append(table);
+}
 function renderStamp(d) {
   const stamp = $("stamp");
   stamp.textContent = "updated " + ago(d.generated);
@@ -707,7 +731,7 @@ fetch("data/energy.json?cb=" + Date.now())
     activeZone = (d.zones[0] || {}).zone;
     renderStamp(d); renderLede(d); renderZones(d);
     renderPills(d); renderCurves(d);
-    renderGrid(d); renderWeather(d);
+    renderGrid(d); renderWeather(d); renderEntsoe(d);
     renderReservoirs(d); renderCommodities(d);
     renderFrance(d); renderGas(d); renderPump(d);
     renderMarket(d); renderNews(d);
