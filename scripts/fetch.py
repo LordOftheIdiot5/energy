@@ -211,6 +211,12 @@ def collect_reservoirs() -> dict:
         print(f"  ! NVE unavailable: {e}")
         return {}
 
+    try:
+        from hydro_extended import hydro_backfill
+        hydro_backfill(OUT.parent / "hydro-v1.json", rows, datetime.now(timezone.utc).isoformat())
+    except Exception as e:
+        print(f"  ! historical archive: {e}")
+
     el = [r for r in rows if r.get("omrType") == "EL"]
     if not el:
         return {}
@@ -850,6 +856,8 @@ def collect_weather() -> dict:
                 sum(max(0.0, HEATING_BASE_C - t) for t in temps), 1) if temps else None,
             "hours": len(temps),
         }
+        from hydro_extended import point_weather
+        zones[zone].update(point_weather(steps))
         print(f"  {zone}  {place:<13} {now.get('air_temperature')}C  "
               f"wind {now.get('wind_speed')} m/s  "
               f"HDH48 {zones[zone]['heatingDegreeHours']}")
@@ -877,6 +885,16 @@ def main() -> int:
     weather = collect_weather()
     print("\ncommodities")
     commodities = collect_commodities()
+    try:
+        from hydro_extended import refresh_plants
+        refresh_plants(OUT.parent / "hydro-plants-v1.json", get_json)
+    except Exception as e:
+        print(f"  ! NVE plant database: {e}")
+    try:
+        from hydro_extended import refresh_geometry
+        refresh_geometry(OUT.parent / "norway-zones-v1.json", get_json)
+    except Exception as e:
+        print(f"  ! NVE zone geometry: {e}")
     print("\nnews")
     try:
         import news as news_module
