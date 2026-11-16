@@ -1,0 +1,32 @@
+# Energy master roadmap V78–V90
+Approved 2026-11-16. Production: https://energy.nordl.dev/
+Keep this file current with PRs, test runs, deployment evidence and known blockers. Do not declare a milestone complete on code or fixture tests alone.
+| Version | Objective | Status | Acceptance gate |
+|---|---|---|---|
+| V78 | Automated visual quality checks | Merged; production smoke passed | Real basemap, actual overlays, zero page errors, screenshots; run after deployments |
+| V79 | Topography and shaded terrain | In progress | Optional real elevation relief, preserve full context and overlays; verify actual tiles and rendered map |
+| V80 | Satellite and aerial imagery | Pending | Verified commercial display permissions and coverage; preserve labels and overlays |
+| V81 | Actual transmission lines and substations | Pending | Source-linked real geometry, voltage and provenance; distinguish schematic routes |
+| V82 | Geographical weather, precipitation and snow layers | Pending | Dated, unit-labelled gridded observations/forecasts; coverage and uncertainty |
+| V83 | Expanded European infrastructure database | Pending | TYNDP reconciliation, geometry and redistribution rights; retain source exceptions |
+| V84 | Individual power-plant research pages | Pending | Stable IDs, source links, coverage and historical/current distinction |
+| V85 | Weather-based hydropower forecasting | Pending | Historical catchment and inflow data, time-aware holdout benchmark against seasonal/persistence baselines |
+| V86 | Electricity price forecasting | Pending | Issue-time features, price/load history, rolling-origin evaluation and calibrated errors |
+| V87 | Stockwatch company and ownership integration | Pending | Verified legal identifiers, dated ownership, no inferred equity exposures |
+| V88 | Professional interactive graphs across all workspaces | Pending | Units, axes, dates, legends, interactive inspection, source and missing-data handling |
+| V89 | Commercial datasets and API | Pending | Rights register, versioned schemas, access control, quotas, exports and documentation |
+| V90 | Full design, data quality and performance audit | Pending | Mobile/desktop tests, accessibility, data freshness, source coverage and performance budgets |
+
+## Release discipline
+- Preserve V77 full-context maps, visible markers/clusters, fallback overview, zoom, pan, fullscreen and asset inspection.
+- Keep observations, historical archives, scenarios and model forecasts distinct; never invent data or source geometry.
+- Use separate research branches for unverified sources or models; release only validated features.
+- Verify source licensing and attribution before public or commercial redistribution.
+- Prioritize V85–V87 commercially while resolving geographical and data dependencies in parallel.
+- Use shared data infrastructure with Stockwatch and Leivro where verified; avoid mixing unrelated source identities.
+
+## Evidence
+- V77 production release: c2130a5504b529ddc411bd2a7f9128696a64620a.
+- V78 live smoke: https://github.com/LordOftheIdiot5/energy/actions/runs/43943335361 (10,212 European records, 69 visible clusters/markers, 3,092 catchments, 2,104 rendered polygon fragments, 54 actual vector tiles, zero page errors).
+- V78 merge: aa8efc3ac368321ec8652a2e0dd56911a636055a.
+- Earlier research PR #6: TYNDP parser and catchment/forecast experiments; unresolved source and commercial rights checks remain. Do not label the forecasting system trained.
