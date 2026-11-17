@@ -59,3 +59,6 @@ Keep this file current with PRs, test runs, deployment evidence and known blocke
 
 - V86: 1,461 complete UTC price days, 365 test days. Monthly median MAE 17.1361 EUR/MWh, ridge 18.3019; nominal 80% range achieved 75.07%. Validated run https://github.com/LordOftheIdiot5/energy/actions/runs/43955243429. Report docs/v86-price-benchmark-results.json.
 - V90 initial validation: https://github.com/LordOftheIdiot5/energy/actions/runs/43955547548, 21 Python tests, 7 open datasets, direct issuer link, 12 route checks each on desktop and mobile, zero page errors; real NVE/WRI profiles and zoom regression passed. Final changes add V86 public research report, exact filename API gate, lazy research loading, and source pacing.
+
+## V90.1 user readiness gate
+Stay at V90.1. Audit run 44166287238: 5.78 MB decoded startup data, 15 loads, 14,731 DOM nodes. Correct delivery intervals, separate GB index, persistent rights-cleared archive, shared lazy data, freshness, metadata and live browser checks. No release until validated.

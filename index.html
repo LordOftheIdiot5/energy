@@ -15,9 +15,9 @@
 <link rel="stylesheet" href="research-tools.css?v=36"/>
 <link rel="stylesheet" href="premium.css?v=36"/>
 <link rel="stylesheet" href="terminal.css?v=36"/><link rel="stylesheet" href="geography.css?v=36"/>
-<meta name="theme-color" content="#080e18"/>
+<meta name="theme-color" content="#080e18"/><link rel="canonical" href="https://energy.nordl.dev/"/><meta property="og:title" content="Nordl Energy — European energy intelligence"/><meta property="og:description" content="Electricity, hydro storage, weather and source-linked energy infrastructure research."/>
 <link rel="stylesheet" href="visual-terminal.css?v=53"/>
-<link rel="stylesheet" href="energy-pro.css?v=90"/>
+<link rel="stylesheet" href="energy-pro.css?v=9011"/>
 </head>
 <body data-theme="dark"><a class="en-skip" href="#overview">Skip to content</a><div class="en-layout"><aside class="en-side" id="enNav" aria-label="Energy navigation"><a class="en-logo" href="index.html" aria-label="Energy home"><span class="en-mark" aria-hidden="true">ϟ</span><span>energy<b>.nordl</b><small>ENERGY INTELLIGENCE</small></span></a><nav class="en-nav"><div class="en-group"><div class="en-label">WORKSPACE</div><a class="en-link active" href="#overview" aria-current="location"><span aria-hidden="true">◫</span>Overview</a><a class="en-link" href="#energyMap"><span aria-hidden="true">◎</span>European energy map</a><a class="en-link" href="#prices"><span aria-hidden="true">▥</span>European power prices</a><a class="en-link" href="#day"><span aria-hidden="true">◷</span>Hourly electricity</a></div><div class="en-group"><div class="en-label">ENERGY SYSTEM</div><a class="en-link" href="#grid"><span aria-hidden="true">⇄</span>Generation &amp; flows</a><a class="en-link" href="#weather"><span aria-hidden="true">☀</span>Weather &amp; demand</a><a class="en-link" href="#hydroLab"><span aria-hidden="true">≋</span>Norwegian hydro intelligence</a><a class="en-link" href="#hydro"><span aria-hidden="true">≋</span>Hydro reservoirs</a><a class="en-link" href="#fuels"><span aria-hidden="true">◈</span>Fuels, carbon &amp; FX</a><a class="en-link" href="#gas" id="gasNav" hidden><span aria-hidden="true">▤</span>Gas storage</a><a class="en-link" href="#pump"><span aria-hidden="true">◉</span>Pump prices</a></div><div class="en-group"><div class="en-label">MARKET INTELLIGENCE</div><a class="en-link" href="#market"><span aria-hidden="true">↗</span>Company economics</a><a class="en-link" href="#news"><span aria-hidden="true">▧</span>Energy projects</a></div><div class="en-group"><div class="en-label">PLATFORM</div><a class="en-link" href="#calculators"><span aria-hidden="true">⊞</span>Energy calculators</a><a class="en-link" href="#history"><span aria-hidden="true">↶</span>Historical data</a><a class="en-link" href="#countries"><span aria-hidden="true">◎</span>Country dashboard</a><a class="en-link" href="#demand"><span aria-hidden="true">☀</span>Demand scenarios</a><a class="en-link" href="#analyst"><span aria-hidden="true">✦</span>Research assistant</a><a class="en-link" href="#plants"><span aria-hidden="true">▥</span>Power plants</a><a class="en-link" href="#datasets"><span aria-hidden="true">▦</span>Datasets &amp; API</a><a class="en-link" href="#sources"><span aria-hidden="true">◇</span>Data &amp; sources</a></div><a class="en-link" href="guide.html"><span aria-hidden="true">?</span>Methodology guide</a></nav><div class="en-sidefoot"><a href="https://stocks.nordl.dev/">Stockwatch ↗</a><a href="https://leivro.com/">Leivro ↗</a><p>Independent energy intelligence</p></div></aside><div class="en-main"><div class="en-tape"><strong>ENERGY MARKETS</strong><span id="enTape">Loading latest published snapshot…</span></div><header class="en-top"><button class="en-button en-mobile" id="enMenu" aria-label="Toggle navigation" aria-controls="enNav" aria-expanded="false" type="button">☰</button><div class="en-crumb">Energy <span>/</span> Dashboard</div><form class="en-search" id="enSearch" role="search"><label class="en-sr" for="enQuery">Find an energy section</label><input id="enQuery" type="search" placeholder="Find prices, hydro, gas…" autocomplete="off"><button type="submit" aria-label="Go to section">⌕</button></form><span class="stamp" id="stamp" role="status">Loading data…</span><button class="en-button" id="enTheme" aria-label="Switch light and dark theme" type="button">☾</button></header><main class="page">
 <div class="stale-bar" id="staleBar" role="status"></div>
@@ -33,10 +33,10 @@
 
 <section class="panel en-map-panel" id="energyMap"><h2>European energy map</h2><p class="sub">Select a market marker or flow to inspect its published observation. Norwegian bidding-zone boundaries appear when the NVE layer is available; elsewhere markers indicate representative locations. Lines connect endpoints, not physical cable routes.</p><div class="en-map-controls" aria-label="Map layer"><button type="button" data-layer="price" aria-pressed="true">Electricity prices</button><button type="button" data-layer="flow" aria-pressed="false">Grid flows</button><button type="button" data-layer="weather" aria-pressed="false">Temperature</button><button type="button" data-layer="hydro" aria-pressed="false">Hydro storage</button><label for="mapSelect">Inspect</label><select id="mapSelect" aria-label="Select an observation"><option>Loading…</option></select></div><div id="marketMapKpis" class="terminal-kpis"></div><div class="atlas-toolbar"><div class="atlas-switch" role="group" aria-label="Map presentation"><button id="atlasVector" type="button" aria-pressed="true">Overview map</button><button id="atlasDetailed" type="button" aria-pressed="false">Detailed map</button><button id="atlasTopo" type="button" aria-pressed="false">Norway topographic</button></div><div class="atlas-switch"><button id="atlasEurope" type="button" disabled>Europe</button><button id="atlasNordic" type="button" disabled>Nordics</button><button id="atlasNorway" type="button" disabled>Norway</button></div><label class="atlas-plant"><input type="checkbox" id="atlasPlants" disabled> Historical power plants (2021)</label><label class="atlas-plant"><input type="checkbox" id="atlasSnowSamples" disabled> Snow research cells (SWE)</label><label for="atlasPhysicalGrid">Norwegian published grid</label><select id="atlasPhysicalGrid" disabled><option value="off">Off</option><option value="transmission">Transmission lines</option><option value="regional">Regional lines</option><option value="cables">Submarine cables</option><option value="stations">Substations</option><option value="all">All published layers</option></select><span id="atlasStatus" role="status">Opening detailed map when this workspace is visible.</span></div><p id="atlasPlantStatus" role="status" class="terminal-hint" hidden></p><p id="atlasSnowStatus" role="status" class="terminal-hint" hidden></p><div id="atlasGridInfo" class="terminal-hint" hidden><p id="atlasGridStatus" role="status"></p><button type="button" id="atlasGridFocus" class="atlas-grid-focus">Zoom to Norwegian grid detail</button><p>Source: <a href="https://kart.nve.no/enterprise/rest/services/Nettanlegg5/MapServer">NVE Nettanlegg utbygd</a> · <a href="https://data.norge.no/en/data-services/f109b2a7-1693-3c84-bd02-b06c0fad83f8/nettanlegg-utbygd-wms">NLOD 1.0</a>. Published infrastructure only, not current operating state or live electrical load. Local distribution and underground land cables are excluded. The national overview uses source-rendered transmission and cable images where selected. Regional lines and substations retain source-defined detail scale limits; coverage may be incomplete or out of date. Flow lines remain schematic.</p><div class="geo-legend"><span><i style="background:#a87000"></i>32–99 kV</span><span><i style="background:#00a884"></i>100–199 kV</span><span><i style="background:#1e6fdc"></i>200–399 kV</span><span><i style="background:#ff3131"></i>400–525 kV</span></div><small>Voltage key follows NVE transmission and substation symbology; other layers retain the original source styles.</small></div><p class="atlas-credits">Topographic map: <a href="https://cache.kartverket.no/">Kartverket</a> (display only; zoom capped at 11). Detailed basemap: <a href="https://openfreemap.org/">OpenFreeMap</a> / OpenMapTiles / <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>. Historical plant data: <a href="https://datasets.wri.org/datasets/global-power-plant-database">Global Power Plant Database, WRI, Global Energy Observatory, Google, KTH and Enipedia (2021), CC BY 4.0</a>. Plant records are not current operating status.</p><div class="en-map-layout"><div class="en-map-frame terminal-map"><div class="terminal-map-tools" aria-label="Map navigation"><button type="button" data-map="mapSVG" data-action="in" aria-label="Zoom in">+</button><button type="button" data-map="mapSVG" data-action="out" aria-label="Zoom out">−</button><button type="button" data-map="mapSVG" data-action="reset" aria-label="Reset map view">⌂</button></div><svg tabindex="0" id="mapSVG" viewBox="0 0 696 624" role="group" aria-label="European energy map"></svg><div id="atlasMap" hidden aria-label="Detailed interactive European energy map"></div><div id="atlasTopoMap" hidden aria-label="Norwegian topographic map"></div></div><aside class="en-map-info" id="mapInfo" aria-live="polite">Waiting for published data…</aside></div><div id="mapLegend" class="en-map-legend"></div><p class="terminal-hint">Drag to pan · scroll, double-click or + / − to zoom · keyboard navigation available.</p><p class="en-map-credit">Norwegian zone boundaries, when available: <a href="https://www.nve.no/kart/kartdata/">NVE / NLOD</a>. Basemap: <a href="https://www.naturalearthdata.com/">Natural Earth</a> (public domain). Snapshot and upstream observation ages can differ.</p></section>
   <section class="panel" id="prices">
-    <h2>Day-ahead power across Europe</h2>
+    <h2>Day-ahead power across Europe</h2><p class="sub">Delivery dates are shown per zone. Last-known and unverified dates are excluded from current rankings.</p>
         <p class="sub">Available bidding-zone observations from Troms&oslash; to northern Italy on one axis, in <span class="hint" tabindex="0" data-tip="The currency power actually clears in. A Norwegian krone and a Swedish krona are not the same ruler, and a German &euro;/MWh is not a Norwegian &oslash;re/kWh, so everything is converted rather than laid side by side.">euro cents per kWh</span>. <span class="hint" tabindex="0" data-tip="An isolated grid with no day-ahead market, so there is no price to publish rather than a source we failed to find.">Iceland is absent</span>.</p>
     <div class="en-zone-controls"><label for="enZoneSearch">Filter zones</label><input id="enZoneSearch" type="search" placeholder="e.g. NO2, Germany"><span id="enZoneCount" role="status"></span></div><div id="zones"></div>
-    <div class="axis" id="zoneAxis"></div><article class="terminal-chart" id="priceModelResearch"><h3>NO2 historical price model evaluation</h3><div id="priceModelRows">Loading research benchmark…</div></article>
+    <div class="axis" id="zoneAxis"></div><article class="terminal-chart"><h3>Great Britain — separate wholesale market index</h3><div id="gbMarketIndex">Awaiting published reference.</div><p class="sub">Elexon APXMIDP index, not a day-ahead auction or necessarily a complete delivery day. Excluded from cross-zone rankings.</p></article><article class="terminal-chart" id="priceModelResearch"><h3>NO2 historical price model evaluation</h3><div id="priceModelRows">Loading research benchmark…</div></article>
   </section>
 
   <section class="panel" id="day">
@@ -116,7 +116,7 @@
 <section class="panel" id="countries"><h2>Country electricity dashboard</h2><p class="sub">Published zone averages, local day-ahead prices where available, and reported weather observations. Markets are not averaged into a national price.</p><div class="en-lab-controls"><label for="countrySelect">Country</label><select id="countrySelect"></select></div><div id="countryRows"></div></section>
 <section class="panel" id="demand"><h2>Weather demand scenarios</h2><p class="sub">Use reported heating degree-hours below 15°C to estimate illustrative space-heating energy over the forecast horizon. This is a simplified scenario, not a demand forecast. Wind speed is reported separately; wind generation is not inferred from it.</p><div class="en-lab-controls"><label for="demandZone">Zone</label><select id="demandZone"></select><label for="heatLoss">Heat loss coefficient (kW/°C)</label><input id="heatLoss" type="number" min="0" max="1000" step="any" value="0.2"><label for="scenarioCop">Heating COP</label><input id="scenarioCop" type="number" min="1" max="10" step="any" value="3"></div><div id="demandResult" aria-live="polite"></div></section>
 <section class="panel" id="analyst"><h2>Energy research assistant</h2><p class="sub">A local, rule-based analyst for the published snapshot. No external AI service, forecasts or invented data. Select a research question and inspect the supporting values.</p><div class="en-lab-controls"><label for="analystTopic">Research question</label><select id="analystTopic"><option value="prices">Which zones have the lowest and highest prices?</option><option value="hydro">Where are reservoirs furthest below seasonal normal?</option><option value="weather">Which zones report the highest heating pressure?</option><option value="grid">What are the largest reported power flows?</option><option value="health">What data is present or stale?</option></select></div><div id="analystAnswer" aria-live="polite"></div></section>
-<section class="panel" id="datasets"><h2>Dataset explorer &amp; developer access</h2><p class="sub">The first structured export is NVE-backed weekly Norwegian hydro data. Other present feeds have not been cleared for expanded commercial redistribution. The static endpoints are public JSON, not a paid API or service-level agreement.</p><div class="en-lab-controls"><label for="exportZone">Export zone</label><select id="exportZone"><option value="all">All Norwegian zones</option><option>NO1</option><option>NO2</option><option>NO3</option><option>NO4</option><option>NO5</option></select><button id="hydroCsv" type="button" disabled>Download CSV</button><a href="data/hydro-v1.json">Open hydro JSON v1 ↗</a><a href="data/catalog-v1.json">Dataset catalog ↗</a></div><div id="datasetSummary"></div><article class="terminal-chart"><h3>Source-attributed open data catalog</h3><p class="sub">Download the original public JSON snapshots. Commercial API hosting and service terms are separate from source reuse rights.</p><div id="openDatasetCatalog" aria-live="polite">Loading catalog…</div><p><a href="data/commercial-catalog-v1.json">Machine-readable manifest ↗</a> · <a href="https://github.com/LordOftheIdiot5/energy/blob/main/docs/V89-API.md">Authenticated service setup ↗</a></p></article><div id="licenseList"></div></section>
+<section class="panel" id="datasets"><h2>Dataset explorer &amp; developer access</h2><p class="sub">The first structured export is NVE-backed weekly Norwegian hydro data. Other present feeds have not been cleared for expanded commercial redistribution. The static endpoints are public JSON, not a paid API or service-level agreement.</p><div class="en-lab-controls"><label for="exportZone">Export zone</label><select id="exportZone"><option value="all">All Norwegian zones</option><option>NO1</option><option>NO2</option><option>NO3</option><option>NO4</option><option>NO5</option></select><button id="hydroCsv" type="button" disabled>Download CSV</button><a href="data/hydro-v1.json">Open hydro JSON v1 ↗</a><a href="data/catalog-v1.json">Dataset catalog ↗</a></div><div id="datasetSummary"></div><article class="terminal-chart"><h3>Source-attributed open data catalog</h3><p class="sub">Download the original public JSON snapshots. Commercial API hosting and service terms are separate from source reuse rights.</p><h3>Nordl historical collection</h3><p>Our own dated, source-attributed records, with explicit licence gates and retained revisions.</p><div id="historyArchiveStatus" role="status">Open this workspace to load the archive index.</div><div id="openDatasetCatalog" aria-live="polite">Loading catalog…</div><p><a href="data/commercial-catalog-v1.json">Machine-readable manifest ↗</a> · <a href="https://github.com/LordOftheIdiot5/energy/blob/main/docs/V89-API.md">Authenticated service setup ↗</a></p></article><div id="licenseList"></div></section>
   <section class="panel" id="sources"><h2>Data &amp; sources</h2><p class="sub">Availability reflects this published snapshot, not an independent real-time source check.</p><div class="en-health" id="enHealth">Loading data availability…</div><p class="en-source-links"><a href="data/energy.json">Download energy JSON ↗</a><a href="guide.html">Read methodology ↗</a><a href="https://stocks.nordl.dev/">Related market intelligence ↗</a></p></section><footer>
     <p>Spot prices via <a href="https://www.hvakosterstrommen.no">hvakosterstrommen.no</a>
        and <a href="https://www.elprisetjustnu.se">elprisetjustnu.se</a>, both over Nord
@@ -125,16 +125,16 @@
        your bill is higher than the number here — what moves is what matters.</p>
   </footer>
 </main></div></div>
-<script src="workspace.js?v=36" defer></script>
-<script src="portal.js?v=84" defer></script>
+<script src="data-cache.js?v=901"></script><script src="workspace.js?v=9011" defer></script>
+<script src="portal.js?v=9011" defer></script>
 <script src="energy-land.js?v=36" defer></script>
 <script src="map-navigation.js?v=71" defer></script>
-<script src="terminal.js?v=36" defer></script>
-<script src="geo-labels.js?v=36" defer></script><script src="energy-map.js?v=73" defer></script>
-<script src="nordl-charts.js?v=90" defer></script><script src="research-tools.js?v=67" defer></script>
-<script src="hydro-intelligence.js?v=36" defer></script>
-<script src="shared-energy.js?v=36" defer></script>
-<script src="infrastructure.js?v=74" defer></script><script src="geography.js?v=84" defer></script><script src="asset-research.js?v=90" defer></script><script src="market-reference.js?v=67" defer></script>
+<script src="terminal.js?v=9011" defer></script>
+<script src="geo-labels.js?v=36" defer></script><script src="energy-map.js?v=9011" defer></script>
+<script src="nordl-charts.js?v=90" defer></script><script src="research-tools.js?v=9011" defer></script>
+<script src="hydro-intelligence.js?v=9011" defer></script>
+<script src="shared-energy.js?v=9011" defer></script>
+<script src="infrastructure.js?v=9011" defer></script><script src="geography.js?v=9011" defer></script><script src="asset-research.js?v=9011" defer></script><script src="market-reference.js?v=9011" defer></script>
 
 <script>
 const $ = id => document.getElementById(id);
@@ -174,12 +174,12 @@ let DATA = null, activeZone = null;
 function allZones(d) {
   const rows = [];
   (d.zones || []).forEach(z => {
-    if (!z.today || !z.today.eur || !z.today.eur.length) return;
+    if (!z.today || !z.today.eur || !z.today.eur.length || !z.today.eur.every(Number.isFinite)) return;
     rows.push({
       code: z.zone, label: z.label, region: "Nordic",
       // Nordic feeds give EUR per kWh; everything here is euro cents.
       series: z.today.eur.map(v => v * 100),
-      local: money(z.today.mean, z.currency) + "/kWh",
+      local: money(z.today.mean, z.currency) + "/kWh · "+z.today.date+(!window.NordlData.comparable(z)?" · last known / unverified day":""),
     });
   });
   // Denmark and Finland arrive from the European feed but are Nordic markets;
@@ -187,12 +187,12 @@ function allZones(d) {
   // an artefact of our plumbing, not a fact about the grid.
   const NORDIC = new Set(["DK1", "DK2", "FI"]);
   (d.europe || []).forEach(z => {
-    if (!z.cents || !z.cents.length) return;
+    if (z.zone==="GB" || rows.some(r=>r.code===z.zone) || !z.cents || !z.cents.length || !z.cents.every(Number.isFinite)) return;
     rows.push({
       code: z.zone, label: z.name,
       region: z.zone === "GB" ? "Britain"
             : NORDIC.has(z.zone) ? "Nordic" : "Continental",
-      series: z.cents, local: z.stale ? "last known" : "",
+      series: z.cents, local: (z.date||"Delivery date unverified")+(!window.NordlData.comparable(z)?" · last known / unverified day":""),
     });
   });
   return rows;
@@ -244,7 +244,7 @@ function curveSvg(day, cheapest, currency, domain) {
   let grid='', bars='', ticks='', shade='';
   for(let j=0;j<=4;j++){const val=lo+(hi-lo)*j/4,yy=y(val);grid+=`<line x1="${L}" x2="${W-R}" y1="${yy}" y2="${yy}" stroke="var(--line)"/><text x="${L-7}" y="${yy+4}" text-anchor="end" fill="var(--muted)" font-size="11">${fmt(val)}</text>`;}
   if(cheapest)shade=`<rect x="${L+cheapest.start*bw}" y="${T}" width="${(cheapest.end-cheapest.start)*bw}" height="${H-T-B}" rx="4" fill="var(--accent)" opacity=".12"/>`;
-  for(let j=0;j<n;j++){const yy=y(v[j]), cheap=cheapest&&j>=cheapest.start&&j<cheapest.end, label=String(day.hours?.[j]??j).padStart(2,'0')+':00 · '+v[j].toFixed(3)+' '+currency+'/kWh';bars+=`<rect class="pro-hour-bar" tabindex="0" role="img" aria-label="${esc(label)}" x="${L+j*bw+1.5}" y="${Math.min(yy,zero)}" width="${Math.max(1,bw-3)}" height="${Math.max(.6,Math.abs(yy-zero))}" rx="2" fill="${cheap?'var(--accent)':v[j]<0?'#63a8f4':'#8ca8c8'}"><title>${esc(label)}</title></rect>`;}
+  for(let j=0;j<n;j++){const yy=y(v[j]), cheap=cheapest&&j>=cheapest.start&&j<cheapest.end, label=(day.hourLabels?.[j]||String(day.hours?.[j]??j).padStart(2,'0')+':00')+' · '+v[j].toFixed(3)+' '+currency+'/kWh';bars+=`<rect class="pro-hour-bar" tabindex="0" role="img" aria-label="${esc(label)}" x="${L+j*bw+1.5}" y="${Math.min(yy,zero)}" width="${Math.max(1,bw-3)}" height="${Math.max(.6,Math.abs(yy-zero))}" rx="2" fill="${cheap?'var(--accent)':v[j]<0?'#63a8f4':'#8ca8c8'}"><title>${esc(label)}</title></rect>`;}
   for(let j=0;j<n;j+=6)ticks+=`<text x="${L+(j+.5)*bw}" y="${H-14}" font-size="11" fill="var(--muted)" text-anchor="middle">${String(day.hours?.[j]??j).padStart(2,'0')}:00</text>`;
   return `<svg class="pro-hour-chart" viewBox="0 0 ${W} ${H}" role="group" aria-label="Hourly wholesale price, common scale ${fmt(lo)} to ${fmt(hi)} ${esc(currency)} per kWh"><text x="${L}" y="13" fill="var(--muted)" font-size="11">${esc(currency)}/kWh</text>${grid}${shade}<line x1="${L}" x2="${W-R}" y1="${zero}" y2="${zero}" stroke="var(--muted)" stroke-width="1.2"/>${bars}${ticks}</svg>`;
 }
@@ -262,17 +262,16 @@ function renderCurves(d) {
       <h3>${esc(title)} <small class="pro-delivery">${esc(day.date||"")}</small></h3>
       <p class="note">
         <span class="cheap-tag">cheapest ${cheap
-          ? String(cheap.start).padStart(2, "0") + ":00–" +
-            String(cheap.end).padStart(2, "0") + ":00 at " + cheap.mean.toFixed(2)
+          ? (day.hourLabels?.[cheap.start]||String(day.hours?.[cheap.start]??cheap.start).padStart(2,"0")+":00")+" · 3 consecutive hours at " + cheap.mean.toFixed(2)
           : "—"}</span>
         &nbsp;·&nbsp;
-        <span class="peak-tag">peak ${String(peak).padStart(2, "0")}:00 at ${day.max.toFixed(2)}</span>
+        <span class="peak-tag">peak ${esc(day.hourLabels?.[peak]||String(day.hours?.[peak]??peak).padStart(2,"0")+":00")} at ${day.max.toFixed(2)}</span>
         &nbsp;·&nbsp;${esc(z.currency)}/kWh
       </p>
       ${curveSvg(day, cheap, z.currency, domain)}
     </div>`;
   };
-  panels.push(mk(z.today, z.cheapest3, "Today"));
+  panels.push(mk(z.today, z.cheapest3, window.NordlData.comparable(z)?"Today":"Last known delivery day"));
   if (z.tomorrow) {
     panels.push(mk(z.tomorrow, bestWindow(z.tomorrow.local, 3), "Tomorrow"));
   } else {
@@ -342,7 +341,7 @@ function renderGrid(d) {
     .slice(0, 12);
   if (!links.length) { $("flows").innerHTML = ""; return; }
   const peak = Math.max(...links.map(l => l.mw));
-  $("flows").innerHTML = `<div class="group-title">Flowing now</div>` +
+  $("flows").innerHTML = `<div class="group-title">Reported cross-border flows</div>` +
     links.map(l => `
       <div class="flow">
         <span class="ends">${esc(l.from)} <em>→</em> ${esc(l.to)}</span>
@@ -633,8 +632,9 @@ function fmtAge(h) {
 function renderLede(d) {
   // Across every zone on the page, not just the Nordic ones: the headline
   // should describe the same picture the strip below it shows.
-  const rows = allZones(d);
-  if (!rows.length) return;
+  const liveCodes=new Set([...(d.zones||[]),...(d.europe||[])].filter(window.NordlData.comparable).map(r=>r.zone));
+  const rows=allZones(d).filter(r=>liveCodes.has(r.code));
+  if(!rows.length){$('lede').textContent='Awaiting verified current delivery prices. Last-known values remain available in the price workspace.';return;}
   const means = rows.map(r => ({ z: { zone: r.code }, m: avgOf(r.series) }));
   means.sort((a, b) => a.m - b.m);
   const cheap = means[0], dear = means[means.length - 1];
@@ -694,6 +694,9 @@ window.addEventListener("resize", placeHints);
 fetch("data/energy.json?cb=" + Date.now())
   .then(r => r.ok ? r.json() : Promise.reject(r.status))
   .then(d => {
+    const gb=d.marketIndex||(d.europe||[]).find(x=>x.zone==="GB");
+    d.europe=(d.europe||[]).filter(x=>x.zone!=="GB");
+    const g=$("gbMarketIndex");if(g)g.textContent=gb&&Number.isFinite(gb.mean)?gb.mean.toFixed(2)+" EUR cents/kWh · "+gb.points+" reported intervals · "+(gb.date||"Date unavailable")+(gb.stale?" · last known":""):"No validated market-index observation.";
     DATA = d;
     activeZone = ((d.zones || [])[0] || {}).zone;
     renderStamp(d); renderLede(d); renderZones(d);
@@ -714,14 +717,14 @@ fetch("data/energy.json?cb=" + Date.now())
     console.error("energy.json", e);
   });
 </script>
-<script src="visual-terminal.js?v=53" defer></script>
-<script src="public-grid-map.js?v=823" defer></script><script src="energy-atlas.js?v=84" defer></script>
+<script src="visual-terminal.js?v=9011" defer></script>
+<script src="public-grid-map.js?v=823" defer></script><script src="energy-atlas.js?v=9011" defer></script>
 <script src="energy-topo.js?v=73" defer></script>
 <script src="plant-tile-map.js?v=77" defer></script>
 <script src="project-atlas.js?v=73" defer></script>
 <script src="terrain-relief.js?v=79" defer></script><script src="satellite-layer.js?v=80" defer></script><script src="regional-atlas.js?v=80" defer></script>
-<script src="weather-geography.js?v=82" defer></script>
-<script src="plant-profile.js?v=90" defer></script>
-<script src="release-research.js?v=901" defer></script>
+<script src="weather-geography.js?v=9011" defer></script>
+<script src="plant-profile.js?v=9011" defer></script>
+<script src="release-research.js?v=9011" defer></script>
 </body>
 </html>

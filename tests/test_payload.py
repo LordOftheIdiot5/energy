@@ -33,7 +33,7 @@ def main() -> int:
         today = z.get("today") or {}
         local = today.get("local") or []
         eur = today.get("eur") or []
-        check(f"{z.get('zone')} has 24 hours", len(local) == 24, f"{len(local)}")
+        check(f"{z.get('zone')} has valid delivery hours", len(local) in (23,24,25), f"{len(local)}")
         check(f"{z.get('zone')} has EUR alongside", len(eur) == len(local))
         # Nordic power has been negative and has been absurd, but never both
         # at once. These bounds catch a unit change, not a market event.
@@ -85,7 +85,7 @@ def main() -> int:
     res = (d.get("reservoirs") or {}).get("zones") or {}
     check("has reservoirs", len(res) >= 4, f"{len(res)} areas")
     for k, v in res.items():
-        check(f"{k} fill is a fraction", 0 <= (v.get("fill") or -1) <= 1,
+        check(f"{k} fill is a fraction", v.get("fill") is not None and 0 <= v["fill"] <= 1,
               str(v.get("fill")))
 
     g = d.get("grid") or {}

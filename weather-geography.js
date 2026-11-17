@@ -6,6 +6,6 @@ snow.replaceChildren();const rows=(d?.snow||[]).filter(r=>Number.isFinite(r.valu
 $('snowStatus').textContent=rows.length+' of '+(d?.snow_expected||5)+' research cells available'+(d?.requested_day?' · requested '+d.requested_day:'')+'. Modelled point samples, not nationwide coverage or catchment averages.';
 for(const r of rows){const tr=node('tr');for(const v of [r.id,r.date,r.value_mm.toLocaleString(undefined,{maximumFractionDigits:1})+' mm',Number.isFinite(r.altitude_m)?r.altitude_m+' m':'Not supplied'])tr.append(node('td',v));snow.append(tr);}
 if(!rows.length){const tr=node('tr'),td=node('td','No validated snow samples available.');td.colSpan=4;tr.append(td);snow.append(tr);}window.NordlWeatherGeography=rows;window.dispatchEvent(new CustomEvent('weather:geography',{detail:rows}));}
-function show(){if($('weather').hidden&&$('hydro').hidden)return;if(data===null){data={};fetch('data/weather-geography-v1.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw Error();return r.json();}).then(d=>{if(d.schema_version!==1||!Array.isArray(d.snow))throw Error();render(d);}).catch(()=>render(null));}}
+function show(){if($('weather').hidden&&$('hydro').hidden)return;if(data===null){data={};window.NordlData.fetch('data/weather-geography-v1.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw Error();return r.json();}).then(d=>{if(d.schema_version!==1||!Array.isArray(d.snow))throw Error();render(d);}).catch(()=>render(null));}}
 window.addEventListener('hashchange',()=>requestAnimationFrame(show));requestAnimationFrame(show);
 })();
