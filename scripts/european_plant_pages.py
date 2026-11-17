@@ -58,7 +58,8 @@ def coverage(root,base,page,e):
         ("ENTSO-E day-ahead prices","Official link; general free-reuse list does not establish permission","https://transparency.entsoe.eu/"),
         ("Yahoo financial price and derived market inputs","Official link; commercial redistribution not established","https://finance.yahoo.com/"),
         ("Elexon GB market index","Review source and upstream exceptions independently of FX; link until cleared","https://bmrs.elexon.co.uk/"),
-        ("Nordic reseller prices","Official link; verify upstream exchange rights","https://www.nordpoolgroup.com/"),
+        ("Norwegian reference prices","Provider permits public display; upstream bulk/commercial dataset reuse remains under review","https://www.hvakosterstrommen.no/strompris-api"),
+        ("Swedish reference prices","Provider permits public display; upstream bulk/commercial dataset reuse remains under review","https://www.elprisetjustnu.se/elpris-api"),
         ("MET forecasts and GIE AGSI","Attribution required; respect dataset-specific terms","https://iip.gie.eu/data-usage"),
     ]
     body='<h1>Data coverage and publication rights</h1><p>API access does not imply commercial redistribution. This is a source-specific review, not a legal certification. A reference link does not confer publication rights.</p><section><h2>Source-by-source review</h2><ul class="rights-list">'+''.join(f'<li><strong>{e(name)}</strong><p>{e(status)} · <a href="{e(url)}">Official source / terms</a></p></li>' for name,status,url in rows)+'</ul></section><section><h2>Open dataset access</h2><p>Only the reviewed dataset catalog is approved for structured commercial export. Mixed market display data is not a licensed export.</p><a class="action" href="/#datasets">Browse reviewed datasets</a></section>'

@@ -55,8 +55,9 @@ class CollectorRegressionTests(unittest.TestCase):
             plant_refresh.assert_called_once_with(out.parent)
             from publication_policy import project_snapshot
             self.assertEqual(json.loads(out.read_text(encoding="utf-8"))["europe"], project_snapshot({"generated":"test","europe":prices})["europe"])
-            for name in ("collect_spot","collect_market","collect_fuel","collect_france","collect_grid","collect_commodities"):
+            for name in ("collect_market","collect_fuel","collect_france","collect_grid","collect_commodities"):
                 getattr(fetch,name).assert_not_called()
+            fetch.collect_spot.assert_called_once()
             previous = out.read_bytes()
             fetch.collect_europe.return_value = lambda: None
             with self.assertRaises(TypeError):

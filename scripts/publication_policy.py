@@ -2,7 +2,8 @@
 Used by the public collector and allowlisted Pages artifact. Historical Git
 objects are outside this forward publication gate. Unknown fields fail closed.
 """
-import argparse,json
+import argparse,json,math
+from datetime import date
 from pathlib import Path
 from urllib.parse import urlsplit
 from price_rights import permitted
@@ -19,6 +20,30 @@ def approved_url(url,host):
     if not isinstance(url,str):return False
     p=urlsplit(url)
     return p.scheme=="https" and p.netloc==host
+NORDIC_PROVIDERS={"NO":("Hva koster strømmen","www.hvakosterstrommen.no","strompris-api","NOK",5),"SE":("Elpriset just nu","www.elprisetjustnu.se","elpris-api","SEK",4)}
+def reference_zones(rows):
+    out=[];seen=set()
+    for r in rows:
+        country=r.get("country");spec=NORDIC_PROVIDERS.get(country)
+        if not spec:continue
+        label,host,terms,currency,n=spec;zone=r.get("zone")
+        if zone not in {country+str(i) for i in range(1,n+1)} or zone in seen or r.get("currency")!=currency:continue
+        def valid(day):
+            if not isinstance(day,dict) or day.get("complete") is not True or not approved_url(day.get("sourceUrl"),host):return False
+            try:
+                dt=date.fromisoformat(day["date"])
+                expected=f"/api/v1/prices/{dt.year}/{dt.month:02d}-{dt.day:02d}_{zone}.json"
+                if urlsplit(day["sourceUrl"]).path!=expected:return False
+                count=len(day["local"])
+                return count in (23,24,25) and all(len(day[k])==count for k in ("eur","hours","hourStartsUtc","hourLabels")) and all(type(v) in (int,float) and math.isfinite(v) for k in ("local","eur") for v in day[k])
+            except (KeyError,TypeError,ValueError):return False
+        if not valid(r.get("today")):continue
+        seen.add(zone)
+        row=fields(r,("zone","country","label","currency","today","tomorrow","stale","cheapest1","cheapest3","peakHour","spread"))
+        if not valid(row.get("tomorrow")):row["tomorrow"]=None
+        row.update(displaySource=label,termsUrl=f"https://{host}/{terms}",reuseStatus="provider_public_display_upstream_review")
+        out.append(row)
+    return out
 def project_snapshot(d):
     prices=[]
     for r in d.get("europe",[]):
@@ -26,13 +51,13 @@ def project_snapshot(d):
             prices.append(fields(r,PRICE_FIELDS))
     gas=d.get("gasStorage") or {}
     # Retain the supported renderer schema, not unapproved values or derivatives.
-    return {"generated":d["generated"],"zones":[],"europe":prices,
+    return {"generated":d["generated"],"zones":reference_zones(d.get("zones",[])),"europe":prices,
         "marketIndex":None,"market":{},"grid":{},"fuel":{},"france":{},
         "commodities":[],"news":[],
         "reservoirs":fields(d.get("reservoirs") or {},("year","week","zones","national","stale")),
         "weather":{z:fields(w,WEATHER_FIELDS) for z,w in d.get("weather",{}).items() if z in SHARED_ZONES and isinstance(w,dict) and w.get("sourceUpdatedAt")},
         "gasStorage":{"source":"GIE AGSI","countries":[fields(r,GAS_FIELDS) for r in gas.get("countries",[])] if gas.get("source")=="GIE AGSI" else [],"status":gas.get("status","unavailable") if gas.get("source")=="GIE AGSI" else "unavailable"},
-        "publication":{"policy":"v90.1_open_projection","sources":{"reservoirs":"NVE / NLOD","weather":"MET Norway / CC BY 4.0","gasStorage":"GIE AGSI / attribution required"},"unavailable":{"zones":"https://www.nordpoolgroup.com/","marketIndex":"https://bmrs.elexon.co.uk/","market":"https://finance.yahoo.com/","commodities":"https://www.eia.gov/dnav/pet/pet_pri_spt_s1_d.htm","grid":"https://transparency.entsoe.eu/"}}}
+        "publication":{"policy":"v90.1_open_projection","sources":{"reservoirs":"NVE / NLOD","weather":"MET Norway / CC BY 4.0","gasStorage":"GIE AGSI / attribution required","nordicPrices":"Provider-authorized public reference display; upstream commercial dataset rights pending"},"unavailable":{"marketIndex":"https://bmrs.elexon.co.uk/","market":"https://finance.yahoo.com/","commodities":"https://www.eia.gov/dnav/pet/pet_pri_spt_s1_d.htm","grid":"https://transparency.entsoe.eu/"}}}
 def project_economic(d):
     rows=[]
     for r in d.get("series",[]):
