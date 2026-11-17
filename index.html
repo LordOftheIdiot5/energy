@@ -17,7 +17,7 @@
 <link rel="stylesheet" href="terminal.css?v=36"/><link rel="stylesheet" href="geography.css?v=36"/>
 <meta name="theme-color" content="#080e18"/><link rel="canonical" href="https://energy.nordl.dev/"/><meta property="og:title" content="Nordl Energy — European energy intelligence"/><meta property="og:description" content="Electricity, hydro storage, weather and source-linked energy infrastructure research."/>
 <link rel="stylesheet" href="visual-terminal.css?v=53"/>
-<link rel="stylesheet" href="energy-pro.css?v=9011"/>
+<link rel="stylesheet" href="energy-pro.css?v=9012"/>
 </head>
 <body data-theme="dark"><a class="en-skip" href="#overview">Skip to content</a><div class="en-layout"><aside class="en-side" id="enNav" aria-label="Energy navigation"><a class="en-logo" href="index.html" aria-label="Energy home"><span class="en-mark" aria-hidden="true">ϟ</span><span>energy<b>.nordl</b><small>ENERGY INTELLIGENCE</small></span></a><nav class="en-nav"><div class="en-group"><div class="en-label">WORKSPACE</div><a class="en-link active" href="#overview" aria-current="location"><span aria-hidden="true">◫</span>Overview</a><a class="en-link" href="#energyMap"><span aria-hidden="true">◎</span>European energy map</a><a class="en-link" href="#prices"><span aria-hidden="true">▥</span>European power prices</a><a class="en-link" href="#day"><span aria-hidden="true">◷</span>Hourly electricity</a></div><div class="en-group"><div class="en-label">ENERGY SYSTEM</div><a class="en-link" href="#grid"><span aria-hidden="true">⇄</span>Generation &amp; flows</a><a class="en-link" href="#weather"><span aria-hidden="true">☀</span>Weather &amp; demand</a><a class="en-link" href="#hydroLab"><span aria-hidden="true">≋</span>Norwegian hydro intelligence</a><a class="en-link" href="#hydro"><span aria-hidden="true">≋</span>Hydro reservoirs</a><a class="en-link" href="#fuels"><span aria-hidden="true">◈</span>Fuels, carbon &amp; FX</a><a class="en-link" href="#gas" id="gasNav" hidden><span aria-hidden="true">▤</span>Gas storage</a><a class="en-link" href="#pump"><span aria-hidden="true">◉</span>Pump prices</a></div><div class="en-group"><div class="en-label">MARKET INTELLIGENCE</div><a class="en-link" href="#market"><span aria-hidden="true">↗</span>Company economics</a><a class="en-link" href="#news"><span aria-hidden="true">▧</span>Energy projects</a></div><div class="en-group"><div class="en-label">PLATFORM</div><a class="en-link" href="#calculators"><span aria-hidden="true">⊞</span>Energy calculators</a><a class="en-link" href="#history"><span aria-hidden="true">↶</span>Historical data</a><a class="en-link" href="#countries"><span aria-hidden="true">◎</span>Country dashboard</a><a class="en-link" href="#demand"><span aria-hidden="true">☀</span>Demand scenarios</a><a class="en-link" href="#analyst"><span aria-hidden="true">✦</span>Research assistant</a><a class="en-link" href="#plants"><span aria-hidden="true">▥</span>Power plants</a><a class="en-link" href="#datasets"><span aria-hidden="true">▦</span>Datasets &amp; API</a><a class="en-link" href="#sources"><span aria-hidden="true">◇</span>Data &amp; sources</a></div><a class="en-link" href="guide.html"><span aria-hidden="true">?</span>Methodology guide</a></nav><div class="en-sidefoot"><a href="https://stocks.nordl.dev/">Stockwatch ↗</a><a href="https://leivro.com/">Leivro ↗</a><p>Independent energy intelligence</p></div></aside><div class="en-main"><div class="en-tape"><strong>ENERGY MARKETS</strong><span id="enTape">Loading latest published snapshot…</span></div><header class="en-top"><button class="en-button en-mobile" id="enMenu" aria-label="Toggle navigation" aria-controls="enNav" aria-expanded="false" type="button">☰</button><div class="en-crumb">Energy <span>/</span> Dashboard</div><form class="en-search" id="enSearch" role="search"><label class="en-sr" for="enQuery">Find an energy section</label><input id="enQuery" type="search" placeholder="Find prices, hydro, gas…" autocomplete="off"><button type="submit" aria-label="Go to section">⌕</button></form><span class="stamp" id="stamp" role="status">Loading data…</span><button class="en-button" id="enTheme" aria-label="Switch light and dark theme" type="button">☾</button></header><main class="page">
 <div class="stale-bar" id="staleBar" role="status"></div>
@@ -125,12 +125,12 @@
        your bill is higher than the number here — what moves is what matters.</p>
   </footer>
 </main></div></div>
-<script src="data-cache.js?v=901"></script><script src="workspace.js?v=9011" defer></script>
+<script src="data-cache.js?v=9012"></script><script src="workspace.js?v=9012" defer></script>
 <script src="portal.js?v=9011" defer></script>
 <script src="energy-land.js?v=36" defer></script>
 <script src="map-navigation.js?v=71" defer></script>
-<script src="terminal.js?v=9011" defer></script>
-<script src="geo-labels.js?v=36" defer></script><script src="energy-map.js?v=9011" defer></script>
+<script src="terminal.js?v=9012" defer></script>
+<script src="geo-labels.js?v=36" defer></script><script src="energy-map.js?v=9012" defer></script>
 <script src="nordl-charts.js?v=90" defer></script><script src="research-tools.js?v=9011" defer></script>
 <script src="hydro-intelligence.js?v=9011" defer></script>
 <script src="shared-energy.js?v=9011" defer></script>
@@ -202,6 +202,7 @@ function renderZones(d) {
   const rows = allZones(d);
   if (!rows.length) { $("zones").innerHTML = "<p class='sub'>No prices yet.</p>"; return; }
 
+  const liveCodes=new Set([...(d.zones||[]),...(d.europe||[])].filter(window.NordlData.comparable).map(r=>r.zone));
   const all = rows.flatMap(r => r.series);
   const lo = Math.min(...all), hi = Math.max(...all);
   const span = (hi - lo) || 1;
@@ -210,12 +211,12 @@ function renderZones(d) {
   $("zones").innerHTML = rows
     // By average, not by cheapest hour: a zone with one wild cheap hour would
     // otherwise sort above a zone that is cheaper all day, which is backwards.
-    .sort((a, b) => avgOf(a.series) - avgOf(b.series))
+    .sort((a,b)=>Number(liveCodes.has(b.code))-Number(liveCodes.has(a.code))||avgOf(a.series)-avgOf(b.series))
     .map(r => {
       const zlo = Math.min(...r.series), zhi = Math.max(...r.series);
       const avg = avgOf(r.series);
       const left = pct(zlo), width = Math.max(pct(zhi) - pct(zlo), 1.2);
-      return `<div class="zone">
+      return `<div class="zone" data-fresh="${liveCodes.has(r.code)?"current":"retained"}">
         <div class="who">
           <span class="code">${esc(r.code)}<i>${esc(r.region)}</i></span>
           <span class="place">${esc(r.label)}</span>
@@ -311,7 +312,7 @@ function renderGrid(d) {
   const g = d.grid || {};
   const mix = g.mix || {};
   const gen = g.generation || 0;
-  if (!gen) { $("mix").innerHTML = ""; $("flows").innerHTML = ""; return; }
+  if (!gen) { $("mix").textContent = "Generation mix unavailable."; $("flows").textContent = "Flow data unavailable."; return; }
 
   const segs = MIX.filter(([k]) => mix[k] > 0).map(([k, label, col]) => {
     const pct = mix[k] / gen * 100;
@@ -339,7 +340,7 @@ function renderGrid(d) {
   const links = (g.flows || [])
     .filter(l => nordic.test(l.from || "") || nordic.test(l.to || ""))
     .slice(0, 12);
-  if (!links.length) { $("flows").innerHTML = ""; return; }
+  if (!links.length) { $("flows").textContent = "No reported nonzero flows available."; return; }
   const peak = Math.max(...links.map(l => l.mw));
   $("flows").innerHTML = `<div class="group-title">Reported cross-border flows</div>` +
     links.map(l => `
@@ -354,7 +355,7 @@ function renderGrid(d) {
 function renderWeather(d) {
   const w = d.weather || {};
   const keys = Object.keys(w);
-  if (!keys.length) { $("weatherRows").innerHTML = ""; return; }
+  if (!keys.length) { $("weatherRows").textContent = "No weather forecast available."; return; }
   const hdh = keys.map(k => w[k].heatingDegreeHours).filter(v => v != null);
   const maxH = Math.max(...hdh, 1);
 
@@ -364,7 +365,7 @@ function renderWeather(d) {
     .map(k => {
       const z = w[k];
       return `<div class="wx">
-        <div class="zone-name">${esc(k)}<small>${esc(z.place)}</small></div>
+        <div class="zone-name">${esc(k)}<small>${esc(z.place)} · ${esc(z.forecastStart||"Validity not supplied")}${z.stale?" · last known":""}</small></div>
         <div class="wtemp">${z.tempNow == null ? "—" : z.tempNow.toFixed(1) + "°"}
           <small>${z.tempMin == null ? "" : z.tempMin.toFixed(0) + "–" + z.tempMax.toFixed(0) + "° ahead"}</small></div>
         <div class="wwind">${z.windNow == null ? "—" : z.windNow.toFixed(1)}
@@ -396,7 +397,7 @@ function renderReservoirs(d) {
       : `<i style="left:50%;width:${half}%;background:var(--up)"></i>`;
     const cls = dev == null ? "dim" : dev < 0 ? "bad" : "ok";
     return `<div class="res">
-      <div class="zone-name">${esc(k)}<small>${z.twh} TWh</small></div>
+      <div class="zone-name">${esc(k)}<small>${z.twh} TWh · ${esc(String(r.year||"") + " W" + String(r.week||""))}${r.stale?" · last known":""}</small></div>
       <div class="dev"><span class="mid"></span>${bar}</div>
       <div class="fig ${cls}">${dev == null ? "—" : (dev * 100 >= 0 ? "+" : "") + (dev * 100).toFixed(1) + " pts"}
         <small>${(z.fill * 100).toFixed(1)}% full${z.normal
@@ -436,7 +437,7 @@ function renderCommodities(d) {
     return `<div class="group-title">${esc(title)}</div>
      <div class="grid">${items.map(c => `
        <div class="card">
-         <div class="nm">${esc(c.name)}</div>
+         <div class="nm">${esc(c.name)}</div><div class="feed-mini">${esc(c.sourceTime?String(c.sourceTime).slice(0,10):"Source date not supplied")}${c.stale?" · last known":""}${c.group==="transition"?" · ETF proxy":""}</div>
          <div class="px">${c.last.toLocaleString("en-US", {
             minimumFractionDigits: c.last < 20 ? 2 : 1,
             maximumFractionDigits: c.last < 20 ? 2 : 1 })}<u>${esc(c.unit || "")}</u></div>
@@ -670,6 +671,8 @@ function renderStamp(d) {
   // so unlike stockwatch there is no weekend gap to forgive. Three hours of
   // silence means something has stopped.
   const hours = (Date.now() - new Date(d.generated)) / 3.6e6;
+  stamp.classList.toggle("stale",!Number.isFinite(hours)||hours<-.1||hours>3);
+  $("staleBar").classList.remove("show");
   if (!Number.isFinite(hours) || hours < -0.1 || hours > 3) {
     stamp.classList.add("stale");
     $("staleBar").innerHTML =
@@ -691,14 +694,17 @@ function placeHints() {
 }
 window.addEventListener("resize", placeHints);
 
-fetch("data/energy.json?cb=" + Date.now())
+let snapshotLoading=false;
+function refreshPublished(){if(snapshotLoading)return;snapshotLoading=true;
+fetch("data/energy.json?cb=" + Date.now(),{cache:"no-cache"})
   .then(r => r.ok ? r.json() : Promise.reject(r.status))
   .then(d => {
     const gb=d.marketIndex||(d.europe||[]).find(x=>x.zone==="GB");
     d.europe=(d.europe||[]).filter(x=>x.zone!=="GB");
     const g=$("gbMarketIndex");if(g)g.textContent=gb&&Number.isFinite(gb.mean)?gb.mean.toFixed(2)+" EUR cents/kWh · "+gb.points+" reported intervals · "+(gb.date||"Date unavailable")+(gb.stale?" · last known":""):"No validated market-index observation.";
+    if(DATA&&d.generated===DATA.generated){renderStamp(DATA);return;}
     DATA = d;
-    activeZone = ((d.zones || [])[0] || {}).zone;
+    if(!(d.zones||[]).some(z=>z.zone===activeZone))activeZone=((d.zones||[])[0]||{}).zone;
     renderStamp(d); renderLede(d); renderZones(d);
     renderPills(d); renderCurves(d);
     renderGrid(d); renderWeather(d);
@@ -709,13 +715,15 @@ fetch("data/energy.json?cb=" + Date.now())
     placeHints();
   })
   .catch(e => {
+    if(DATA){renderStamp(DATA);$("staleBar").textContent="Refresh failed. Showing last successful published snapshot from "+DATA.generated+"."; $("staleBar").classList.add("show");return;}
     $("stamp").textContent = "could not load data";
     $("staleBar").textContent = "Energy data could not be loaded. No current values are available.";
     $("staleBar").classList.add("show");
     window.dispatchEvent(new Event("energy:unavailable"));
     $("stamp").classList.add("stale");
     console.error("energy.json", e);
-  });
+  }).finally(()=>{snapshotLoading=false;});}
+refreshPublished();setInterval(()=>{if(!document.hidden)refreshPublished();},300000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)refreshPublished();});
 </script>
 <script src="visual-terminal.js?v=9011" defer></script>
 <script src="public-grid-map.js?v=823" defer></script><script src="energy-atlas.js?v=9011" defer></script>
@@ -723,8 +731,9 @@ fetch("data/energy.json?cb=" + Date.now())
 <script src="plant-tile-map.js?v=77" defer></script>
 <script src="project-atlas.js?v=73" defer></script>
 <script src="terrain-relief.js?v=79" defer></script><script src="satellite-layer.js?v=80" defer></script><script src="regional-atlas.js?v=80" defer></script>
-<script src="weather-geography.js?v=9011" defer></script>
+<script src="weather-geography.js?v=9012" defer></script>
 <script src="plant-profile.js?v=9011" defer></script>
 <script src="release-research.js?v=9011" defer></script>
+<script src="feed-freshness.js?v=9012" defer></script>
 </body>
 </html>
