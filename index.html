@@ -17,14 +17,14 @@
 <link rel="stylesheet" href="terminal.css?v=36"/><link rel="stylesheet" href="geography.css?v=36"/>
 <meta name="theme-color" content="#080e18"/><link rel="canonical" href="https://energy.nordl.dev/"/><meta property="og:title" content="Nordl Energy — European energy intelligence"/><meta property="og:description" content="Electricity, hydro storage, weather and source-linked energy infrastructure research."/>
 <link rel="stylesheet" href="visual-terminal.css?v=53"/>
-<link rel="stylesheet" href="energy-pro.css?v=9012"/>
+<link rel="stylesheet" href="energy-pro.css?v=9013"/>
 </head>
 <body data-theme="dark"><a class="en-skip" href="#overview">Skip to content</a><div class="en-layout"><aside class="en-side" id="enNav" aria-label="Energy navigation"><a class="en-logo" href="index.html" aria-label="Energy home"><span class="en-mark" aria-hidden="true">ϟ</span><span>energy<b>.nordl</b><small>ENERGY INTELLIGENCE</small></span></a><nav class="en-nav"><div class="en-group"><div class="en-label">WORKSPACE</div><a class="en-link active" href="#overview" aria-current="location"><span aria-hidden="true">◫</span>Overview</a><a class="en-link" href="#energyMap"><span aria-hidden="true">◎</span>European energy map</a><a class="en-link" href="#prices"><span aria-hidden="true">▥</span>European power prices</a><a class="en-link" href="#day"><span aria-hidden="true">◷</span>Hourly electricity</a></div><div class="en-group"><div class="en-label">ENERGY SYSTEM</div><a class="en-link" href="#grid"><span aria-hidden="true">⇄</span>Generation &amp; flows</a><a class="en-link" href="#weather"><span aria-hidden="true">☀</span>Weather &amp; demand</a><a class="en-link" href="#hydroLab"><span aria-hidden="true">≋</span>Norwegian hydro intelligence</a><a class="en-link" href="#hydro"><span aria-hidden="true">≋</span>Hydro reservoirs</a><a class="en-link" href="#fuels"><span aria-hidden="true">◈</span>Fuels, carbon &amp; FX</a><a class="en-link" href="#gas" id="gasNav" hidden><span aria-hidden="true">▤</span>Gas storage</a><a class="en-link" href="#pump"><span aria-hidden="true">◉</span>Pump prices</a></div><div class="en-group"><div class="en-label">MARKET INTELLIGENCE</div><a class="en-link" href="#market"><span aria-hidden="true">↗</span>Company economics</a><a class="en-link" href="#news"><span aria-hidden="true">▧</span>Energy projects</a></div><div class="en-group"><div class="en-label">PLATFORM</div><a class="en-link" href="#calculators"><span aria-hidden="true">⊞</span>Energy calculators</a><a class="en-link" href="#history"><span aria-hidden="true">↶</span>Historical data</a><a class="en-link" href="#countries"><span aria-hidden="true">◎</span>Country dashboard</a><a class="en-link" href="#demand"><span aria-hidden="true">☀</span>Demand scenarios</a><a class="en-link" href="#analyst"><span aria-hidden="true">✦</span>Research assistant</a><a class="en-link" href="#plants"><span aria-hidden="true">▥</span>Power plants</a><a class="en-link" href="#datasets"><span aria-hidden="true">▦</span>Datasets &amp; API</a><a class="en-link" href="#sources"><span aria-hidden="true">◇</span>Data &amp; sources</a></div><a class="en-link" href="guide.html"><span aria-hidden="true">?</span>Methodology guide</a></nav><div class="en-sidefoot"><a href="https://stocks.nordl.dev/">Stockwatch ↗</a><a href="https://leivro.com/">Leivro ↗</a><p>Independent energy intelligence</p></div></aside><div class="en-main"><div class="en-tape"><strong>ENERGY MARKETS</strong><span id="enTape">Loading latest published snapshot…</span></div><header class="en-top"><button class="en-button en-mobile" id="enMenu" aria-label="Toggle navigation" aria-controls="enNav" aria-expanded="false" type="button">☰</button><div class="en-crumb">Energy <span>/</span> Dashboard</div><form class="en-search" id="enSearch" role="search"><label class="en-sr" for="enQuery">Find an energy section</label><input id="enQuery" type="search" placeholder="Find prices, hydro, gas…" autocomplete="off"><button type="submit" aria-label="Go to section">⌕</button></form><span class="stamp" id="stamp" role="status">Loading data…</span><button class="en-button" id="enTheme" aria-label="Switch light and dark theme" type="button">☾</button></header><main class="page">
 <div class="stale-bar" id="staleBar" role="status"></div>
 <section class="lede" id="overview"><div class="en-eyebrow">EUROPEAN ENERGY INTELLIGENCE</div><h1>Energy markets, <em>made clear.</em></h1><p id="lede">Power prices, electricity generation, weather, hydro storage and the fuel markets behind them.</p></section>
 <div class="en-kpis" id="enKpis" aria-label="Energy snapshot"><div class="en-kpi">Loading published energy data…</div></div>
 <p class="en-disclaimer">Wholesale prices exclude grid charges, taxes and VAT. Snapshot freshness does not certify the age of every upstream observation.</p><div class="en-platform-links" id="researchQuick"><a href="#hydroLab">Norwegian hydro outlook ↗</a><a href="#history">Hydro history ↗</a><a href="#countries">Country dashboards ↗</a><a href="#demand">Demand scenarios ↗</a><a href="#analyst">Research assistant ↗</a><a href="#datasets">Datasets &amp; API ↗</a></div>
-<div id="enSearchStatus" class="en-search-status" role="status"></div><section id="enPortal"><div class="en-sectionhead"><h2>Explore energy intelligence</h2><a class="en-map-jump" href="#energyMap">Explore the interactive energy map ↗</a></div><section class="visual-room" aria-labelledby="visualTitle"><div class="visual-heading"><div><span class="visual-eyebrow">MARKET MONITOR / PUBLISHED DATA</span><h2 id="visualTitle">The energy system at a glance</h2><p>Compare the electricity market and Norwegian water storage in one view.</p></div><span id="visualStamp" class="visual-stamp" role="status">Waiting for data</span></div><div class="visual-grid"><article class="visual-card"><div class="visual-card-head"><div><span class="visual-eyebrow">DAY-AHEAD MARKET</span><h3>Electricity price profile</h3></div><label>Zone <select id="visualZone" aria-label="Price chart bidding zone"><option>NO3</option></select></label></div><div id="visualPriceStats" class="visual-stats"></div><div id="visualPrice" class="visual-plot">Awaiting published data.</div><p id="visualReadout" class="visual-readout" aria-live="polite"></p><details class="visual-data"><summary>View underlying price data</summary><div id="visualPriceTable"></div></details><a class="visual-link" href="#day">Explore hourly markets ↗</a></article><article class="visual-card"><div class="visual-card-head"><div><span class="visual-eyebrow">NVE / RESERVOIR MONITOR</span><h3>Water in storage</h3></div><span class="visual-tag">% of capacity</span></div><div id="visualHydro" class="visual-plot">Awaiting reservoir data.</div><p class="visual-note">Bars show reported fill. Markers show the seasonal median. No forecast is implied.</p><a class="visual-link" href="#hydroLab">Open hydro research ↗</a></article></div></section><div class="en-features"><a href="#prices" class="en-feature"><div class="en-preview" id="preview-prices" aria-hidden="true">Waiting for published data…</div><div class="en-feature-body"><small>01 · POWER MARKETS</small><h3>Electricity markets<span aria-hidden="true">↗</span></h3><p>European spot prices, regional differences and cheaper charging hours.</p></div></a>
+<div id="enSearchStatus" class="en-search-status" role="status"></div><nav class="v901-quick-links" aria-label="Quick energy navigation"><a href="#prices">Power prices</a><a href="#energyMap">Map</a><a href="#hydroLab">Hydro</a><a href="/plants/">Plant directory</a><a href="/data-coverage/">Data coverage</a></nav><section id="enPortal"><div class="en-sectionhead"><h2>Explore energy intelligence</h2><a class="en-map-jump" href="#energyMap">Explore the interactive energy map ↗</a></div><section class="visual-room" aria-labelledby="visualTitle"><div class="visual-heading"><div><span class="visual-eyebrow">MARKET MONITOR / PUBLISHED DATA</span><h2 id="visualTitle">The energy system at a glance</h2><p>Compare the electricity market and Norwegian water storage in one view.</p></div><span id="visualStamp" class="visual-stamp" role="status">Waiting for data</span></div><div class="visual-grid"><article class="visual-card"><div class="visual-card-head"><div><span class="visual-eyebrow">DAY-AHEAD MARKET</span><h3>Electricity price profile</h3></div><label>Zone <select id="visualZone" aria-label="Price chart bidding zone"><option>NO3</option></select></label></div><div id="visualPriceStats" class="visual-stats"></div><div id="visualPrice" class="visual-plot">Awaiting published data.</div><p id="visualReadout" class="visual-readout" aria-live="polite"></p><details class="visual-data"><summary>View underlying price data</summary><div id="visualPriceTable"></div></details><a class="visual-link" href="#day">Explore hourly markets ↗</a></article><article class="visual-card"><div class="visual-card-head"><div><span class="visual-eyebrow">NVE / RESERVOIR MONITOR</span><h3>Water in storage</h3></div><span class="visual-tag">% of capacity</span></div><div id="visualHydro" class="visual-plot">Awaiting reservoir data.</div><p class="visual-note">Bars show reported fill. Markers show the seasonal median. No forecast is implied.</p><a class="visual-link" href="#hydroLab">Open hydro research ↗</a></article></div></section><div class="en-features"><a href="#prices" class="en-feature"><div class="en-preview" id="preview-prices" aria-hidden="true">Waiting for published data…</div><div class="en-feature-body"><small>01 · POWER MARKETS</small><h3>Electricity markets<span aria-hidden="true">↗</span></h3><p>European spot prices, regional differences and cheaper charging hours.</p></div></a>
 <a href="#grid" class="en-feature"><div class="en-preview" id="preview-grid" aria-hidden="true">Waiting for published data…</div><div class="en-feature-body"><small>02 · POWER SYSTEM</small><h3>Grid intelligence<span aria-hidden="true">↗</span></h3><p>Generation mix, interconnectors and cross-border electricity flows.</p></div></a>
 <a href="#hydro" class="en-feature"><div class="en-preview" id="preview-hydro" aria-hidden="true">Waiting for published data…</div><div class="en-feature-body"><small>03 · STORAGE</small><h3>Hydro and storage<span aria-hidden="true">↗</span></h3><p>Reservoir levels, seasonal comparisons and European gas storage.</p></div></a>
 <a href="#fuels" class="en-feature"><div class="en-preview" id="preview-fuels" aria-hidden="true">Waiting for published data…</div><div class="en-feature-body"><small>04 · COMMODITIES</small><h3>Commodity intelligence<span aria-hidden="true">↗</span></h3><p>Fuels, carbon, currency and energy-related company economics.</p></div></a>
@@ -251,6 +251,7 @@ function curveSvg(day, cheapest, currency, domain) {
 }
 
 function renderCurves(d) {
+  if (!d.zones?.length && d.publication) { $("curves").innerHTML = `<p class="v901-reference">Nordic local-currency delivery curves await commercial rights clearance. <a href="https://www.nordpoolgroup.com/">Open official market prices</a> · <a href="#prices">View approved European prices</a>.</p>`; return; }
   const z = d.zones.find(x => x.zone === activeZone) || d.zones[0];
   if (!z) return;
   const panels = [];
@@ -312,7 +313,7 @@ function renderGrid(d) {
   const g = d.grid || {};
   const mix = g.mix || {};
   const gen = g.generation || 0;
-  if (!gen) { $("mix").textContent = "Generation mix unavailable."; $("flows").textContent = "Flow data unavailable."; return; }
+  if (!gen) { $("mix").innerHTML = d.publication ? `<p class="v901-reference">Live generation mix: <a href="https://transparency.entsoe.eu/">Open ENTSO-E official statistics</a>.</p>` : "Generation mix unavailable."; $("flows").textContent = d.publication ? "See the reviewed physical-flow observations below." : "Flow data unavailable."; return; }
 
   const segs = MIX.filter(([k]) => mix[k] > 0).map(([k, label, col]) => {
     const pct = mix[k] / gen * 100;
@@ -429,6 +430,7 @@ function sparkSvg(v) {
 }
 
 function renderCommodities(d) {
+  if (d.publication && !d.commodities?.length) { $("commodities").innerHTML = `<p class="v901-reference">Exchange quotes are awaiting rights clearance. <a href="https://finance.yahoo.com/">Open market quotes</a> · See dated EIA spot reference observations below.</p>`; return; }
   const byGroup = {};
   (d.commodities || []).forEach(c => (byGroup[c.group] ||= []).push(c));
   $("commodities").innerHTML = GROUPS.map(([title, keys]) => {
@@ -477,7 +479,7 @@ function renderGas(d) {
 /* ---------------------------------------------- France, inside the grid */
 function renderFrance(d) {
   const f = d.france || {};
-  if (!f.nuclearMw) { $("france").innerHTML = ""; return; }
+  if (!f.nuclearMw) { $("france").innerHTML = d.publication ? `<p class="v901-reference">French generation: <a href="https://www.rte-france.com/en/eco2mix">RTE official electricity data</a>.</p>` : ""; return; }
   // Availability against installed capacity is the number traders watch:
   // the shortfall is what the rest of Europe has to burn gas to cover.
   const pct = f.availabilityPct;
@@ -512,7 +514,7 @@ function monthLabel(key) {
 function renderPump(d) {
   const f = d.fuel || {};
   const fuels = f.fuels || [];
-  if (!fuels.length) { $("pumpRows").innerHTML = ""; return; }
+  if (!fuels.length) { $("pumpRows").innerHTML = d.publication ? `<p class="v901-reference">Fuel-price model inputs await clearance. <a href="https://www.ssb.no/en/energi-og-industri/energi/statistikk/sal-av-petroleumsprodukt">Statistics Norway petroleum data</a>.</p>` : ""; return; }
   const PARTS = [
     ["productNok", "Product", "#58b9ff"],
     ["roadTax", "Road duty", "#f09243"],
@@ -553,6 +555,7 @@ function renderPump(d) {
 /* ------------------------------------------------- margins & equities */
 function renderMarket(d) {
   const m = d.market || {};
+  if (d.publication && !m.margins?.length) { $("margins").innerHTML = `<p class="v901-reference">Market-derived company estimates await cleared inputs. <a href="https://finance.yahoo.com/">Open official-provider market references</a>. Historical plant research remains available.</p>`; $("cohorts").replaceChildren(); $("correlations").replaceChildren(); return; }
 
   $("margins").innerHTML = (m.margins || []).map(x => `
     <div class="spread">
@@ -702,6 +705,7 @@ fetch("data/energy.json?cb=" + Date.now(),{cache:"no-cache"})
     const gb=d.marketIndex||(d.europe||[]).find(x=>x.zone==="GB");
     d.europe=(d.europe||[]).filter(x=>x.zone!=="GB");
     const g=$("gbMarketIndex");if(g)g.textContent=gb&&Number.isFinite(gb.mean)?gb.mean.toFixed(2)+" EUR cents/kWh · "+gb.points+" reported intervals · "+(gb.date||"Date unavailable")+(gb.stale?" · last known":""):"No validated market-index observation.";
+    if(g&&d.publication&&!gb){const a=document.createElement("a");a.href="https://bmrs.elexon.co.uk/";a.textContent="Open Elexon official market data";g.replaceChildren(a);}
     if(DATA&&d.generated===DATA.generated){renderStamp(DATA);return;}
     DATA = d;
     if(!(d.zones||[]).some(z=>z.zone===activeZone))activeZone=((d.zones||[])[0]||{}).zone;
@@ -725,7 +729,7 @@ fetch("data/energy.json?cb=" + Date.now(),{cache:"no-cache"})
   }).finally(()=>{snapshotLoading=false;});}
 refreshPublished();setInterval(()=>{if(!document.hidden)refreshPublished();},300000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)refreshPublished();});
 </script>
-<script src="visual-terminal.js?v=9011" defer></script>
+<script src="visual-terminal.js?v=9013" defer></script>
 <script src="public-grid-map.js?v=823" defer></script><script src="energy-atlas.js?v=9011" defer></script>
 <script src="energy-topo.js?v=73" defer></script>
 <script src="plant-tile-map.js?v=77" defer></script>

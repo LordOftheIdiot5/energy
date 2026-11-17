@@ -24,6 +24,7 @@ jobs:
           python -m compileall -q scripts tests
           python -m unittest discover -s tests -v
           for f in *.js; do node --check "$f"; done
+          node tests/test_visual_terminal.cjs
       - name: Generate full static directory
         run: python scripts/build_plant_pages.py
       - name: Validate separate public-data projection
@@ -40,3 +41,5 @@ jobs:
           const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=require('fs');
           (async()=>{const d=JSON.parse(fs.readFileSync('data/europe-plants-v1.json'));const id=d.rows[0].id;const b=await chromium.launch({headless:true,args:['--no-sandbox']});try{for(const width of [1440,390]){const p=await b.newPage({viewport:{width,height:900},javaScriptEnabled:false});const path='/plants/wri/'+id+'/';assert.equal((await p.goto('http://127.0.0.1:8765'+path)).status(),200);assert.equal(await p.locator('h1').innerText(),d.rows[0].name);assert.equal(await p.locator('link[rel=canonical]').getAttribute('href'),'https://energy.nordl.dev'+path);assert.ok(await p.getByText('Historical archive · 2021').isVisible());assert.ok(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2));await p.close();}}finally{await b.close();}})().catch(e=>{console.error(e);process.exitCode=1});
           JS
+      - name: Test projected homepage without modifying source data
+        run: node tests/test_projected_home.cjs
