@@ -1,7 +1,7 @@
 """Build an explicit public artifact, never the checkout. Fail closed."""
 import argparse,hashlib,json,re,shutil
 from pathlib import Path
-from publication_policy import write_projection,project_snapshot,project_economic,project_shared
+from publication_policy import write_projection,project_snapshot,project_economic,project_shared,SHARED_ZONES
 from price_rights import permitted
 from build_plant_pages import generate
 ROOT=Path(__file__).resolve().parents[1]
@@ -43,7 +43,9 @@ def stage(root,out):
         for r in obj["rows"]:
             if not r.get("attribution") or not r.get("license"):raise ValueError("Missing archive rights")
             if kind=="day-ahead" and (not permitted(r.get("zone"),r["license"]) or not r.get("source","").startswith("https://api.energy-charts.info/")):raise ValueError("Unapproved price archive")
-            if kind=="entsoe-series" and (r.get("article") not in ("6.1.b","12.1.g") or r.get("source")!="https://transparency.entsoe.eu/"):raise ValueError("Unapproved ENTSO-E archive")
+            if kind=="entsoe-series":
+                category=r.get("kind");valid=(category=="day_ahead_load_forecast" and r.get("article")=="6.1.b" and r.get("zone") in SHARED_ZONES) or (category=="physical_flow" and r.get("article")=="12.1.g" and r.get("from") in SHARED_ZONES and r.get("to") in SHARED_ZONES)
+                if not valid or r.get("source")!="https://transparency.entsoe.eu/" or r["license"]!="https://creativecommons.org/licenses/by/4.0/":raise ValueError("Unapproved ENTSO-E archive")
             if kind=="gas-storage" and r.get("source")!="https://agsi.gie.eu/":raise ValueError("Unapproved gas archive")
             if kind=="snow-water" and not r.get("source","").startswith("https://gts.nve.no/api/GridTimeSeries/"):raise ValueError("Unapproved snow archive")
             if kind=="weather-forecast" and r.get("source")!="https://api.met.no/weatherapi/locationforecast/2.0/":raise ValueError("Unapproved weather archive")
