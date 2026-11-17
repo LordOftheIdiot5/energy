@@ -825,8 +825,8 @@ def main() -> int:
         previous = json.loads(OUT.read_text(encoding="utf-8"))
     except (OSError, ValueError):
         previous = {}
-    # Public collector: unverified sources are not requested or persisted.
-    zones = []
+    # Restore provider-authorized Nordic reference display, not commercial export.
+    zones = collect_spot(previous.get("zones"))
     print("\nreservoirs")
     reservoirs = collect_reservoirs()
     if not reservoirs and previous.get("reservoirs"):reservoirs={**previous["reservoirs"],"stale":True}

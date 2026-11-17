@@ -45,7 +45,7 @@
     <div class="curve-head">
       <div class="pills" id="zonePills"></div>
     </div>
-    <p class="pro-explain"><strong>How to read:</strong> Both days share the same vertical scale, starting from zero (negative prices extend below it). Green marks the cheapest consecutive three-hour period. Focus or hover a bar for its exact price. Wholesale prices exclude taxes and network charges.</p><div class="curve-wrap" id="curves"></div>
+    <p class="pro-explain"><strong>How to read:</strong> Both days share the same vertical scale, starting from zero (negative prices extend below it). Green marks the cheapest consecutive three-hour period. Focus or hover a bar for its exact price. Wholesale prices exclude taxes and network charges.</p><div class="curve-wrap" id="curves"></div><p class="sub">Nordic reference prices: <a href="https://www.hvakosterstrommen.no/strompris-api">Hva koster strømmen</a> and <a href="https://www.elprisetjustnu.se/elpris-api">Elpriset just nu</a>. Provider-authorized display; upstream commercial dataset reuse remains under review. Source delivery dates shown above.</p>
   </section>
 
   <section class="panel" id="grid">
@@ -251,7 +251,7 @@ function curveSvg(day, cheapest, currency, domain) {
 }
 
 function renderCurves(d) {
-  if (!d.zones?.length && d.publication) { $("curves").innerHTML = `<p class="v901-reference">Nordic local-currency delivery curves await commercial rights clearance. <a href="https://www.nordpoolgroup.com/">Open official market prices</a> · <a href="#prices">View approved European prices</a>.</p>`; return; }
+  if (!d.zones?.length && d.publication) { $("curves").innerHTML = `<p class="v901-reference">Nordic reference prices temporarily unavailable. <a href="https://www.nordpoolgroup.com/">Open official market prices</a> · <a href="#prices">View approved European prices</a>.</p>`; return; }
   const z = d.zones.find(x => x.zone === activeZone) || d.zones[0];
   if (!z) return;
   const panels = [];
