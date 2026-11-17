@@ -25,7 +25,7 @@ def archive_weather(directory,payload):
     old=json.loads(p.read_text(encoding="utf-8")) if p.exists() else {"schema_version":1,"source":"MET Norway; retrieved point forecasts, not original issue-time archive","rows":[]}
     day=payload["generated"][:10]
     if any(r["day"]==day for r in old["rows"]): return
-    points={z:{k:v for k,v in row.items() if k in ("place","forecastStart","forecastEnd","precipCoverageHours","precipMm","coldPrecipMm","positiveDegreeHours","tempNow","windNow")} for z,row in payload["weather"].items() if isinstance(row,dict) and row.get("forecastStart")}
+    points={z:{k:v for k,v in row.items() if k in ("place","forecastStart","forecastEnd","precipCoverageHours","precipMm","coldPrecipMm","positiveDegreeHours","tempNow","windNow","sourceUpdatedAt","retrievedAt")} for z,row in payload["weather"].items() if isinstance(row,dict) and not row.get("stale") and row.get("forecastStart")}
     if points:
         old["rows"].append({"day":day,"retrieved_at":payload["generated"],"points":points})
         write_json(p,old)
