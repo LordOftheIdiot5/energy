@@ -24,6 +24,7 @@ import urllib.parse
 import urllib.request
 from price_rights import OPEN_ZONES, permitted, eur_mwh
 from datetime import date, datetime, timedelta, timezone
+from delivery_prices import nordic_day, european_day, bounds, LOCAL, number
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -115,48 +116,15 @@ def get_json(url: str, timeout: int = 25):
 
 # ----------------------------------------------------------------- spot
 def spot_day(zone: str, host: str, field: str, day: date) -> dict | None:
-    """One zone, one day, normalised to 24 hourly values.
-
-    Returns local currency and EUR side by side. A bill rises when either
-    moves, and only one of those is an energy story.
-    """
     url = (f"https://www.{host}/api/v1/prices/"
            f"{day.year}/{day.month:02d}-{day.day:02d}_{zone}.json")
     try:
-        slots = get_json(url)
-    except Exception:
-        return None                      # tomorrow is simply not published yet
-    if not slots:
+        result=nordic_day(get_json(url),field,day)
+        result.update({"sourceUrl":url,"retrievedAt":datetime.now(timezone.utc).isoformat()})
+        return result
+    except Exception as e:
+        print(f"  ! {zone} {day}: {type(e).__name__}: {e}")
         return None
-
-    buckets: dict[int, list[tuple[float, float]]] = {}
-    for s in slots:
-        try:
-            hour = datetime.fromisoformat(s["time_start"]).hour
-            buckets.setdefault(hour, []).append(
-                (float(s[field]), float(s.get("EUR_per_kWh") or 0))
-            )
-        except (KeyError, ValueError):
-            continue
-    if not buckets:
-        return None
-
-    hours = sorted(buckets)
-    local = [round(statistics.mean(v[0] for v in buckets[h]), 4) for h in hours]
-    eur = [round(statistics.mean(v[1] for v in buckets[h]), 5) for h in hours]
-    rates = [float(s.get("EXR") or 0) for s in slots if s.get("EXR")]
-
-    return {
-        "date": day.isoformat(),
-        "resolution": len(slots),
-        "hours": hours,
-        "local": local,
-        "eur": eur,
-        "rate": round(statistics.mean(rates), 4) if rates else None,
-        "min": min(local),
-        "max": max(local),
-        "mean": round(statistics.mean(local), 4),
-    }
 
 
 def window(values: list[float], size: int) -> dict | None:
@@ -172,21 +140,25 @@ def window(values: list[float], size: int) -> dict | None:
             "mean": round(best / size, 4)}
 
 
-def collect_spot() -> list[dict]:
-    today = date.today()
+def collect_spot(previous=None) -> list[dict]:
+    previous={x["zone"]:x for x in (previous or [])}
+    today = datetime.now(LOCAL).date()
     tomorrow = today + timedelta(days=1)
     out = []
     for zone, country, label, host, field in ZONES:
         day = spot_day(zone, host, field, today)
         if not day:
             print(f"  ! {zone}: no prices for today")
+            old=previous.get(zone)
+            if old and old.get("today",{}).get("local"):
+                out.append({**old,"stale":True,"tomorrow":None})
             continue
         nxt = spot_day(zone, host, field, tomorrow)
         peak_at = day["local"].index(day["max"])
         out.append({
             "zone": zone, "country": country, "label": label,
             "currency": "NOK" if country == "NO" else "SEK",
-            "today": day, "tomorrow": nxt,
+            "today": day, "tomorrow": nxt, "stale":False,
             "cheapest1": window(day["local"], 1),
             "cheapest3": window(day["local"], 3),
             "peakHour": peak_at,
@@ -269,8 +241,8 @@ def collect_commodities() -> list[dict]:
         try:
             payload = get_json(url)
             block = (payload.get("chart") or {}).get("result")[0]
-            closes = [c for c in block["indicators"]["quote"][0]["close"]
-                      if c is not None]
+            pairs=[(t,c) for t,c in zip(block.get("timestamp",[]),block["indicators"]["quote"][0]["close"]) if number(c) and number(t)]
+            closes=[c for t,c in pairs]
         except Exception:
             print(f"  ! {sym}: no data")
             continue
@@ -280,6 +252,7 @@ def collect_commodities() -> list[dict]:
         first = closes[0]
         out.append({
             "symbol": sym, "name": name, "unit": unit, "group": group,
+            "sourceTime":datetime.fromtimestamp(pairs[-1][0],timezone.utc).isoformat(),"retrievedAt":datetime.now(timezone.utc).isoformat(),"source":"Yahoo Finance historical chart (rights review)",
             "last": round(last, 4),
             "changePct": round((last / prev - 1) * 100, 2),
             "changeSixMonthPct": round((last / first - 1) * 100, 1),
@@ -310,7 +283,9 @@ def _euro_zone(code: str, name: str, country: str) -> dict | None:
     if code not in OPEN_ZONES:
         print(f"  ! {code}: Energy-Charts price reuse not permitted; omitted")
         return None
-    url = f"https://api.energy-charts.info/price?bzn={code}"
+    day=datetime.now(LOCAL).date()
+    start,end=bounds(day)
+    url = f"https://api.energy-charts.info/price?bzn={code}&start={start.strftime('%Y-%m-%dT%H:%MZ')}&end={(end-timedelta(minutes=1)).strftime('%Y-%m-%dT%H:%MZ')}"
     for attempt in range(2):
         try:
             d = get_json(url, timeout=25)
@@ -328,19 +303,12 @@ def _euro_zone(code: str, name: str, country: str) -> dict | None:
     if not permitted(code,d.get("license_info")) or not eur_mwh(d.get("unit")):
         print(f"  ! {code}: unverified price license or units; omitted")
         return None
-    raw = [p for p in (d.get("price") or []) if p is not None]
-    if not raw:
+    try:
+        row=european_day(d,day)
+    except ValueError as e:
+        print(f"  ! {code}: {e}")
         return None
-    # EUR/MWh -> euro cents per kWh, the page's common unit.
-    cents = [round(p / 10.0, 3) for p in raw]
-    return {
-        "zone": code, "name": name, "country": country,
-        "points": len(cents),
-        "cents": cents,
-        "min": min(cents), "max": max(cents),
-        "mean": round(statistics.mean(cents), 3),
-        "unit": "eurocent/kWh", "priceSource": "Energy-Charts.info / Bundesnetzagentur | SMARD.de", "licenseInfo": d["license_info"],
-    }
+    return {**row,"zone":code,"name":name,"country":country,"unit":"eurocent/kWh","priceSource":"Energy-Charts.info / Bundesnetzagentur | SMARD.de","licenseInfo":d["license_info"],"sourceUrl":url,"retrievedAt":datetime.now(timezone.utc).isoformat(),"stale":False}
 
 
 def _great_britain() -> dict | None:
@@ -367,7 +335,7 @@ def _great_britain() -> dict | None:
     prices = [float(r["price"]) for r in rows
               if r.get("price") is not None
               and r.get("dataProvider") == "APXMIDP"
-              and float(r["price"]) > 0]
+              and number(r["price"])]
     if not prices:
         return None
 
@@ -389,7 +357,7 @@ def _great_britain() -> dict | None:
         "points": len(cents), "cents": cents,
         "min": min(cents), "max": max(cents),
         "mean": round(statistics.mean(cents), 3),
-        "unit": "eurocent/kWh", "fx": round(rate, 4),
+        "unit": "eurocent/kWh", "fx": round(rate, 4), "date":today.isoformat(), "marketType":"market_index", "complete":False, "retrievedAt":datetime.now(timezone.utc).isoformat(),"sourceUrl":url,
     }
 
 
@@ -410,13 +378,6 @@ def collect_europe() -> list[dict]:
                   f"c/kWh{flag}")
         time.sleep(EUROPE_GAP_SECONDS)
 
-    gb = _great_britain()
-    if gb is None and "GB" in previous:
-        gb = dict(previous["GB"], stale=True)
-        reused += 1
-    if gb:
-        out.append(gb)
-        print(f"  {'GB':<9}{'Great Britain':<16}{gb['min']:>6.2f}-{gb['max']:>6.2f} c/kWh")
     if reused:
         print(f"  ({reused} kept from the previous run after throttling)")
     return out
@@ -435,7 +396,7 @@ def collect_market(zones: list[dict]) -> dict:
 
     ref = next((z for z in zones if z["zone"] == "NO2"), None)
     power_eur_mwh = None
-    if ref and ref.get("today", {}).get("eur"):
+    if ref and not ref.get("stale") and ref.get("today", {}).get("eur"):
         eur = ref["today"]["eur"]
         power_eur_mwh = sum(eur) / len(eur) * 1000          # EUR/kWh -> EUR/MWh
 
@@ -850,6 +811,8 @@ def collect_weather() -> dict:
         }
         from hydro_extended import point_weather
         zones[zone].update(point_weather(steps))
+        zones[zone]["sourceUpdatedAt"]=d.get("properties",{}).get("meta",{}).get("updated_at")
+        zones[zone]["retrievedAt"]=datetime.now(timezone.utc).isoformat()
         print(f"  {zone}  {place:<13} {now.get('air_temperature')}C  "
               f"wind {now.get('wind_speed')} m/s  "
               f"HDH48 {zones[zone]['heatingDegreeHours']}")
@@ -862,11 +825,16 @@ def main() -> int:
     except (OSError, ValueError):
         previous = {}
     print("spot prices")
-    zones = collect_spot()
+    zones = collect_spot(previous.get("zones"))
     print("\nreservoirs")
     reservoirs = collect_reservoirs()
+    if not reservoirs and previous.get("reservoirs"):reservoirs={**previous["reservoirs"],"stale":True}
     print("\nthe rest of Europe")
     europe = collect_europe()
+    gb = _great_britain()
+    if not gb:
+        prior=previous.get("marketIndex") or next((r for r in previous.get("europe",[]) if r.get("zone")=="GB"),None)
+        gb={**prior,"stale":True,"marketType":"market_index","complete":False} if prior else None
     print("\nmargins and equities")
     market = collect_market(zones)
     print("\ngas storage")
@@ -883,15 +851,22 @@ def main() -> int:
     france = collect_france()
     print("\nthe grid")
     grid = collect_grid()
+    if not grid.get("mix") and previous.get("grid"):grid={**previous["grid"],"stale":True}
+    else:grid["retrievedAt"]=datetime.now(timezone.utc).isoformat()
     print("\nweather")
+    snow_snapshot=None
     weather = collect_weather()
+    for key,row in (previous.get("weather") or {}).items():
+        if key not in weather:weather[key]={**row,"stale":True}
     try:
         from weather_geography import refresh as refresh_weather_geography
-        refresh_weather_geography(OUT.parent)
+        snow_snapshot=refresh_weather_geography(OUT.parent)
     except Exception as e:
         print("  ! weather geography:",type(e).__name__)
     print("\ncommodities")
     commodities = collect_commodities()
+    known={r["symbol"] for r in commodities}
+    commodities.extend({**r,"stale":True} for r in previous.get("commodities",[]) if r.get("symbol") not in known)
     try:
         from hydro_extended import refresh_plants
         refresh_plants(OUT.parent / "hydro-plants-v1.json", get_json)
@@ -932,6 +907,7 @@ def main() -> int:
         "zones": zones,
         "reservoirs": reservoirs,
         "europe": europe,
+        "marketIndex":gb,
         "market": market,
         "grid": grid,
         "gasStorage": gas,
@@ -945,6 +921,8 @@ def main() -> int:
     # Serialize before replacing the last good snapshot. A bad source must
     # never leave a truncated or non-standard JSON file on the VPS.
     from hydro_extended import write_json
+    from open_history import append as append_open_history
+    append_open_history(OUT.parent,payload,snow_snapshot)
     write_json(OUT, payload)
     from hydro_archive import append_snapshot
     append_snapshot(OUT.parent / "hydro-v1.json", payload)

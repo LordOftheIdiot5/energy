@@ -77,8 +77,10 @@ def refresh(directory):
         x,y=point[3:];url=f"{GTS}/{x}/{y}/{day.isoformat()}/{day.isoformat()}/swe.json"
         try:
             raw,_=download(url,200_000,"application/json")
-            rows.append(normalize_swe(json.loads(raw),point,day,url))
+            rows.append({**normalize_swe(json.loads(raw),point,day,url),"retrievedAt":iso_time()})
         except Exception as e:print("  ! SWE",point[0],type(e).__name__)
+    seen={r["id"] for r in rows}
+    rows.extend({**r,"stale":True} for r in old.get("snow",[]) if r["id"] not in seen)
     snapshot={"schema_version":1,"generated":iso_time(),"requested_day":day.isoformat(),"radar":radar,"snow":rows,"snow_expected":len(POINTS),"snow_source":"https://api.nve.no/doc/gridtimeseries-data-gts/","snow_license":"https://data.norge.no/nlod/","notice":"SWE model samples in mm water, not catchment means; radar source retrieval time is not capture time."}
     write_json(dest,snapshot)
     # Only clean files belonging to this collector after metadata is published.
