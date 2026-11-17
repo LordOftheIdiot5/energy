@@ -6,7 +6,7 @@ function latestZone(rows,zone){return (rows||[]).filter(r=>r.zone===zone&&Number
 if(typeof module!=='undefined'&&module.exports){module.exports={parseRoute,linked,latestZone,validPoint};return;}
 const $=id=>document.getElementById(id),host=$('assetProfileBody');if(!host)return;
 const cache=new Map();let token=0,map=null,library=null;
-function get(file){if(!cache.has(file))cache.set(file,fetch('data/'+file,{cache:'no-cache'}).then(r=>{if(!r.ok)throw Error(file+' unavailable');return r.json();}).then(d=>{if(d.schema_version!==1||!Array.isArray(d.rows))throw Error('Invalid '+file);return d;}).catch(e=>{cache.delete(file);throw e;}));return cache.get(file);}
+function get(file){if(!cache.has(file))cache.set(file,window.NordlData.fetch('data/'+file,{cache:'no-cache'}).then(r=>{if(!r.ok)throw Error(file+' unavailable');return r.json();}).then(d=>{if(d.schema_version!==1||!Array.isArray(d.rows))throw Error('Invalid '+file);return d;}).catch(e=>{cache.delete(file);throw e;}));return cache.get(file);}
 function optional(file){return get(file).catch(()=>null);}
 function n(tag,value,cls){const e=document.createElement(tag);if(value!==undefined)e.textContent=String(value);if(cls)e.className=cls;return e;}
 function link(text,url){const a=n('a',text);a.href=url;return a;}

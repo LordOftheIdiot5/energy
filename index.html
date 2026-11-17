@@ -632,8 +632,9 @@ function fmtAge(h) {
 function renderLede(d) {
   // Across every zone on the page, not just the Nordic ones: the headline
   // should describe the same picture the strip below it shows.
-  const rows = allZones(d);
-  if (!rows.length) return;
+  const liveCodes=new Set([...(d.zones||[]),...(d.europe||[])].filter(window.NordlData.comparable).map(r=>r.zone));
+  const rows=allZones(d).filter(r=>liveCodes.has(r.code));
+  if(!rows.length){$('lede').textContent='Awaiting verified current delivery prices. Last-known values remain available in the price workspace.';return;}
   const means = rows.map(r => ({ z: { zone: r.code }, m: avgOf(r.series) }));
   means.sort((a, b) => a.m - b.m);
   const cheap = means[0], dear = means[means.length - 1];

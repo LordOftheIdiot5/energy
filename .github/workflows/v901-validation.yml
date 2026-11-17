@@ -1,0 +1,45 @@
+name: V90.1 readiness validation
+on:
+  push:
+    branches: [release/v90-1-user-ready-20261117]
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - run: |
+          for f in *.js; do node --check "$f"; done
+          python -m unittest discover -s tests -v
+          python tests/test_payload.py
+      - run: |
+          python - <<'PY'
+          import sys,tempfile
+          sys.path.insert(0,'scripts')
+          import fetch
+          from open_history import append
+          from datetime import datetime,timezone
+          day=datetime.now(fetch.LOCAL).date()
+          for code,cc,label,host,field in [fetch.ZONES[0],fetch.ZONES[5]]:
+              row=fetch.spot_day(code,host,field,day)
+              assert row and row['complete'],code
+              print('Fresh Nordic delivery:',code,row['date'],row['resolution'],len(row['hours']))
+          row=fetch._euro_zone('DK1','Denmark west','DK')
+          assert row and row['complete']
+          print('Fresh licensed day ahead:',row['date'],row['points'])
+          with tempfile.TemporaryDirectory() as d:
+              p={'generated':datetime.now(timezone.utc).isoformat(),'europe':[row]}
+              assert append(d,p)==1 and append(d,p)==0
+          PY
+      - run: npm install --no-save --no-package-lock playwright@1.56.1 && npx playwright install chromium
+      - run: |
+          python -m http.server 8765 --bind 127.0.0.1 >/tmp/energy-http.log 2>&1 &
+          node tests/test_v901_browser.cjs
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: v901-browser
+          path: v901-*.png
+          retention-days: 14

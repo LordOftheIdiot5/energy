@@ -59,6 +59,7 @@ EUROPE_ZONES = [
     ("FR", "France", "FR"), ("AT", "Austria", "AT"),
     ("CH", "Switzerland", "CH"), ("ES", "Spain", "ES"),
     ("PL", "Poland", "PL"), ("IT-North", "Italy north", "IT"),
+    ("NO2", "Southern Norway", "NO"), ("SE4", "Southern Sweden", "SE"),
 ]
 
 # energy-charts throttles hard - a tight loop gets 429 after three or four
