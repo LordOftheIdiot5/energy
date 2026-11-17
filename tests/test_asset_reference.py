@@ -23,7 +23,11 @@ class CollectorRegressionTests(unittest.TestCase):
         from unittest.mock import patch
         import fetch
         import asset_reference
-        prices = [{"zone": "DE-LU", "cents": [5.0]}]
+        from datetime import date,datetime,timezone
+        from delivery_prices import bounds,european_day
+        day=date(2026,11,17);a,b=bounds(day)
+        series=european_day({"unix_seconds":list(range(int(a.timestamp()),int(b.timestamp()),3600)),"price":[50]*24},day)
+        prices=[{**series,"zone":"DE-LU","name":"Germany / Luxembourg","country":"DE","unit":"eurocent/kWh","priceSource":"Energy-Charts.info / SMARD","sourceUrl":"https://api.energy-charts.info/price","licenseInfo":"CC BY 4.0","retrievedAt":datetime.now(timezone.utc).isoformat(),"stale":False}]
         with tempfile.TemporaryDirectory() as directory, ExitStack() as stack:
             root = Path(directory)
             out = root / "data" / "energy.json"
@@ -43,12 +47,16 @@ class CollectorRegressionTests(unittest.TestCase):
                 "asset_reference.owners", "economic_reference.refresh",
                 "news.collect", "hydro_archive.append_snapshot",
                 "economic_reference.archive_weather", "hydro_validation.refresh",
+                "weather_geography.refresh",
             ):
                 stack.enter_context(patch(target, return_value=[]))
             plant_refresh = stack.enter_context(patch.object(asset_reference, "europe"))
             self.assertEqual(fetch.main(), 0)
             plant_refresh.assert_called_once_with(out.parent)
-            self.assertEqual(json.loads(out.read_text(encoding="utf-8"))["europe"], prices)
+            from publication_policy import project_snapshot
+            self.assertEqual(json.loads(out.read_text(encoding="utf-8"))["europe"], project_snapshot({"generated":"test","europe":prices})["europe"])
+            for name in ("collect_spot","collect_market","collect_fuel","collect_france","collect_grid","collect_commodities"):
+                getattr(fetch,name).assert_not_called()
             previous = out.read_bytes()
             fetch.collect_europe.return_value = lambda: None
             with self.assertRaises(TypeError):

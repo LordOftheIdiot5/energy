@@ -26,8 +26,14 @@ def main() -> int:
         return 1
     d = json.loads(DATA.read_text(encoding="utf-8"))
 
+    public = d.get("publication", {}).get("policy") == "v90.1_open_projection"
     zones = d.get("zones") or []
-    check("has zones", len(zones) >= 4, f"{len(zones)} zones")
+    if public:
+        sys.path.insert(0,str(DATA.parents[1]/"scripts"))
+        from publication_policy import project_snapshot
+        check("snapshot matches publication allowlist", d == project_snapshot(d))
+    else:
+        check("has zones", len(zones) >= 4, f"{len(zones)} zones")
 
     for z in zones:
         today = z.get("today") or {}
@@ -89,7 +95,8 @@ def main() -> int:
               str(v.get("fill")))
 
     g = d.get("grid") or {}
-    check("has a generation mix", bool(g.get("mix")), str((g.get("mix") or {}).get("hydro")))
+    if not public:
+        check("has a generation mix", bool(g.get("mix")), str((g.get("mix") or {}).get("hydro")))
     flows = g.get("flows") or []
     check("flows carry a direction, not a minus sign",
           all(f.get("mw", 0) > 0 for f in flows), f"{len(flows)} links")
@@ -98,7 +105,8 @@ def main() -> int:
     check("has weather", len(wx) >= 6, f"{len(wx)} zones")
 
     com = d.get("commodities") or []
-    check("has commodities", len(com) >= 8, f"{len(com)} instruments")
+    if not public:
+        check("has commodities", len(com) >= 8, f"{len(com)} instruments")
     check("every commodity has a sparkline",
           all(len(c.get("spark") or []) >= 2 for c in com))
 
@@ -112,7 +120,8 @@ def main() -> int:
 
     fuel = d.get("fuel") or {}
     fuels = fuel.get("fuels") or []
-    check("has fuel breakdown", len(fuels) >= 1, f"{len(fuels)} fuels")
+    if not public:
+        check("has fuel breakdown", len(fuels) >= 1, f"{len(fuels)} fuels")
     for f in fuels:
         total = f.get("modelledTotal") or 0
         parts = sum(f.get(k) or 0 for k in
@@ -139,7 +148,8 @@ def main() -> int:
 
     mk = d.get("market") or {}
     margins = mk.get("margins") or []
-    check("has margins", len(margins) >= 2, f"{len(margins)} spreads")
+    if not public:
+        check("has margins", len(margins) >= 2, f"{len(margins)} spreads")
     for sp in margins:
         # A margin is a difference of two real prices; if it has exploded, a
         # unit has changed somewhere rather than the market having moved.
@@ -147,10 +157,12 @@ def main() -> int:
               f"{sp.get('value')} {sp.get('unit')}")
         check(f"{sp.get('key')} shows its working", len(sp.get("parts") or []) >= 2)
     coh = mk.get("cohorts") or []
-    check("has cohorts", len(coh) >= 2, f"{len(coh)} groups")
+    if not public:
+        check("has cohorts", len(coh) >= 2, f"{len(coh)} groups")
     # The guard is the point of the correlation section; without the counts
     # it is just a list of suggestive numbers.
-    check("correlations state what was tested",
+    if not public:
+        check("correlations state what was tested",
           mk.get("tested") is not None and mk.get("expectedByChance") is not None,
           f"{mk.get('tested')} tested, ~{mk.get('expectedByChance')} by chance")
     check("survived count is not the truncated one",

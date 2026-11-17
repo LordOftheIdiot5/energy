@@ -825,19 +825,15 @@ def main() -> int:
         previous = json.loads(OUT.read_text(encoding="utf-8"))
     except (OSError, ValueError):
         previous = {}
-    print("spot prices")
-    zones = collect_spot(previous.get("zones"))
+    # Public collector: unverified sources are not requested or persisted.
+    zones = []
     print("\nreservoirs")
     reservoirs = collect_reservoirs()
     if not reservoirs and previous.get("reservoirs"):reservoirs={**previous["reservoirs"],"stale":True}
     print("\nthe rest of Europe")
     europe = collect_europe()
-    gb = _great_britain()
-    if not gb:
-        prior=previous.get("marketIndex") or next((r for r in previous.get("europe",[]) if r.get("zone")=="GB"),None)
-        gb={**prior,"stale":True,"marketType":"market_index","complete":False} if prior else None
-    print("\nmargins and equities")
-    market = collect_market(zones)
+    gb = None
+    market = {}
     print("\ngas storage")
     gas = collect_gas_storage()
     from shared_energy import retain_gas, retain_news, refresh_shared
@@ -846,21 +842,7 @@ def main() -> int:
         refresh_shared(OUT.parent / "entsoe-open.json", get_json)
     except Exception as e:
         print(f"  ! shared ENTSO-E: {type(e).__name__}")
-    print("\nfuel at the pump")
-    fuel = collect_fuel()
-    print("\nthe French fleet")
-    france = collect_france()
-    print("\nthe grid")
-    grid = collect_grid()
-    old_grid=previous.get("grid") or {}
-    if not grid.get("mix") and old_grid.get("mix"):
-        for key in ("mix","byCountry","generation","renewableShare"):
-            if key in old_grid:grid[key]=old_grid[key]
-        grid["mixStale"]=True;grid["mixRetrievedAt"]=old_grid.get("mixRetrievedAt") or old_grid.get("retrievedAt")
-    else:grid["mixRetrievedAt"]=datetime.now(timezone.utc).isoformat()
-    if not grid.get("flows") and old_grid.get("flows"):
-        grid["flows"]=old_grid["flows"];grid["flowsStale"]=True;grid["flowsRetrievedAt"]=old_grid.get("flowsRetrievedAt") or old_grid.get("retrievedAt")
-    else:grid["flowsRetrievedAt"]=datetime.now(timezone.utc).isoformat()
+    fuel, france, grid = {}, {}, {}
     print("\nweather")
     snow_snapshot=None
     weather = collect_weather()
@@ -871,10 +853,7 @@ def main() -> int:
         snow_snapshot=refresh_weather_geography(OUT.parent)
     except Exception as e:
         print("  ! weather geography:",type(e).__name__)
-    print("\ncommodities")
-    commodities = collect_commodities()
-    known={r["symbol"] for r in commodities}
-    commodities.extend({**r,"stale":True} for r in previous.get("commodities",[]) if r.get("symbol") not in known)
+    commodities = []
     try:
         from hydro_extended import refresh_plants
         refresh_plants(OUT.parent / "hydro-plants-v1.json", get_json)
@@ -899,17 +878,7 @@ def main() -> int:
         refresh(OUT.parent,get_json)
     except Exception as e:
         print("  ! economic reference:",type(e).__name__)
-    print("\nnews")
-    try:
-        import news as news_module
-        stories = news_module.collect(30)
-    except Exception as e:                                   # noqa: BLE001
-        # News is the least important part of the page and the most likely to
-        # break: one bad RSS response must not cost the prices.
-        print(f"  ! news unavailable: {e}")
-        stories = []
-
-    stories = retain_news(stories, previous.get("news") or [])
+    stories = []
     payload = {
         "generated": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
         "zones": zones,
@@ -930,6 +899,11 @@ def main() -> int:
     # never leave a truncated or non-standard JSON file on the VPS.
     from hydro_extended import write_json
     from open_history import append as append_open_history
+    from publication_policy import project_snapshot, project_shared
+    payload = project_snapshot(payload)
+    shared_path=OUT.parent / "entsoe-open.json"
+    if shared_path.exists():
+        write_json(shared_path,project_shared(json.loads(shared_path.read_text(encoding="utf-8"))))
     append_open_history(OUT.parent,payload,snow_snapshot)
     write_json(OUT, payload)
     from hydro_archive import append_snapshot
