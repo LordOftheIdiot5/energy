@@ -32,10 +32,47 @@ def append(directory,payload,snow=None):
         record={k:r[k] for k in ("id","date","geometry","source_utm33","value_mm","source")}
         record.update({"unit":"mm water","attribution":"NVE / seNorge","license":"https://data.norge.no/nlod/"})
         added+=partition(directory,"snow-water",r["date"],record,r.get("retrievedAt",(snow or {}).get("generated",stamp)))
+    # Archive only explicitly CC BY shared ENTSO-E load forecasts and physical flows.
+    # Input points remain source-reported; A03 constant curves are not expanded.
+    shared_path=Path(directory)/"entsoe-open.json"
+    if shared_path.exists():
+        from shared_energy import validate_shared
+        shared=validate_shared(json.loads(shared_path.read_text()))
+        allowed_zones=set("NO1 NO2 NO3 NO4 NO5 SE1 SE2 SE3 SE4 DK1 DK2 FI DE-LU FR NL".split())
+        for s in shared["series"]:
+            if s.get("status")!="ok" or not s.get("points"):continue
+            if s["kind"]=="day_ahead_load_forecast" and s.get("zone") not in allowed_zones:continue
+            if s["kind"]=="physical_flow" and (s.get("from") not in allowed_zones or s.get("to") not in allowed_zones):continue
+            day=datetime.fromisoformat(s["startUtc"].replace("Z","+00:00")).date().isoformat()
+            record={k:s[k] for k in ("id","kind","article","startUtc","endUtc","unit","points")}
+            for k in ("zone","from","to"):
+                if k in s:record[k]=s[k]
+            record.update({"source":shared["sourceUrl"],"attribution":"ENTSO-E Transparency Platform; normalized by Stockwatch / Nordl","license":shared["licenseUrl"],"note":"Explicit reported points, not complete interval coverage or observed load forecast actuals."})
+            added+=partition(directory,"entsoe-series",day,record,shared["generated"])
+    # Keep changed MET snapshots, not repeated cached runs; source validity
+    # and model update time are preserved separately from retrieval time.
+    for zone,w in payload.get("weather",{}).items():
+        if w.get("stale") or not w.get("sourceUpdatedAt") or not w.get("forecastStart"):continue
+        if zone not in ("NO1","NO2","NO3","NO4","NO5","SE1","SE2","SE3","SE4"):continue
+        try:day=datetime.fromisoformat(w["sourceUpdatedAt"].replace("Z","+00:00")).date().isoformat()
+        except (ValueError,TypeError):continue
+        record={k:w[k] for k in ("place","sourceUpdatedAt","forecastStart","forecastEnd","tempNow","windNow","tempMin","tempMax","windMean","hours","heatingDegreeHours","precipCoverageHours","precipMm","coldPrecipMm","positiveDegreeHours") if k in w}
+        record.update({"zone":zone,"source":"https://api.met.no/weatherapi/locationforecast/2.0/","attribution":"MET Norway; Nordl derived point summaries","license":"https://creativecommons.org/licenses/by/4.0/","note":"Modelled point forecast, not observed weather; precipitation/heat proxies are Nordl calculations."})
+        added+=partition(directory,"weather-forecast",day,record,w.get("retrievedAt",stamp))
+    # GIE Transparency Platforms expressly permit repackaging with attribution.
+    for row in (payload.get("gasStorage") or {}).get("countries",[]):
+        if row.get("stale") or not number(row.get("fullPct")) or not 0<=row["fullPct"]<=100 or not number(row.get("twh")) or row["twh"]<0:continue
+        if row.get("code") not in ("EU","DE","FR","IT","NL","AT"):continue
+        try:day=date.fromisoformat(row["date"]).isoformat()
+        except (ValueError,TypeError,KeyError):continue
+        record={k:row[k] for k in ("code","name","fullPct","twh","date")}
+        record["changePct"]=row.get("changePct") if number(row.get("changePct")) else None
+        record.update({"source":"https://agsi.gie.eu/","attribution":"GIE AGSI","license":"https://iip.gie.eu/data-usage","note":"Reported gas-day country/European aggregate; TWh and percentage normalized by Nordl."})
+        added+=partition(directory,"gas-storage",day,record,stamp)
     root=Path(directory)/"archive";manifest=[]
     for path in sorted(root.glob("*/*.json")):
         d=json.loads(path.read_text());manifest.append({"kind":d["kind"],"month":d["month"],"rows":len(d["rows"]),"path":str(path.relative_to(directory)),"sha256":hashlib.sha256(path.read_bytes()).hexdigest()})
     root.mkdir(parents=True,exist_ok=True)
-    write_json(root/"index-v1.json",{"schema_version":1,"generated":stamp,"notice":"Own versioned collection of cleared open-source observations; revisions retained. Nordic reseller, GB, Yahoo, GIE and unchecked sources excluded.","partitions":manifest})
+    write_json(root/"index-v1.json",{"schema_version":1,"generated":stamp,"notice":"Own versioned collection of cleared open-source observations; revisions retained. GIE AGSI included with mandatory attribution; Nordic reseller, GB, Yahoo and unchecked sources excluded.","partitions":manifest})
     print("Open history:",added,"new unique records;",len(manifest),"partitions")
     return added

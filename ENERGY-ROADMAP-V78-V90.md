@@ -62,3 +62,7 @@ Keep this file current with PRs, test runs, deployment evidence and known blocke
 
 ## V90.1 user readiness gate
 Stay at V90.1. Audit run 44166287238: 5.78 MB decoded startup data, 15 loads, 14,731 DOM nodes. Correct delivery intervals, separate GB index, persistent rights-cleared archive, shared lazy data, freshness, metadata and live browser checks. No release until validated.
+
+V90.1 first release 045f8cb: syntax, real Nordic and licensed European source tests, 26 Python tests, 247,473 decoded homepage bytes (2 requests); desktop/mobile route and source identity tests passed; production initial smoke passed. Additional V90.1 work: historical ENTSO-E load/flow and MET source-vintage summaries; separate mix/flow stale provenance. Live collector persistence verification remains mandatory.
+
+V90.1 acceptance: latest production archive verified at 22:28 UTC on 17 Nov: 12 licensed price profiles / 5 snow records. Reapply successful freshness changes onto latest main without reverting observations. Add GIE AGSI history with mandatory source attribution, static NVE profiles and sitemap generated on every deployment. Source-rights review: GIE, MET, scoped ENTSO-E archive cleared; Nordic reseller upstream day-ahead and Yahoo, Statnett, GB index + FX not cleared for unrestricted commercial redistributions. No blanket commercial clearance or operational forecast.
