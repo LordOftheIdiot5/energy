@@ -59,10 +59,20 @@ def append(directory,payload,snow=None):
         record={k:w[k] for k in ("place","sourceUpdatedAt","forecastStart","forecastEnd","tempNow","windNow","tempMin","tempMax","windMean","hours","heatingDegreeHours","precipCoverageHours","precipMm","coldPrecipMm","positiveDegreeHours") if k in w}
         record.update({"zone":zone,"source":"https://api.met.no/weatherapi/locationforecast/2.0/","attribution":"MET Norway; Nordl derived point summaries","license":"https://creativecommons.org/licenses/by/4.0/","note":"Modelled point forecast, not observed weather; precipitation/heat proxies are Nordl calculations."})
         added+=partition(directory,"weather-forecast",day,record,w.get("retrievedAt",stamp))
+    # GIE Transparency Platforms expressly permit repackaging with attribution.
+    for row in (payload.get("gasStorage") or {}).get("countries",[]):
+        if row.get("stale") or not number(row.get("fullPct")) or not 0<=row["fullPct"]<=100 or not number(row.get("twh")) or row["twh"]<0:continue
+        if row.get("code") not in ("EU","DE","FR","IT","NL","AT"):continue
+        try:day=date.fromisoformat(row["date"]).isoformat()
+        except (ValueError,TypeError,KeyError):continue
+        record={k:row[k] for k in ("code","name","fullPct","twh","date")}
+        record["changePct"]=row.get("changePct") if number(row.get("changePct")) else None
+        record.update({"source":"https://agsi.gie.eu/","attribution":"GIE AGSI","license":"https://iip.gie.eu/data-usage","note":"Reported gas-day country/European aggregate; TWh and percentage normalized by Nordl."})
+        added+=partition(directory,"gas-storage",day,record,stamp)
     root=Path(directory)/"archive";manifest=[]
     for path in sorted(root.glob("*/*.json")):
         d=json.loads(path.read_text());manifest.append({"kind":d["kind"],"month":d["month"],"rows":len(d["rows"]),"path":str(path.relative_to(directory)),"sha256":hashlib.sha256(path.read_bytes()).hexdigest()})
     root.mkdir(parents=True,exist_ok=True)
-    write_json(root/"index-v1.json",{"schema_version":1,"generated":stamp,"notice":"Own versioned collection of cleared open-source observations; revisions retained. Nordic reseller, GB, Yahoo, GIE and unchecked sources excluded.","partitions":manifest})
+    write_json(root/"index-v1.json",{"schema_version":1,"generated":stamp,"notice":"Own versioned collection of cleared open-source observations; revisions retained. GIE AGSI included with mandatory attribution; Nordic reseller, GB, Yahoo and unchecked sources excluded.","partitions":manifest})
     print("Open history:",added,"new unique records;",len(manifest),"partitions")
     return added

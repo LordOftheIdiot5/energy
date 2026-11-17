@@ -14,6 +14,7 @@ jobs:
           for f in *.js; do node --check "$f"; done
           python -m unittest discover -s tests -v
           python tests/test_payload.py
+          python scripts/build_plant_pages.py
       - run: |
           python - <<'PY'
           import sys,json,tempfile
@@ -38,6 +39,7 @@ jobs:
           node tests/test_v901_browser.cjs
           node tests/test_v901_freshness_browser.cjs
           node tests/test_atlas_zoom_browser.cjs
+          node tests/test_static_plant_browser.cjs
       - uses: actions/upload-artifact@v7
         if: always()
         with:

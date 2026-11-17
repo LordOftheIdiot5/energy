@@ -16,3 +16,10 @@ class ArchiveSources(unittest.TestCase):
             self.assertEqual(len(weather),1);self.assertEqual(weather[0]["tempNow"],0)
             payload["weather"]["NO1"]["tempNow"]=1
             self.assertEqual(append(root,payload),1)
+
+    def test_gas_attribution(self):
+        payload={"generated":"2026-11-17T22:00:00+00:00","gasStorage":{"countries":[{"code":"EU","name":"Europe","date":"2026-11-16","fullPct":0,"twh":0,"changePct":0},{"code":"DE","name":"Germany","date":"2026-11-16","fullPct":20,"twh":10,"stale":True}]}}
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);self.assertEqual(append(root,payload),1);self.assertEqual(append(root,payload),0)
+            row=json.loads((root/"archive/gas-storage/2026-11.json").read_text())["rows"][0]
+            self.assertEqual(row["attribution"],"GIE AGSI");self.assertEqual(row["twh"],0)
