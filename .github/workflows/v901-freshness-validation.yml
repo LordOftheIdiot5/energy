@@ -1,0 +1,48 @@
+name: V90.1 archive and freshness validation
+on:
+  push:
+    branches: [release/v90-1-freshness-history-20261117]
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - run: |
+          for f in *.js; do node --check "$f"; done
+          python -m unittest discover -s tests -v
+          python tests/test_payload.py
+      - run: |
+          python - <<'PY'
+          import sys,json,tempfile
+          from pathlib import Path
+          sys.path.insert(0,'scripts')
+          from open_history import append
+          from datetime import datetime,timezone
+          with tempfile.TemporaryDirectory() as d:
+              root=Path(d)
+              root.joinpath('entsoe-open.json').write_bytes(Path('data/entsoe-open.json').read_bytes())
+              payload=json.loads(Path('data/energy.json').read_text())
+              snow=json.loads(Path('data/weather-geography-v1.json').read_text())
+              added=append(root,payload,snow)
+              assert added>=5
+              assert append(root,payload,snow)==0
+              index=json.loads(root.joinpath('archive/index-v1.json').read_text())
+              print('Actual stored source partitions:',[(p['kind'],p['month'],p['rows']) for p in index['partitions']])
+          PY
+      - run: npm install --no-save --no-package-lock playwright@1.56.1 && npx playwright install chromium
+      - run: |
+          python -m http.server 8765 --bind 127.0.0.1 >/tmp/energy-http.log 2>&1 &
+          node tests/test_v901_browser.cjs
+          node tests/test_v901_freshness_browser.cjs
+          node tests/test_atlas_zoom_browser.cjs
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: v901-freshness-screenshots
+          path: |
+            v901-*.png
+            atlas-zoom-overview.png
+          retention-days: 14
