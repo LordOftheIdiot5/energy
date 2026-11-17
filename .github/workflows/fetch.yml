@@ -27,6 +27,9 @@ on:
       - scripts/price_rights.py
       - scripts/delivery_prices.py
       - scripts/open_history.py
+      - scripts/publication_policy.py
+      - scripts/build_public_site.py
+      - scripts/economic_reference.py
       - tests/test_v901_data.py
       - tests/test_archive_sources.py
       - tests/test_weather_geography.py
@@ -75,6 +78,7 @@ jobs:
         run: |
           git config user.name "energy"
           git config user.email "actions@github.com"
+          python scripts/build_public_site.py --check-only
           git add data/
           git diff --staged --quiet || git commit -m "fetch: $(date -u '+%Y-%m-%d %H:%M UTC')"
           for attempt in 1 2 3; do
@@ -84,6 +88,7 @@ jobs:
               echo "::warning::Concurrent data changes; refusing to overwrite remote observations"
               exit 1
             fi
+            python scripts/build_public_site.py --check-only
             if git push origin HEAD:main; then exit 0; fi
             sleep 5
           done
@@ -111,11 +116,11 @@ jobs:
       - uses: actions/checkout@v7
         with:
           ref: main
-      - name: Generate crawlable plant pages
-        run: python3 scripts/build_plant_pages.py
+      - name: Build allowlisted publication artifact
+        run: python3 scripts/build_public_site.py --out "$RUNNER_TEMP/energy-public"
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:
-          path: .
+          path: ${{ runner.temp }}/energy-public
       - id: deployment
         uses: actions/deploy-pages@v5

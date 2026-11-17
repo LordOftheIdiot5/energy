@@ -4,7 +4,7 @@ from datetime import datetime,date
 from pathlib import Path
 from hydro_extended import write_json
 URL="https://stocks.nordl.dev/data/economic-feeds.json"
-KEYS={"eia:RBRTE","eia:RWTC","fred:DFF","fred:DGS10","fred:DGS2","fred:UNRATE"}
+KEYS={"eia:RBRTE","eia:RWTC"}
 def refresh(directory,get_json):
     p=Path(directory)/"economic-reference-v1.json"
     d=get_json(URL,timeout=40)
@@ -13,13 +13,14 @@ def refresh(directory,get_json):
         prior=datetime.fromisoformat(json.loads(p.read_text(encoding="utf-8"))["generated"].replace("Z","+00:00"))
         if prior>=stamp: return
     series=[r for r in d["series"] if r.get("key") in KEYS]
-    if {r["key"] for r in series}!=KEYS or len(series)!=6: raise ValueError("Missing series")
+    if {r["key"] for r in series}!=KEYS or len(series)!=2: raise ValueError("Missing series")
     for r in series:
         if not r.get("license") or not str(r.get("sourceUrl","")).startswith("https://") or not math.isfinite(r["value"]): raise ValueError("Invalid provenance or value")
         for x in r["history"]:
             date.fromisoformat(x["date"])
             if not math.isfinite(x["value"]): raise ValueError("Invalid observation")
-    write_json(p,{"generated":d["generated"],"notice":"Dated observations via Stockwatch; not live quotes. Per-series rights apply.","series":series})
+    from publication_policy import project_economic
+    write_json(p,project_economic({"generated":d["generated"],"series":series}))
 def archive_weather(directory,payload):
     p=Path(directory)/"weather-vintages-v1.json"
     old=json.loads(p.read_text(encoding="utf-8")) if p.exists() else {"schema_version":1,"source":"MET Norway; retrieved point forecasts, not original issue-time archive","rows":[]}

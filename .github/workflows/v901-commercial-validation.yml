@@ -43,3 +43,11 @@ jobs:
           JS
       - name: Test projected homepage without modifying source data
         run: node tests/test_projected_home.cjs
+      - name: Build and verify exact production artifact
+        run: |
+          python scripts/build_public_site.py --out "$RUNNER_TEMP/energy-public"
+          test -f "$RUNNER_TEMP/energy-public/plants/europe/index.html"
+          test ! -e "$RUNNER_TEMP/energy-public/scripts"
+          test ! -e "$RUNNER_TEMP/energy-public/.git"
+          test ! -e "$RUNNER_TEMP/energy-public/.github"
+          python tests/test_payload.py

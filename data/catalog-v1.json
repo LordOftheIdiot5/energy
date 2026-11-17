@@ -12,10 +12,10 @@
       "notes": "Selected weekly NVE records, processed by Nordl. Preserve attribution and license. Validated export selection is in commercial-catalog-v1.json."
     },
     {
-      "id": "mixed_energy_snapshot",
+      "id": "approved_energy_snapshot",
       "path": "energy.json",
-      "status": "display_only_pending_review",
-      "notes": "Existing published mixed-source snapshot; not a commercially cleared dataset."
+      "status": "source_scoped_open_projection",
+      "notes": "Reviewed source-specific public snapshot. Preserve upstream attribution and terms; unavailable feeds are official-link only."
     },
     {
       "id": "norway_hydro_plants",
@@ -44,8 +44,8 @@
     {
       "id": "selected_energy_projects",
       "path": "energy-projects-v1.json",
-      "status": "curated_public_facts",
-      "notes": "Selected source-linked factual records; approximate geography; not comprehensive or continuously updated. Source images and prose not included, commercial redistribution review required."
+      "status": "reference_only_pending_review",
+      "notes": "Curated project register not included in the production artifact until review. Use official links."
     },
     {
       "id": "nve_stations",
@@ -88,8 +88,10 @@
     {
       "id": "economic_reference",
       "path": "economic-reference-v1.json",
-      "status": "display_only_pending_review",
-      "notes": "Six dated EIA/FRED series via Stockwatch; preserve series-specific attribution and verify reuse rights."
+      "status": "open_with_attribution",
+      "notes": "EIA Brent and WTI public-domain spot observations; dated, not futures.",
+      "source": "https://www.eia.gov/opendata/",
+      "license": "https://www.eia.gov/about/copyrights_reuse.php"
     },
     {
       "id": "weather_vintages",

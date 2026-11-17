@@ -1,6 +1,6 @@
 """V90.1 public snapshot projection; never modifies the source payload.
-Not a complete deploy gate: the static artifact and repository exposure must
-also be reviewed before commercial release. Unknown fields fail closed.
+Used by the public collector and allowlisted Pages artifact. Historical Git
+objects are outside this forward publication gate. Unknown fields fail closed.
 """
 import argparse,json
 from pathlib import Path
@@ -29,7 +29,7 @@ def project_snapshot(d):
     return {"generated":d["generated"],"zones":[],"europe":prices,
         "marketIndex":None,"market":{},"grid":{},"fuel":{},"france":{},
         "commodities":[],"news":[],
-        "reservoirs":fields(d.get("reservoirs") or {},("year","week","zones","national")),
+        "reservoirs":fields(d.get("reservoirs") or {},("year","week","zones","national","stale")),
         "weather":{z:fields(w,WEATHER_FIELDS) for z,w in d.get("weather",{}).items() if z in SHARED_ZONES and isinstance(w,dict) and w.get("sourceUpdatedAt")},
         "gasStorage":{"source":"GIE AGSI","countries":[fields(r,GAS_FIELDS) for r in gas.get("countries",[])] if gas.get("source")=="GIE AGSI" else [],"status":gas.get("status","unavailable") if gas.get("source")=="GIE AGSI" else "unavailable"},
         "publication":{"policy":"v90.1_open_projection","sources":{"reservoirs":"NVE / NLOD","weather":"MET Norway / CC BY 4.0","gasStorage":"GIE AGSI / attribution required"},"unavailable":{"zones":"https://www.nordpoolgroup.com/","marketIndex":"https://bmrs.elexon.co.uk/","market":"https://finance.yahoo.com/","commodities":"https://www.eia.gov/dnav/pet/pet_pri_spt_s1_d.htm","grid":"https://transparency.entsoe.eu/"}}}
