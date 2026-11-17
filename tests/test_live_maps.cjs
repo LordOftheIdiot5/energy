@@ -42,11 +42,13 @@ fs.mkdirSync(out,{recursive:true});
   await ready('#atlasMap [data-observation]');
   await shot('05-weather','#atlasMap');
   await page.goto(base+'#news',{waitUntil:'domcontentloaded',timeout:60000});
-  await ready('#projectAtlas [data-project-id]',6);
+  const projects=await page.request.get(base+'data/energy-projects-v1.json');assert.ok(projects.ok());const projectData=await projects.json();
+  if(projectData.rows.length){await ready('#projectAtlas [data-project-id]',6);}else{assert.match(projectData.coverage,/pending commercial review/i);assert.ok(await page.locator('.en-project-sources a').first().isVisible());assert.equal(await page.locator('#projectAtlas [data-project-id]').count(),0);}
   await shot('06-projects','#projectAtlas');
   await page.goto(base+'#gas',{waitUntil:'domcontentloaded',timeout:60000});
   await ready('#gasAtlas [data-gas-code]');
   await shot('07-gas','#gasAtlas');
+  const snapshot=await (await page.request.get(base+'data/energy.json')).json();assert.equal(snapshot.publication.policy,'v90.1_open_projection');assert.equal(snapshot.commodities.length,0);assert.equal(snapshot.zones.length,0);assert.equal(snapshot.marketIndex,null);assert.deepEqual(snapshot.market,{});const wri=await (await page.request.get(base+'data/europe-plants-v1.json')).json();assert.equal((await page.request.get(base+'plants/wri/'+wri.rows[0].id+'/')).status(),200);assert.equal((await page.request.get(base+'data-coverage/')).status(),200);assert.equal((await page.request.get(base+'scripts/fetch.py')).status(),404);
   report('LIVE MAP VERIFICATION',{realVectorTiles:tiles.size,pageErrors:errors});
   assert.equal(errors.length,0,'Unexpected page JavaScript errors');
  }catch(error){await page.screenshot({path:out+'/failure.png',fullPage:false}).catch(()=>{});throw error;}

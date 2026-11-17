@@ -51,3 +51,7 @@ jobs:
           test ! -e "$RUNNER_TEMP/energy-public/.git"
           test ! -e "$RUNNER_TEMP/energy-public/.github"
           python tests/test_payload.py
+      - name: Browser checks against actual staged artifact
+        run: |
+          python -m http.server 8766 --bind 127.0.0.1 --directory "$RUNNER_TEMP/energy-public" >/tmp/energy-public-http.log 2>&1 &
+          ENERGY_TEST_URL=http://127.0.0.1:8766/ node tests/test_projected_home.cjs
