@@ -852,8 +852,15 @@ def main() -> int:
     france = collect_france()
     print("\nthe grid")
     grid = collect_grid()
-    if not grid.get("mix") and previous.get("grid"):grid={**previous["grid"],"stale":True}
-    else:grid["retrievedAt"]=datetime.now(timezone.utc).isoformat()
+    old_grid=previous.get("grid") or {}
+    if not grid.get("mix") and old_grid.get("mix"):
+        for key in ("mix","byCountry","generation","renewableShare"):
+            if key in old_grid:grid[key]=old_grid[key]
+        grid["mixStale"]=True;grid["mixRetrievedAt"]=old_grid.get("mixRetrievedAt") or old_grid.get("retrievedAt")
+    else:grid["mixRetrievedAt"]=datetime.now(timezone.utc).isoformat()
+    if not grid.get("flows") and old_grid.get("flows"):
+        grid["flows"]=old_grid["flows"];grid["flowsStale"]=True;grid["flowsRetrievedAt"]=old_grid.get("flowsRetrievedAt") or old_grid.get("retrievedAt")
+    else:grid["flowsRetrievedAt"]=datetime.now(timezone.utc).isoformat()
     print("\nweather")
     snow_snapshot=None
     weather = collect_weather()

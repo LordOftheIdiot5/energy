@@ -30,7 +30,7 @@
       "path": "norway-zones-v1.json",
       "source": "https://gis3.nve.no/map/rest/services/Mapservices/Omradekonsesjoner/MapServer/0",
       "license": "https://data.norge.no/nlod/",
-      "status": "optional_endpoint_after_validated_import",
+      "status": "validated_geometry_available",
       "notes": "Simplified NVE boundaries; do not use for legal surveying. Check endpoint availability and generated timestamp."
     },
     {
@@ -76,13 +76,13 @@
       "path": "nve-projects-v1.json",
       "source": "https://gis3.nve.no/map/rest/services/Mapservices/VassdragsreguleringVannkraft/MapServer/11",
       "license": "https://data.norge.no/nlod/",
-      "status": "pending_validated_import",
+      "status": "validated_licensing_reference_available",
       "notes": "Optional endpoint; NVE attributed normalized records, simplified polygon geometry."
     },
     {
       "id": "hydro_validation",
       "path": "hydro-validation-v1.json",
-      "status": "derived_historical_baseline_pending_run",
+      "status": "derived_historical_baseline_available",
       "notes": "Rolling-origin historical seasonal model and empirical residual range; no weather input."
     },
     {
@@ -94,7 +94,7 @@
     {
       "id": "weather_vintages",
       "path": "weather-vintages-v1.json",
-      "status": "pending_first_snapshot",
+      "status": "daily_snapshot_archive_active",
       "notes": "Collector-retrieved point weather; original forecast issue time and catchment forecasts not included."
     },
     {
@@ -112,6 +112,13 @@
       "license": "https://creativecommons.org/licenses/by/4.0/",
       "status": "open_with_attribution",
       "notes": "2021 historical archive, not operational status. Validated export selection is in commercial-catalog-v1.json."
+    },
+    {
+      "id": "nordl_open_archive",
+      "path": "archive/index-v1.json",
+      "status": "open_with_source_specific_attribution",
+      "title": "Nordl dated open history",
+      "notes": "Versioned monthly partitions of licensed day-ahead prices, snow, MET modelled forecast summaries and ENTSO-E explicit load/flow records. Revision identity retained. Source rights per record."
     }
   ],
   "sources": [
