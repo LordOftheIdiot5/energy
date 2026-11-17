@@ -1,0 +1,42 @@
+name: V90.1 commercial readiness validation
+on:
+  push:
+    branches: [release/v90-1-commercial-readiness-20261118]
+  pull_request:
+    branches: [main]
+    paths:
+      - scripts/build_plant_pages.py
+      - scripts/european_plant_pages.py
+      - scripts/publication_policy.py
+      - tests/test_static_plants.py
+      - tests/test_publication_policy.py
+      - .github/workflows/v901-commercial-validation.yml
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v7
+      - name: Syntax and full offline tests
+        run: |
+          python -m compileall -q scripts tests
+          python -m unittest discover -s tests -v
+          for f in *.js; do node --check "$f"; done
+      - name: Generate full static directory
+        run: python scripts/build_plant_pages.py
+      - name: Validate separate public-data projection
+        run: python scripts/publication_policy.py --out /tmp/energy-open-projection
+      - name: Browser profile validation
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1
+          npx playwright install chromium
+          python -m http.server 8765 --bind 127.0.0.1 >/tmp/energy-http.log 2>&1 &
+          node tests/test_static_plant_browser.cjs
+      - name: Test European profile without JavaScript
+        run: |
+          node - <<'JS'
+          const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=require('fs');
+          (async()=>{const d=JSON.parse(fs.readFileSync('data/europe-plants-v1.json'));const id=d.rows[0].id;const b=await chromium.launch({headless:true,args:['--no-sandbox']});try{for(const width of [1440,390]){const p=await b.newPage({viewport:{width,height:900},javaScriptEnabled:false});const path='/plants/wri/'+id+'/';assert.equal((await p.goto('http://127.0.0.1:8765'+path)).status(),200);assert.equal(await p.locator('h1').innerText(),d.rows[0].name);assert.equal(await p.locator('link[rel=canonical]').getAttribute('href'),'https://energy.nordl.dev'+path);assert.ok(await p.getByText('Historical archive · 2021').isVisible());assert.ok(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2));await p.close();}}finally{await b.close();}})().catch(e=>{console.error(e);process.exitCode=1});
+          JS
