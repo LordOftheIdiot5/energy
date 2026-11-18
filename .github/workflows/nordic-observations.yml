@@ -1,0 +1,81 @@
+name: Nordic observations
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/nordic-observations.yml
+      - scripts/nordic_observations.py
+  schedule:
+    - cron: '8 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+concurrency:
+  group: nordic-observations
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+      - name: Collect and validate only Nordic observations
+        env:
+          NVE_HYDAPI_KEY: ${{ secrets.NVE_HYDAPI_KEY }}
+          FINGRID_API_KEY: ${{ secrets.FINGRID_API_KEY }}
+        run: |
+          python -u scripts/nordic_observations.py
+          python - <<'PY'
+          import sys,json
+          sys.path.insert(0,"scripts")
+          from pathlib import Path
+          from nordic_observations import public_files
+          files=list(public_files(Path("data")))
+          print("Validated files:",files)
+          for provider in ("hydapi","fingrid"):
+              p=Path("data")/(provider+"-v1.json")
+              if not p.exists() or not json.loads(p.read_text())["rows"]:
+                  print("::warning::"+provider+" has no published observations yet")
+          PY
+      - name: Publish independent data transaction
+        run: |
+          git config user.name "energy-observations"
+          git config user.email "actions@github.com"
+          git add -- 'data/hydapi*.json' 'data/fingrid*.json' data/observations/
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Nordic observations: $(date -u +%FT%TZ)"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              git rebase --abort
+              echo "::error::Another writer changed Nordic observation files; refusing overwrite"
+              exit 1
+            fi
+            if git push origin HEAD:main; then exit 0; fi
+            sleep 2
+          done
+          exit 1
+  deploy:
+    needs: collect
+    runs-on: ubuntu-24.04
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+      - run: python3 scripts/build_public_site.py --out "$RUNNER_TEMP/energy-public"
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: ${{ runner.temp }}/energy-public
+      - id: deployment
+        uses: actions/deploy-pages@v5
