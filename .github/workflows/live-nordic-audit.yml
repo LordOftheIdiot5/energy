@@ -1,0 +1,16 @@
+name: V90.2 live Nordic audit
+on:
+  push:
+    branches: [diagnostics/v902-live-nordic-20261118]
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v7
+      - run: npm install --no-save --no-package-lock playwright@1.56.1
+      - run: npx playwright install chromium
+      - name: Live website checks with actual observations
+        run: node tests/live_nordic_audit.cjs
