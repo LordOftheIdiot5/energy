@@ -5,6 +5,7 @@ on:
     paths:
       - .github/workflows/nordic-observations.yml
       - scripts/nordic_observations.py
+      - scripts/nordic_backfill.py
   schedule:
     - cron: '8 * * * *'
   workflow_dispatch:
@@ -29,6 +30,7 @@ jobs:
           FINGRID_API_KEY: ${{ secrets.FINGRID_API_KEY }}
         run: |
           python -u scripts/nordic_observations.py
+          python -u scripts/nordic_backfill.py
           python - <<'PY'
           import sys,json
           sys.path.insert(0,"scripts")
