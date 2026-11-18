@@ -78,7 +78,7 @@ def fg_rows(d,dataset):
         if (datetime.fromisoformat(z)-datetime.fromisoformat(a)).total_seconds()!=180:continue
         result.append({"id":str(dataset),"datasetId":dataset,"name":FG_IDS[dataset],"unit":"MW","time":a,"endTime":z,"value":r["value"]})
     return result
-def store(directory,provider,rows,stamp):
+def store(directory,provider,rows,stamp,archive_only=False):
     root=Path(directory)/"observations"/provider;root.mkdir(parents=True,exist_ok=True)
     groups={}
     for r in rows:groups.setdefault(r["time"][:7],[]).append(r)
@@ -90,6 +90,9 @@ def store(directory,provider,rows,stamp):
             rev=hashlib.sha256(json.dumps(r,sort_keys=True,allow_nan=False).encode()).hexdigest()
             if rev not in seen:doc["rows"].append({**r,"revision":rev,"firstRetrievedAt":stamp});seen.add(rev)
         if items:write_json(path,doc)
+    if archive_only:
+        print(provider,len(rows),"historical observations archived")
+        return
     # Preserve latest observations and short chart history when one series fails.
     path=Path(directory)/(provider+"-v1.json");old=read(path,{**base(provider),"rows":[]})
     combined={(r["id"],r["time"]):r for r in old["rows"]}
