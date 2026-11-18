@@ -68,6 +68,7 @@ jobs:
           # registration at agsi.gie.eu/account. Absent, the gas storage
           # panel is skipped and everything else runs unchanged.
           GIE_API_KEY: ${{ secrets.GIE_API_KEY }}
+          NORDIC_OBSERVATIONS_DEDICATED: "1"
           NVE_HYDAPI_KEY: ${{ secrets.NVE_HYDAPI_KEY }}
           HYDAPI_API_KEY: ${{ secrets.HYDAPI_API_KEY }}
           HYDAPI_KEY: ${{ secrets.HYDAPI_KEY }}

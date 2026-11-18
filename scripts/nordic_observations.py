@@ -109,12 +109,21 @@ def refresh_hydapi(directory,key,get=request):
     samples=select_samples(stations);rows=[]
     for start in range(0,len(samples),5):
         ids=[s["stationId"] for s in samples[start:start+5]]
-        url=NVE+"Observations?"+urlencode({"StationId":",".join(ids),"Parameter":"1000,1001,1003","ResolutionTime":"1440","ReferenceTime":"P30D/"})
-        try:rows.extend(hydro_rows(get(url,key),set(ids)))
-        except HTTPError as e:
-            if e.code in (401,403,429):raise
-            print("HydAPI sample batch HTTP",e.code)
-        time.sleep(1)
+        # Avoid cross-products of unsupported stations and parameters.
+        # Use independent GET queries for available parameters, with a bounded
+        # history window and throttling. Save successful rows on partial failure.
+        for station in samples[start:start+5]:
+            sid=station["stationId"]
+            available={s["parameter"] for s in station["series"] if s.get("serieTo") is None}
+            for parameter in sorted(available & PARAMS.keys()):
+                url=NVE+"Observations?"+urlencode({"StationId":sid,"Parameter":parameter,"ResolutionTime":"1440","ReferenceTime":"P30D/"})
+                try:rows.extend(hydro_rows(get(url,key),{sid}))
+                except HTTPError as e:
+                    if e.code in (401,403,429):
+                        if rows:store(root,"hydapi",rows,stamp)
+                        raise
+                    print("HydAPI",sid,parameter,"HTTP",e.code)
+                time.sleep(1)
     if not rows:raise ValueError("No HydAPI observations returned")
     store(root,"hydapi",rows,stamp)
 def refresh_fingrid(directory,key,get=request):
@@ -129,6 +138,8 @@ def refresh_fingrid(directory,key,get=request):
     if not rows:raise ValueError("No Fingrid observations returned")
     store(directory,"fingrid",rows,stamp)
 def refresh(directory):
+    if os.environ.get("NORDIC_OBSERVATIONS_DEDICATED")=="1":
+        print("Nordic observations: dedicated collector owns these files");return
     for provider,names,fn in (("hydapi",("NVE_HYDAPI_KEY","HYDAPI_API_KEY","HYDAPI_KEY","NVE_HYDAPI_API_KEY"),refresh_hydapi),("fingrid",("FINGRID_API_KEY","FINGRID_KEY"),refresh_fingrid)):
         key=next((os.environ.get(n) for n in names if os.environ.get(n)),None)
         if not key:print(provider+": missing repository secret; retaining existing observations");continue

@@ -54,7 +54,13 @@ def stage(root,out):
     # Keep the route useful but do not publish the pending third-party project register.
     (out/"data/energy-projects-v1.json").write_text(json.dumps({"schema_version":1,"coverage":"Official source links only pending commercial review.","rows":[]}),encoding="utf-8")
     from nordic_observations import public_files
-    for name in public_files(root/"data"):copy(root,out,"data/"+name)
+    observations=[]
+    for name in public_files(root/"data"):
+        copy(root,out,"data/"+name)
+        item=load(root/"data"/name)
+        observations.append({"path":name,"provider":item["provider"],"rows":len(item["rows"]),"generated":item.get("generated"),"month":item.get("month"),"license":item["license"],"attribution":item["attribution"],"sha256":sha(root/"data"/name)})
+    (out/"data/observations").mkdir(exist_ok=True)
+    (out/"data/observations/index-v1.json").write_text(json.dumps({"schema_version":1,"datasets":observations},indent=2)+"\n",encoding="utf-8")
     generate(out)
     assert_public(out)
     print("Public artifact:",len(list(out.rglob("*.html"))),"HTML pages")
