@@ -47,7 +47,7 @@ class CollectorRegressionTests(unittest.TestCase):
                 "asset_reference.owners", "economic_reference.refresh",
                 "news.collect", "hydro_archive.append_snapshot",
                 "economic_reference.archive_weather", "hydro_validation.refresh",
-                "weather_geography.refresh",
+                "weather_geography.refresh", "nordic_observations.refresh",
             ):
                 stack.enter_context(patch(target, return_value=[]))
             plant_refresh = stack.enter_context(patch.object(asset_reference, "europe"))

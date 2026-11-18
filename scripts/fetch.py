@@ -878,6 +878,8 @@ def main() -> int:
         refresh(OUT.parent,get_json)
     except Exception as e:
         print("  ! economic reference:",type(e).__name__)
+    from nordic_observations import refresh as refresh_observations
+    refresh_observations(OUT.parent)
     stories = []
     payload = {
         "generated": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
