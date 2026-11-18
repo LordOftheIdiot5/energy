@@ -1,0 +1,45 @@
+name: HydAPI and Fingrid credential diagnostic
+on:
+  push:
+    branches: [diagnostics/hydapi-fingrid-auth-20261118]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v7
+      - name: Check real provider responses
+        env:
+          NVE_HYDAPI_KEY: ${{ secrets.NVE_HYDAPI_KEY }}
+          FINGRID_API_KEY: ${{ secrets.FINGRID_API_KEY }}
+          FINGRID_API_KEY_SECOND: ${{ secrets.FINGRID_API_KEY_SECOND }}
+        run: |
+          python -u - <<'PY'
+          import os,sys,time
+          from datetime import datetime,timedelta,timezone
+          from pathlib import Path
+          from urllib.parse import urlencode
+          from urllib.error import HTTPError
+          sys.path.insert(0,str(Path('scripts').resolve()))
+          from nordic_observations import request,hydro_rows,fg_rows,NVE,FG
+          def check(name,key,url,normalize):
+              if not key:
+                  print(name,': missing secret',flush=True);return False
+              try:
+                  rows=normalize(request(url,key))
+                  print(name,': HTTP success;',len(rows),'validated records',flush=True)
+                  return bool(rows)
+              except HTTPError as exc:
+                  print(name,': HTTP',exc.code,flush=True);return False
+              except Exception as exc:
+                  print(name,':',type(exc).__name__,flush=True);return False
+          nve=check('HydAPI observation',os.environ.get('NVE_HYDAPI_KEY'),NVE+'Observations?'+urlencode({'StationId':'6.10.0','Parameter':'1000','ResolutionTime':'1440','ReferenceTime':'P7D/'}),lambda x:hydro_rows(x,{'6.10.0'}))
+          end=datetime.now(timezone.utc);start=end-timedelta(hours=2)
+          url=FG+'192/data?'+urlencode({'startTime':start.isoformat(),'endTime':end.isoformat(),'format':'json','pageSize':100})
+          fg=check('Fingrid primary',os.environ.get('FINGRID_API_KEY'),url,lambda x:fg_rows(x,192))
+          time.sleep(2.2)
+          backup=check('Fingrid secondary',os.environ.get('FINGRID_API_KEY_SECOND'),url,lambda x:fg_rows(x,192))
+          if not(nve and fg):sys.exit(1)
+          PY
