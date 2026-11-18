@@ -121,6 +121,22 @@
       "status": "open_with_source_specific_attribution",
       "title": "Nordl dated open history",
       "notes": "Versioned monthly partitions of licensed day-ahead prices, snow, MET modelled forecast summaries and ENTSO-E explicit load/flow records. Revision identity retained. Source rights per record. GIE AGSI gas-day aggregates included with mandatory source credit."
+    },
+    {
+      "id": "hydapi_station_inventory",
+      "path": "hydapi-stations-v1.json",
+      "status": "open_with_attribution_pending_first_collection",
+      "source": "https://hydapi.nve.no/UserDocumentation/",
+      "license": "https://data.norge.no/nlod/",
+      "notes": "Nationwide metadata; sampled daily observations in hydapi-v1.json and monthly observations/hydapi partitions."
+    },
+    {
+      "id": "fingrid_observations",
+      "path": "fingrid-v1.json",
+      "status": "open_with_attribution_pending_first_collection",
+      "source": "https://data.fingrid.fi/en/about",
+      "license": "https://creativecommons.org/licenses/by/4.0/",
+      "notes": "Fingrid-produced datasets 181, 191, 192, 193; 3-minute source intervals, hourly fetch. Historical partitions under observations/fingrid."
     }
   ],
   "sources": [
@@ -176,7 +192,7 @@
     {
       "name": "NVE HydAPI",
       "url": "https://hydapi.nve.no/",
-      "status": "Registration required; historical station series"
+      "status": "NLOD; authenticated collector configured; live validation pending"
     },
     {
       "name": "NVE VEPS",

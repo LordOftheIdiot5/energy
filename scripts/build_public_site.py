@@ -5,7 +5,7 @@ from publication_policy import write_projection,project_snapshot,project_economi
 from price_rights import permitted
 from build_plant_pages import generate
 ROOT=Path(__file__).resolve().parents[1]
-SITE="index.html guide.html CNAME robots.txt style.css workspace.css portal.css energy-map.css research-tools.css premium.css terminal.css geography.css visual-terminal.css energy-pro.css asset-pages.css energy-contours.svg asset-research.js data-cache.js energy-atlas.js energy-land.js energy-map.js energy-topo.js feed-freshness.js geo-labels.js geography.js hydro-intelligence.js infrastructure.js map-navigation.js market-reference.js nordl-charts.js plant-profile.js plant-tile-map.js portal.js project-atlas.js public-grid-map.js regional-atlas.js release-research.js research-tools.js satellite-layer.js shared-energy.js terminal.js terrain-relief.js visual-terminal.js weather-geography.js workspace.js".split()
+SITE="index.html guide.html CNAME robots.txt style.css workspace.css portal.css energy-map.css research-tools.css premium.css terminal.css geography.css visual-terminal.css energy-pro.css asset-pages.css energy-contours.svg asset-research.js data-cache.js energy-atlas.js energy-land.js energy-map.js energy-topo.js feed-freshness.js geo-labels.js geography.js hydro-intelligence.js infrastructure.js map-navigation.js market-reference.js nordl-charts.js plant-profile.js plant-tile-map.js portal.js project-atlas.js public-grid-map.js regional-atlas.js release-research.js research-tools.js satellite-layer.js shared-energy.js terminal.js terrain-relief.js visual-terminal.js weather-geography.js workspace.js nordic-observations.js".split()
 DATA="catalog-v1.json commercial-catalog-v1.json hydro-v1.json hydro-plants-v1.json hydro-owners-v1.json hydro-validation-v1.json norway-zones-v1.json nve-catchments-v1.json nve-projects-v1.json nve-reservoirs-v1.json nve-stations-v1.json europe-plants-v1.json weather-geography-v1.json weather-vintages-v1.json owner-company-links-v1.json".split()
 DOCS="V89-API.md v85-benchmark-results.json v86-price-benchmark-results.json".split()
 KINDS={"day-ahead","entsoe-series","gas-storage","snow-water","weather-forecast"}
@@ -53,6 +53,8 @@ def stage(root,out):
     copy(root,out,"data/archive/index-v1.json")
     # Keep the route useful but do not publish the pending third-party project register.
     (out/"data/energy-projects-v1.json").write_text(json.dumps({"schema_version":1,"coverage":"Official source links only pending commercial review.","rows":[]}),encoding="utf-8")
+    from nordic_observations import public_files
+    for name in public_files(root/"data"):copy(root,out,"data/"+name)
     generate(out)
     assert_public(out)
     print("Public artifact:",len(list(out.rglob("*.html"))),"HTML pages")

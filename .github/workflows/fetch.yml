@@ -30,6 +30,8 @@ on:
       - scripts/publication_policy.py
       - scripts/build_public_site.py
       - scripts/economic_reference.py
+      - scripts/nordic_observations.py
+      - tests/test_nordic_observations.py
       - tests/test_v901_data.py
       - tests/test_archive_sources.py
       - tests/test_weather_geography.py
@@ -66,6 +68,12 @@ jobs:
           # registration at agsi.gie.eu/account. Absent, the gas storage
           # panel is skipped and everything else runs unchanged.
           GIE_API_KEY: ${{ secrets.GIE_API_KEY }}
+          NVE_HYDAPI_KEY: ${{ secrets.NVE_HYDAPI_KEY }}
+          HYDAPI_API_KEY: ${{ secrets.HYDAPI_API_KEY }}
+          HYDAPI_KEY: ${{ secrets.HYDAPI_KEY }}
+          NVE_HYDAPI_API_KEY: ${{ secrets.NVE_HYDAPI_API_KEY }}
+          FINGRID_API_KEY: ${{ secrets.FINGRID_API_KEY }}
+          FINGRID_KEY: ${{ secrets.FINGRID_KEY }}
         run: python scripts/fetch.py
 
       - name: Sanity check
