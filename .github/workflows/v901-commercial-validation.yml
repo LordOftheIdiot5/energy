@@ -1,7 +1,7 @@
 name: V90.1 commercial readiness validation
 on:
   push:
-    branches: [release/v90-1-commercial-readiness-20261118, fix/v901-restore-nordic-prices-20261118, feature/v902-hydapi-fingrid-20261118, feature/v902-observations-explorer-20261118, feature/v902-nordic-history-20261119, feature/v902-energy-research-access-20261119, feature/v903a-energy-network-brand-20261119, feature/v904a-unified-atlas-20261119, feature/v904b-hydro-network-20261119, feature/v905a-professional-charts-20261119, feature/v905b-chart-laboratory-20261119, feature/v906-ssb-energy-statistics-20261119, feature/v906b-energinet-20261119]
+    branches: [release/v90-1-commercial-readiness-20261118, fix/v901-restore-nordic-prices-20261118, feature/v902-hydapi-fingrid-20261118, feature/v902-observations-explorer-20261118, feature/v902-nordic-history-20261119, feature/v902-energy-research-access-20261119, feature/v903a-energy-network-brand-20261119, feature/v904a-unified-atlas-20261119, feature/v904b-hydro-network-20261119, feature/v905a-professional-charts-20261119, feature/v905b-chart-laboratory-20261119, feature/v906-ssb-energy-statistics-20261119]
   pull_request:
     branches: [main]
     paths:
@@ -11,6 +11,10 @@ on:
       - tests/test_static_plants.py
       - tests/test_publication_policy.py
       - .github/workflows/v901-commercial-validation.yml
+      - scripts/energinet_energy.py
+      - tests/test_energinet_energy.py
+      - energinet-energy.js
+      - .github/workflows/nordic-observations.yml
 permissions:
   contents: read
 jobs:
@@ -40,7 +44,6 @@ jobs:
         run: |
           python -u scripts/energinet_energy.py --metadata --force
           python -u scripts/energinet_energy.py --force
-          python -u scripts/energinet_energy.py --history --force
       - name: Generate full static directory
         run: python scripts/build_plant_pages.py
       - name: Validate separate public-data projection
