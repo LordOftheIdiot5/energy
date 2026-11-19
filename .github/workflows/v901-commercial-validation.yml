@@ -1,7 +1,7 @@
 name: V90.1 commercial readiness validation
 on:
   push:
-    branches: [release/v90-1-commercial-readiness-20261118, fix/v901-restore-nordic-prices-20261118, feature/v902-hydapi-fingrid-20261118, feature/v902-observations-explorer-20261118, feature/v902-nordic-history-20261119, feature/v902-energy-research-access-20261119]
+    branches: [release/v90-1-commercial-readiness-20261118, fix/v901-restore-nordic-prices-20261118, feature/v902-hydapi-fingrid-20261118, feature/v902-observations-explorer-20261118, feature/v902-nordic-history-20261119, feature/v902-energy-research-access-20261119, feature/v903a-energy-network-brand-20261119]
   pull_request:
     branches: [main]
     paths:
@@ -58,3 +58,6 @@ jobs:
           ENERGY_TEST_URL=http://127.0.0.1:8766/ node tests/test_projected_home.cjs
       - name: Nordic dataset explorer fixture browser checks
         run: node tests/test_nordic_explorer.cjs
+
+      - name: Energy identity browser validation
+        run: node tests/test_energy_brand.cjs

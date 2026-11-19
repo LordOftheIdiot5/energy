@@ -1,0 +1,12 @@
+/* V90.3a: approved Nordl Energy network identity. Existing data and theme tokens remain unchanged. */
+.energy-brand{display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink,#e9f2ff);min-width:0}
+.energy-brand .energy-brand-icon{display:block;flex:0 0 auto;width:48px;height:48px}
+.energy-brand .energy-brand-name{display:flex;flex-direction:column;gap:3px;min-width:0;line-height:1.02;font-family:Manrope,"DM Sans",system-ui,sans-serif}
+.energy-brand-name strong{font-size:21px;font-weight:800;letter-spacing:.065em;color:var(--ink,#e9f2ff)}
+.energy-brand-name b{font-size:12px;font-weight:800;letter-spacing:.19em;color:var(--accent,#4ce2b5)}
+.en-logo.energy-brand{margin:0 10px 24px;min-height:48px}
+.energy-static-brand,.energy-guide-brand{flex-shrink:0}
+.energy-mobile-brand{display:none}
+.energy-brand:focus-visible,.energy-mobile-brand:focus-visible{outline:2px solid var(--accent,#4ce2b5);outline-offset:4px;border-radius:4px}
+@media(max-width:900px){.energy-mobile-brand{display:inline-flex;align-items:center;gap:6px;min-height:40px;color:var(--ink);text-decoration:none;white-space:nowrap;font-size:13px;letter-spacing:-.025em}.energy-mobile-brand img{flex:0 0 auto;width:32px;height:32px}.energy-mobile-brand b{color:var(--accent)}.en-top .en-crumb{display:none}.en-top .stamp{margin-left:auto}}
+@media(max-width:390px){.energy-mobile-brand{font-size:12px;gap:5px}.energy-mobile-brand img{width:28px;height:28px}.en-top .stamp{max-width:78px;overflow-wrap:anywhere}.en-top .en-button{min-width:37px}}
