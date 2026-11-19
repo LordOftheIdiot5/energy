@@ -57,4 +57,5 @@ Use small PRs, evidence of data and browser tests, production smoke tests, repor
 - V90.4b: first hydropower network overlay implementation staged; existing NVE polygons and documented transfer IDs only. Natural river topology and globe remain pending.
 - V90.5a: shared professional chart engine first increment implemented; range controls, keyboard inspection, interval steps, table, licensed visible exports. Pending validation. Cross-chart synchronization and comparison laboratory follow.
 - V90.5b: first comparison workspace staged: matching delivery-price groups, weekly reservoir zones, Finnish measurements and monthly selection; aligned means and shared inspection. Live verification pending; cross-unit synchronized views and validated forecast comparisons remain future work.
-- V90.6 onward: planned.
+- V90.6: SSB official annual/monthly statistics collector, exact cell/status retention, source-aware country chart and data-workbench integration staged. Live API/schema gate pending; Energinet next.
+- V90.7 onward: planned.
