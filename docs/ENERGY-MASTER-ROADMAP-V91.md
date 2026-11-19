@@ -55,4 +55,5 @@ Use small PRs, evidence of data and browser tests, production smoke tests, repor
 - V90.3b: Daily Energy Monitor implemented with shared zone/date controls, step delivery charts, future windows, exact comparison, reservoir and Fingrid changes; release verification pending.
 - V90.4a: unified infrastructure search, filters, NVE/HydAPI layers and retained fallback implemented on feature branch; live gate pending.
 - V90.4b: first hydropower network overlay implementation staged; existing NVE polygons and documented transfer IDs only. Natural river topology and globe remain pending.
-- V90.5a onward: planned.
+- V90.5a: shared professional chart engine first increment implemented; range controls, keyboard inspection, interval steps, table, licensed visible exports. Pending validation. Cross-chart synchronization and comparison laboratory follow.
+- V90.5b onward: planned.
