@@ -1,0 +1,26 @@
+name: V90.6 Danish generation source probe
+on:
+  push:
+    branches: [diagnostics/v906-energinet-20261119]
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 4
+    steps:
+      - name: Verify replacement generation endpoint (read only)
+        run: |
+          python - <<'PY'
+          import urllib.request,json
+          base="https://api.energidataservice.dk/dataset/GenerationProdTypeExchange"
+          r=urllib.request.Request(base+"?limit=4",headers={"Accept":"application/json","User-Agent":"Nordl-Energy/1.0 (energy.nordl.dev)"})
+          with urllib.request.urlopen(r,timeout=40) as h:
+              d=json.load(h)
+              print("HTTP",h.status,"keys",list(d))
+          rows=d["records"]
+          assert len(rows)>0
+          print("Rows",len(rows))
+          print("Source sample",json.dumps(rows[0],ensure_ascii=False))
+          print("PASS Energinet replacement endpoint")
+          PY
