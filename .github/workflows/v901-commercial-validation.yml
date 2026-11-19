@@ -1,7 +1,7 @@
 name: V90.1 commercial readiness validation
 on:
   push:
-    branches: [release/v90-1-commercial-readiness-20261118, fix/v901-restore-nordic-prices-20261118, feature/v902-hydapi-fingrid-20261118, feature/v902-observations-explorer-20261118, feature/v902-nordic-history-20261119, feature/v902-energy-research-access-20261119, feature/v903a-energy-network-brand-20261119]
+    branches: [release/v90-1-commercial-readiness-20261118, fix/v901-restore-nordic-prices-20261118, feature/v902-hydapi-fingrid-20261118, feature/v902-observations-explorer-20261118, feature/v902-nordic-history-20261119, feature/v902-energy-research-access-20261119, feature/v903a-energy-network-brand-20261119, feature/v904a-unified-atlas-20261119]
   pull_request:
     branches: [main]
     paths:
@@ -27,6 +27,8 @@ jobs:
           node tests/test_visual_terminal.cjs
           node tests/test_energy_data_access.cjs
           node tests/test_daily_monitor.cjs
+          node tests/test_atlas.cjs
+          node tests/test_atlas_assets.cjs
       - name: Generate full static directory
         run: python scripts/build_plant_pages.py
       - name: Validate separate public-data projection
@@ -65,3 +67,6 @@ jobs:
 
       - name: Daily Energy Monitor browser checks
         run: node tests/test_daily_monitor_browser.cjs
+
+      - name: Unified atlas real-data and fallback checks
+        run: node tests/test_atlas_assets_browser.cjs
