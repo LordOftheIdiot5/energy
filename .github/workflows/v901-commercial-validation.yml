@@ -26,6 +26,7 @@ jobs:
           for f in *.js; do node --check "$f"; done
           node tests/test_visual_terminal.cjs
           node tests/test_energy_data_access.cjs
+          node tests/test_daily_monitor.cjs
       - name: Generate full static directory
         run: python scripts/build_plant_pages.py
       - name: Validate separate public-data projection
@@ -61,3 +62,6 @@ jobs:
 
       - name: Energy identity browser validation
         run: node tests/test_energy_brand.cjs
+
+      - name: Daily Energy Monitor browser checks
+        run: node tests/test_daily_monitor_browser.cjs

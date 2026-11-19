@@ -10,3 +10,5 @@
 .energy-brand:focus-visible,.energy-mobile-brand:focus-visible{outline:2px solid var(--accent,#4ce2b5);outline-offset:4px;border-radius:4px}
 @media(max-width:900px){.energy-mobile-brand{display:inline-flex;align-items:center;gap:6px;min-height:40px;color:var(--ink);text-decoration:none;white-space:nowrap;font-size:13px;letter-spacing:-.025em}.energy-mobile-brand img{flex:0 0 auto;width:32px;height:32px}.energy-mobile-brand b{color:var(--accent)}.en-top .en-crumb{display:none}.en-top .stamp{margin-left:auto}}
 @media(max-width:390px){.energy-mobile-brand{font-size:12px;gap:5px}.energy-mobile-brand img{width:28px;height:28px}.en-top .stamp{max-width:78px;overflow-wrap:anywhere}.en-top .en-button{min-width:37px}}
+
+.energy-menu-close{display:none}@media(max-width:900px){.energy-menu-close{display:block;width:100%;min-height:40px;margin:0 0 12px;background:var(--panel);border:1px solid var(--line);color:var(--ink);border-radius:8px;text-align:right;padding:8px 12px;font:600 13px var(--sans);cursor:pointer}.energy-menu-close:focus-visible{outline:2px solid var(--accent);outline-offset:2px}}

@@ -52,4 +52,5 @@ Use small PRs, evidence of data and browser tests, production smoke tests, repor
 ### Progress
 - V90.2: deployed; backfill in progress; next dedicated live audit of new export/network UI pending.
 - V90.3a: Energy Network (C) selected by owner; production vector branding and theme-aware headers implemented; validation/deployment gate pending.
-- V90.3b onward: planned.
+- V90.3b: Daily Energy Monitor implemented with shared zone/date controls, step delivery charts, future windows, exact comparison, reservoir and Fingrid changes; release verification pending.
+- V90.4a onward: planned.

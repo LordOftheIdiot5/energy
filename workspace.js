@@ -8,6 +8,7 @@
   theme?.addEventListener('click',()=>setTheme(document.body.dataset.theme==='light'?'dark':'light'));
   const nav=get('enNav'), menu=get('enMenu');
   function closeMenu(){nav?.classList.remove('open');menu?.setAttribute('aria-expanded','false');}
+  get('enCloseMenu')?.addEventListener('click',()=>{closeMenu();menu?.focus();});
   menu?.addEventListener('click',()=>{const open=nav.classList.toggle('open');menu.setAttribute('aria-expanded',String(open));if(open)nav.querySelector('a')?.focus();});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&nav?.classList.contains('open')){closeMenu();menu?.focus();}});
   document.addEventListener('pointerdown',e=>{if(nav?.classList.contains('open')&&!nav.contains(e.target)&&!menu?.contains(e.target))closeMenu();});
