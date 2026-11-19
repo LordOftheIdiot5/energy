@@ -61,3 +61,8 @@ Use small PRs, evidence of data and browser tests, production smoke tests, repor
 - V90.7 onward: planned.
 
 - V90.6b: Energinet merged after 43 regression tests, live source and public artifact desktop/mobile checks; production gate pending at merge. V90.6c: Sodir monthly source collector and public data workbench staged; historical fill and ownership joins pending.
+
+- V90.6b: production collector and deployment passed; 1,484 Danish source rows collected. V90.6c: 845 offshore field-month observations across 108 fields/discoveries, 45 tests and desktop/mobile staged artifact passed; PR 47 merged; production collection pending at merge.
+
+## Global Infrastructure Atlas extension (owner requested 19 November 2026)
+Make the existing Atlas a global, layer-selectable infrastructure research workspace; retain all existing Nordic tools and fallback. See docs/GLOBAL-INFRASTRUCTURE-ATLAS.md for source gates, phased architecture and measurable acceptance. Start V90.6d with world navigation and source inventory; larger map layers and petroleum ownership follow without blocking ongoing collections. V90.7 forecasting and V90.8 company link work continue with verified geographic and entity joins. No claim of worldwide infrastructure coverage until measured. V91 integrated audit includes the atlas foundation; long-tail civil infrastructure expansion continues after launch.
