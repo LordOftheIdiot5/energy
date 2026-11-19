@@ -59,3 +59,5 @@ Use small PRs, evidence of data and browser tests, production smoke tests, repor
 - V90.5b: first comparison workspace staged: matching delivery-price groups, weekly reservoir zones, Finnish measurements and monthly selection; aligned means and shared inspection. Live verification pending; cross-unit synchronized views and validated forecast comparisons remain future work.
 - V90.6: SSB official annual/monthly statistics collector, exact cell/status retention, source-aware country chart and data-workbench integration staged. SSB live API/schema and 39 offline tests passed; merged. Danish Energinet collection, hourly source revisions and bounded monthly backfill staged; verify units and source sign semantics before chart calculations.
 - V90.7 onward: planned.
+
+- V90.6b: Energinet merged after 43 regression tests, live source and public artifact desktop/mobile checks; production gate pending at merge. V90.6c: Sodir monthly source collector and public data workbench staged; historical fill and ownership joins pending.

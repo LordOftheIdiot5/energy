@@ -8,6 +8,7 @@ on:
       - scripts/nordic_backfill.py
       - scripts/ssb_energy.py
       - scripts/energinet_energy.py
+      - scripts/sodir_production.py
   schedule:
     - cron: '8 * * * *'
   workflow_dispatch:
@@ -36,6 +37,7 @@ jobs:
           python -u scripts/nordic_backfill.py
           if [ -f data/energinet-v1.json ] && [ "$(date -u +%H)" = 10 ]; then python -u scripts/energinet_energy.py --history; elif [ -f data/energinet-v1.json ] && [ "$(date -u +%H)" = 11 ]; then python -u scripts/energinet_energy.py --refresh; else python -u scripts/energinet_energy.py; fi
           if [ ! -f data/ssb-08307-v1.json ] || [ ! -f data/ssb-14091-v1.json ] || [ ! -f data/ssb-14092-v1.json ] || [ ! -f data/ssb-14093-v1.json ] || [ "$(date -u +%H)" = 09 ]; then python -u scripts/ssb_energy.py; fi
+          if [ ! -f "data/sodir-production/$(date -u +%Y).json" ] || [ "$(date -u +%H)" = 12 ]; then python -u scripts/sodir_production.py; elif [ "$(date -u +%H)" = 13 ]; then python -u scripts/sodir_production.py --history; fi
           python - <<'PY'
           import sys,json
           sys.path.insert(0,"scripts")
@@ -56,6 +58,7 @@ jobs:
           for p in data/ssb-*-v1.json; do if [ -f "$p" ]; then git add -- "$p"; fi; done
           if [ -d data/ssb-revisions ]; then git add -- data/ssb-revisions/; fi
           for p in data/energinet-v1.json data/energinet-history data/energinet-revisions data/energinet-backfill-state-v1.json; do if [ -e "$p" ]; then git add -- "$p"; fi; done
+          for p in data/sodir-production data/sodir-revisions; do if [ -e "$p" ]; then git add -- "$p"; fi; done
           if git diff --cached --quiet; then exit 0; fi
           git commit -m "Nordic observations: $(date -u +%FT%TZ)"
           for attempt in 1 2 3 4 5; do

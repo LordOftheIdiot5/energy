@@ -11,6 +11,7 @@ on:
       - tests/test_static_plants.py
       - tests/test_publication_policy.py
       - .github/workflows/v901-commercial-validation.yml
+      - scripts/sodir_production.py
       - scripts/energinet_energy.py
       - tests/test_energinet_energy.py
       - energinet-energy.js
@@ -44,6 +45,9 @@ jobs:
         run: |
           python -u scripts/energinet_energy.py --metadata --force
           python -u scripts/energinet_energy.py --force
+      - name: Verify official offshore production endpoint
+        if: contains(github.head_ref, 'v906c-sodir')
+        run: python -u scripts/sodir_production.py --force
       - name: Generate full static directory
         run: python scripts/build_plant_pages.py
       - name: Validate separate public-data projection
@@ -102,3 +106,7 @@ jobs:
       - name: Danish real-data country and archive checks
         if: contains(github.ref, 'v906b-energinet') || contains(github.head_ref, 'v906b-energinet')
         run: node tests/test_energinet_browser.cjs
+
+      - name: Offshore production public workbench
+        if: contains(github.head_ref, 'v906c-sodir')
+        run: node tests/test_sodir_browser.cjs
