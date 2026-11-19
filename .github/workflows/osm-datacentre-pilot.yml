@@ -1,0 +1,30 @@
+name: OSM data-centre regional pilot
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - scripts/osm_datacentres.py
+      - tests/test_osm_datacentres.py
+      - .github/workflows/osm-datacentre-pilot.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  extract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install regional extraction tools
+        run: python -m pip install 'osmium>=4,<5' 'shapely>=2,<3'
+      - name: Unit tests
+        run: python -m unittest discover -s tests -p test_osm_datacentres.py -v
+      - name: Acquire and normalize public OSM objects
+        run: |
+          python -u scripts/osm_datacentres.py --region IS --out /tmp/nordl-osm-pilot
+          python -u scripts/osm_datacentres.py --region LU --out /tmp/nordl-osm-pilot
+      - uses: actions/upload-artifact@v4
+        with:
+          name: osm-odbl-pilot
+          path: /tmp/nordl-osm-pilot/*.json
+          if-no-files-found: error
