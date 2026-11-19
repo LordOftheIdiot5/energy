@@ -1,7 +1,7 @@
 name: V90.1 commercial readiness validation
 on:
   push:
-    branches: [release/v90-1-commercial-readiness-20261118, fix/v901-restore-nordic-prices-20261118, feature/v902-hydapi-fingrid-20261118, feature/v902-observations-explorer-20261118, feature/v902-nordic-history-20261119, feature/v902-energy-research-access-20261119, feature/v903a-energy-network-brand-20261119, feature/v904a-unified-atlas-20261119, feature/v904b-hydro-network-20261119, feature/v905a-professional-charts-20261119, feature/v905b-chart-laboratory-20261119, feature/v906-ssb-energy-statistics-20261119]
+    branches: [release/v90-1-commercial-readiness-20261118, fix/v901-restore-nordic-prices-20261118, feature/v902-hydapi-fingrid-20261118, feature/v902-observations-explorer-20261118, feature/v902-nordic-history-20261119, feature/v902-energy-research-access-20261119, feature/v903a-energy-network-brand-20261119, feature/v904a-unified-atlas-20261119, feature/v904b-hydro-network-20261119, feature/v905a-professional-charts-20261119, feature/v905b-chart-laboratory-20261119, feature/v906-ssb-energy-statistics-20261119, feature/v906b-energinet-20261119]
   pull_request:
     branches: [main]
     paths:
@@ -35,6 +35,11 @@ jobs:
       - name: Verify official SSB live endpoints on V90.6 branch
         if: contains(github.ref, 'v906-ssb') || contains(github.head_ref, 'v906-ssb')
         run: python -u scripts/ssb_energy.py --force
+      - name: Verify Energinet metadata and real source on Danish branch
+        if: contains(github.ref, 'v906b-energinet') || contains(github.head_ref, 'v906b-energinet')
+        run: |
+          python -u scripts/energinet_energy.py --metadata
+          python -u scripts/energinet_energy.py --force
       - name: Generate full static directory
         run: python scripts/build_plant_pages.py
       - name: Validate separate public-data projection
@@ -89,3 +94,7 @@ jobs:
       - name: SSB statistics actual data browser check
         if: contains(github.ref, 'v906-ssb') || contains(github.head_ref, 'v906-ssb')
         run: node tests/test_ssb_energy_browser.cjs
+
+      - name: Danish real-data country and archive checks
+        if: contains(github.ref, 'v906b-energinet') || contains(github.head_ref, 'v906b-energinet')
+        run: node tests/test_energinet_browser.cjs
