@@ -35,7 +35,10 @@ def normalize(doc,table):
         measure=c["ContentsCode"]; cat=dims["ContentsCode"]["category"]; u=cat.get("unit",{}).get(measure,{})
         unit=u.get("label") if isinstance(u,dict) else None
         expected="GWh" if table=="08307" else "MWh"
-        if unit!=expected:raise ValueError("Unexpected unit: "+str(unit))
+        if unit is not None and unit!=expected:raise ValueError("Unexpected unit: "+str(unit))
+        # SSB official table descriptions explicitly specify these units. The
+        # data response may omit per-category unit metadata; never infer from values.
+        unit=expected
         other={k:c[k] for k in ids if k not in ("Tid","ContentsCode")}
         labels={k:dims[k]["category"].get("label",{}).get(c[k],c[k]) for k in other}
         rows.append({"id":json.dumps([measure,other],sort_keys=True,separators=(",",":")),"period":period,"measure":measure,"name":cat.get("label",{}).get(measure,measure),"dimensions":other,"labels":labels,"unit":unit,"value":v,"status":status})

@@ -33,7 +33,7 @@ jobs:
         run: |
           python -u scripts/nordic_observations.py
           python -u scripts/nordic_backfill.py
-          if [ ! -f data/ssb-14091-v1.json ] || [ "$(date -u +%H)" = 09 ]; then python -u scripts/ssb_energy.py; fi
+          if [ ! -f data/ssb-08307-v1.json ] || [ ! -f data/ssb-14091-v1.json ] || [ ! -f data/ssb-14092-v1.json ] || [ ! -f data/ssb-14093-v1.json ] || [ "$(date -u +%H)" = 09 ]; then python -u scripts/ssb_energy.py; fi
           python - <<'PY'
           import sys,json
           sys.path.insert(0,"scripts")

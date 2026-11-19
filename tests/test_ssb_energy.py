@@ -10,3 +10,5 @@ class SSBTests(unittest.TestCase):
         self.assertIsNone(rows[1]["value"])
         self.assertEqual(rows[1]["status"],":")
         with self.assertRaises(ValueError):normalize(d,"08307")
+        del d["dimension"]["ContentsCode"]["category"]["unit"]
+        self.assertEqual(normalize(d,"14091")[0]["unit"],"MWh")
