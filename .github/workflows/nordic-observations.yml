@@ -34,7 +34,7 @@ jobs:
         run: |
           python -u scripts/nordic_observations.py
           python -u scripts/nordic_backfill.py
-          if [ -f data/energinet-v1.json ] && [ "$(date -u +%H)" = 10 ]; then python -u scripts/energinet_energy.py --history; else python -u scripts/energinet_energy.py; fi
+          if [ -f data/energinet-v1.json ] && [ "$(date -u +%H)" = 10 ]; then python -u scripts/energinet_energy.py --history; elif [ -f data/energinet-v1.json ] && [ "$(date -u +%H)" = 11 ]; then python -u scripts/energinet_energy.py --refresh; else python -u scripts/energinet_energy.py; fi
           if [ ! -f data/ssb-08307-v1.json ] || [ ! -f data/ssb-14091-v1.json ] || [ ! -f data/ssb-14092-v1.json ] || [ ! -f data/ssb-14093-v1.json ] || [ "$(date -u +%H)" = 09 ]; then python -u scripts/ssb_energy.py; fi
           python - <<'PY'
           import sys,json

@@ -38,8 +38,9 @@ jobs:
       - name: Verify Energinet metadata and real source on Danish branch
         if: contains(github.ref, 'v906b-energinet') || contains(github.head_ref, 'v906b-energinet')
         run: |
-          python -u scripts/energinet_energy.py --metadata
+          python -u scripts/energinet_energy.py --metadata --force
           python -u scripts/energinet_energy.py --force
+          python -u scripts/energinet_energy.py --history --force
       - name: Generate full static directory
         run: python scripts/build_plant_pages.py
       - name: Validate separate public-data projection
