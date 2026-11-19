@@ -56,11 +56,12 @@ def stage(root,out):
     from nordic_observations import public_files
     from ssb_energy import public_files as ssb_files
     from energinet_energy import public_files as denmark_files
+    from sodir_production import public_files as sodir_files
     observations=[]
-    for name in list(public_files(root/"data"))+list(ssb_files(root/"data"))+list(denmark_files(root/"data")):
+    for name in list(public_files(root/"data"))+list(ssb_files(root/"data"))+list(denmark_files(root/"data"))+list(sodir_files(root/"data")):
         copy(root,out,"data/"+name)
         item=load(root/"data"/name)
-        observations.append({"path":name,"provider":item["provider"],"rows":len(item["rows"]),"generated":item.get("generated"),"month":item.get("month"),"license":item["license"],"attribution":item["attribution"],"sha256":sha(root/"data"/name)})
+        observations.append({"path":name,"provider":item["provider"],"rows":len(item["rows"]),"generated":item.get("generated"),"month":item.get("month"),"year":item.get("year"),"license":item["license"],"attribution":item["attribution"],"sha256":sha(root/"data"/name)})
     from hydapi_relationships import generate as generate_relationships
     from hydro_transfer_network import generate as generate_transfer
     for derived in (generate_relationships(out/"data"),generate_transfer(out/"data")):
