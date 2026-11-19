@@ -55,6 +55,16 @@ def select_samples(stations):
     for county,rows in sorted(groups.items()):
         chosen.append(sorted(rows,key=lambda s:s["stationId"])[0])
     return chosen[:20]
+def expanded_samples(stations,stamp,extra=8):
+    # Keep the established county sample stable. Rotate a bounded additional
+    # station batch daily, prioritising explicitly active discharge series.
+    core=select_samples(stations)
+    existing={s["stationId"] for s in core}
+    candidates=sorted((s for s in stations if s["stationId"] not in existing and str(s.get("status")).lower() in ("aktiv","active") and any(r["parameter"]==1001 and r.get("serieTo") is None for r in s["series"])),key=lambda s:s["stationId"])
+    if not candidates:return core
+    day=datetime.fromisoformat(stamp).date().toordinal()
+    start=(day*extra)%len(candidates)
+    return core+[candidates[(start+i)%len(candidates)] for i in range(min(extra,len(candidates)))]
 def hydro_rows(d,selected):
     result=[]
     for s in nve_data(d):
@@ -109,7 +119,7 @@ def refresh_hydapi(directory,key,get=request):
         stations=normalize_stations(get(NVE+"Stations",key))
         write_json(registry,{**base("hydapi"),"generated":stamp,"rows":stations})
     else:stations=old["rows"]
-    samples=select_samples(stations);rows=[]
+    samples=expanded_samples(stations,stamp);rows=[]
     for start in range(0,len(samples),5):
         ids=[s["stationId"] for s in samples[start:start+5]]
         # Avoid cross-products of unsupported stations and parameters.
