@@ -1,0 +1,21 @@
+name: V90.4a live atlas and branding
+on:
+  push:
+    branches: [diagnostics/v904a-live-atlas-20261119]
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v7
+      - run: npm install --no-save --no-package-lock playwright@1.56.1 && npx playwright install chromium
+      - run: ENERGY_TEST_URL=https://energy.nordl.dev/ node tests/test_energy_brand.cjs
+      - run: node tests/live_atlas_assets.cjs
+      - name: Verify monitor against public data
+        run: |
+          node - <<'JS'
+          const {chromium}=require('playwright'),assert=require('node:assert/strict');
+          (async()=>{const b=await chromium.launch({headless:true,args:['--no-sandbox']});try{for(const width of [1440,390]){const p=await b.newPage({viewport:{width,height:900}});const errors=[];p.on('pageerror',e=>errors.push(e.message));await p.goto('https://energy.nordl.dev/');await p.locator('#visualPrice svg').waitFor();await p.locator('#monitorWindows').getByText('Best upcoming 2h').waitFor();await p.locator('#monitorFingrid').getByText('Production',{exact:true}).waitFor();assert.ok(await p.locator('#monitorDay option').count()>0);assert.ok(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+12));assert.deepEqual(errors,[]);console.log('PASS live monitor',width,await p.locator('#monitorPriceSource').innerText());await p.close();}}finally{await b.close()}})().catch(e=>{console.error(e);process.exitCode=1});
+          JS
