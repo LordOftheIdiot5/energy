@@ -1,5 +1,5 @@
 """Bounded public OSM data-centre pilot; separate ODbL database, not a census."""
-import argparse,hashlib,json,math,tempfile
+import argparse,hashlib,json,math,tempfile,subprocess
 from datetime import datetime,timezone
 from pathlib import Path
 from urllib.request import Request,urlopen
@@ -37,12 +37,16 @@ def collect(region,root):
     slug=REGIONS[region];url=f"https://download.geofabrik.de/europe/{slug}-latest.osm.pbf"
     with tempfile.TemporaryDirectory() as tmp:
         p=Path(tmp)/"extract.osm.pbf";h=hashlib.sha256();size=0
-        with urlopen(Request(url,headers={"User-Agent":"Nordl Energy (https://energy.nordl.dev/)"}),timeout=90) as response,p.open("wb") as out:
-            modified=response.headers.get("Last-Modified")
-            while chunk:=response.read(1024*1024):
+        # The initial hosted runner had no route to the resolved source address.
+        # Force IPv4, retry transient transport errors, and keep the bounded download.
+        headers=Path(tmp)/"headers.txt"
+        subprocess.run(["curl","--ipv4","--fail","--location","--retry","2","--retry-delay","3","--connect-timeout","20","--max-time","180","--max-filesize","150000000","--user-agent","Nordl Energy (https://energy.nordl.dev/)","--dump-header",str(headers),"--output",str(p),url],check=True)
+        modified=next((line.split(":",1)[1].strip() for line in reversed(headers.read_text(errors="replace").splitlines()) if line.lower().startswith("last-modified:")),None)
+        with p.open("rb") as src:
+            while chunk:=src.read(1024*1024):
                 size+=len(chunk)
                 if size>150_000_000:raise ValueError("Regional extract exceeds pilot cap")
-                h.update(chunk);out.write(chunk)
+                h.update(chunk)
         rows,rejected=extract(p)
     doc={"schema_version":1,"provider":"osm","region":region,"source":url,"source_sha256":h.hexdigest(),"source_last_modified":modified,"retrieved":datetime.now(timezone.utc).isoformat(),"license":LICENSE,"attribution":ATTRIBUTION,"source_notice":"Named, explicitly tagged OSM objects only. Counts are mapped source records, not unique verified facilities. Missing means unknown. No capacity, connectivity or operational status inferred. ODbL derived database kept separate.","rejected_tagged_objects":rejected,"rows":rows}
     root.mkdir(parents=True,exist_ok=True);p=root/f"{region.lower()}-datacentres.json";temp=p.with_suffix(".tmp");temp.write_text(json.dumps(doc,ensure_ascii=False,indent=2));temp.replace(p)
