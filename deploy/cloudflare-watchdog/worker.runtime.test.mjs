@@ -1,7 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {fileURLToPath} from "node:url";
-import {Miniflare,createFetchMock} from "miniflare";
+import {createRequire} from "node:module";
+import {Miniflare} from "miniflare";
+const require=createRequire(import.meta.url);
+const runtimeRequire=createRequire(require.resolve("miniflare"));
+const {MockAgent}=runtimeRequire("undici");
+const createFetchMock=()=>new MockAgent();
 const fixture=fileURLToPath(new URL("./runtime-fixture.mjs",import.meta.url));
 const github="/repos/LordOftheIdiot5/energy/actions/workflows/fetch.yml";
 const snapshot=(age)=>JSON.stringify({generated:new Date(Date.now()-age*60000).toISOString(),zones:[{}],europe:[]});
