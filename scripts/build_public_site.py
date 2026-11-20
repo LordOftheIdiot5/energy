@@ -76,6 +76,8 @@ def stage(root,out):
     stage_osm(root/"data"/"osm-odbl",out/"data"/"osm-odbl")
     from gdw_publication import stage_gdw
     stage_gdw(root/"data"/"gdw",out/"data"/"gdw")
+    from osm_grid_publication import stage_grid
+    stage_grid(root/"data"/"osm-grid-odbl",out/"data"/"osm-grid-odbl")
     assert_public(out)
     print("Public artifact:",len(list(out.rglob("*.html"))),"HTML pages")
 if __name__=="__main__":
