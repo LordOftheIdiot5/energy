@@ -1,0 +1,29 @@
+name: GEM global gas pipeline public source and geometry audit
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - scripts/audit_gem_gas_pipelines.py
+      - tests/test_audit_gem_gas_pipelines.py
+      - .github/workflows/gem-gas-pipelines-audit.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - run: python -m unittest discover -s tests -p test_audit_gem_gas_pipelines.py -v
+      - name: Read public CC BY 4.0 GEM distribution files (no restricted PHMSA files)
+        run: python scripts/audit_gem_gas_pipelines.py --out "$RUNNER_TEMP/gem-pipelines/audit.json"
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: gem-gas-202511-audit
+          path: "${{ runner.temp }}/gem-pipelines/audit.json"
+          retention-days: 14
