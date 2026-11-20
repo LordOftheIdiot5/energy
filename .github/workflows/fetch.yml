@@ -1,11 +1,17 @@
 name: Fetch
 
 on:
-  # VPS is primary. Independent twice-hourly fallback checks freshness and
+  # GitHub schedule is the primary autonomous trigger; VPS and Cloudflare are optional backups.
+  # Twice-hourly checks assess freshness and
   # skips expensive collection when the current published snapshot is recent.
   schedule:
     - cron: "7,37 * * * *"
   workflow_dispatch:
+    inputs:
+      recovery:
+        description: Check freshness and collect or republish only if required
+        type: boolean
+        default: false
   push:
     branches: [main]
     paths:
@@ -61,7 +67,13 @@ jobs:
 
       - name: Decide freshness recovery action
         id: guard
-        run: python scripts/freshness_guard.py --event "${{ github.event_name }}" --output "$GITHUB_OUTPUT"
+        env:
+          RECOVERY: ${{ inputs.recovery || false }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          event="$EVENT_NAME"
+          if [ "$RECOVERY" = true ]; then event=schedule; fi
+          python scripts/freshness_guard.py --event "$event" --output "$GITHUB_OUTPUT"
 
       - name: Offline regression tests
         if: steps.guard.outputs.mode == 'collect'
