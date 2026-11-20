@@ -126,13 +126,13 @@ jobs:
       - name: Global source and responsive layout checks
         if: (contains(github.head_ref, 'v906e-world-assets') || contains(github.head_ref, 'v906e2c-independent-atlas-layers') || contains(github.head_ref, 'v906f1-measured-flows'))
         run: node tests/test_global_atlas_browser.cjs
+
+      - name: Measured flow interval and layer browser checks
+        if: contains(github.head_ref, 'v906f1-measured-flows')
+        run: node tests/test_measured_flows_browser.cjs
       - uses: actions/upload-artifact@v4
         if: always() && (contains(github.head_ref, 'v906e-world-assets') || contains(github.head_ref, 'v906e2c-independent-atlas-layers') || contains(github.head_ref, 'v906f1-measured-flows'))
         with:
           name: global-atlas-design-review
           path: /tmp/global-atlas-review/*.png
           if-no-files-found: warn
-
-      - name: Measured flow interval and layer browser checks
-        if: contains(github.head_ref, 'v906f1-measured-flows')
-        run: node tests/test_measured_flows_browser.cjs
