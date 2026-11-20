@@ -1,0 +1,37 @@
+name: Atlas delivery validation
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/*atlas*'
+      - tests/test_atlas_delivery.py
+      - '.github/actions/stage-atlas-tiles/**'
+      - .github/workflows/atlas-delivery-validation.yml
+      - .github/workflows/atlas-delivery-smoke.yml
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v7
+      - run: python3 -m unittest discover -s tests -p test_atlas_delivery.py -v
+      - run: python3 scripts/build_public_site.py --out "$RUNNER_TEMP/energy-public"
+      - uses: ./.github/actions/stage-atlas-tiles
+        with:
+          public-dir: ${{ runner.temp }}/energy-public
+      - name: Verify staged manifest, exact checksums and source
+        run: |
+          python3 - <<'PY'
+          import json,hashlib,os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"energy-public/data"
+          m=json.loads((p/"atlas-tiles/index-v1.json").read_text())
+          b=(p/"atlas-tiles"/m["path"]).read_bytes()
+          assert hashlib.sha256(b).hexdigest()==m["archive_sha256"]
+          assert hashlib.sha256((p/"global-plants-wri-v130.json").read_bytes()).hexdigest()==m["source_sha256"]
+          assert len(b)==m["archive_bytes"]
+          for r in m["probe_ranges"]:assert hashlib.sha256(b[r["start"]:r["end"]+1]).hexdigest()==r["sha256"]
+          print("PASS public staging",m["source_records"],m["archive_bytes"])
+          PY
