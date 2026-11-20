@@ -1,0 +1,17 @@
+const assert=require('node:assert/strict'),fs=require('node:fs');
+const {validate,filtered}=require('../atlas-uk-projects.js');
+const d=JSON.parse(fs.readFileSync('data/uk-repd-projects-v1.json','utf8'));
+assert.equal(validate(d),d);
+assert.equal(d.rows.length,14388);
+assert.equal(d.rows.filter(r=>r.status==='Decommissioned').length>0,true);
+assert.ok(d.rows.some(r=>r.reported_mw===null));
+assert.ok(d.rows.every(r=>!('generation_mw' in r)));
+const row=d.rows[0],search=filtered(d.rows,{country:row.country,technology:row.technology,status:row.status,query:row.id});
+assert.equal(search.length,1);assert.equal(search[0].id,row.id);
+assert.equal(filtered(d.rows,{query:'xxxxxxxxabsentprojectxxxxxxxx'}).length,0);
+assert.equal(filtered(d.rows,{country:'Norway'}).length,0);
+assert.throws(()=>validate({...d,license:'https://unauthorized.example/'}));
+assert.throws(()=>validate({...d,rows:d.rows.slice(1)}));
+assert.throws(()=>validate({...d,rows:[{...row,geometry:[200,200]},...d.rows.slice(1)]}));
+assert.throws(()=>validate({...d,rows:[{...row,generation_mw:35},...d.rows.slice(1)]}));
+console.log('PASS actual UK REPD 14,388 records: schema, rights, statuses, filters, geometry, no invented generation');
