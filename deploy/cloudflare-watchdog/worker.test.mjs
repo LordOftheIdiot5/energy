@@ -15,3 +15,24 @@ test("default global fetch is called with the owning global receiver",async()=>{
 
 test("all request paths use workerd-compatible manual redirects",async()=>{const f=async(url,init)=>{assert.equal(init.redirect,"manual");return url.endsWith("/dispatches")?new Response(null,{status:204}):Response.json({total_count:0});};assert.equal(await recover({GITHUB_DISPATCH_TOKEN:"test"},f),"dispatch-accepted");await probe(async(url,init)=>{assert.equal(init.redirect,"manual");return Response.json({generated:new Date(now-60000).toISOString(),zones:[{}],europe:[]});},now);});
 test("redirects fail closed with safe diagnostics and no follow-up request",async()=>{let calls=0;const f=async()=>{calls++;return new Response("private",{status:302,headers:{Location:"https://example.invalid/SECRET"}});};await assert.rejects(probe(f,now),e=>e.code==="redirect-http-302");await assert.rejects(recover({GITHUB_DISPATCH_TOKEN:"test"},f),e=>e.code==="redirect-http-302");assert.equal(calls,2);});
+
+test("runtime TypeError in probe does not trigger false recovery or outage alerts",async()=>{
+  const calls=[];const state={failures:51,lastAttempt:0};
+  const result=await tick(state,{probe:async()=>{throw new TypeError("WORKER INTERNAL PRIVATE URL");},recover:async()=>calls.push("recovery"),notify:async()=>calls.push("alert"),save:async()=>{}},now);
+  assert.equal(result.action,"probe-unverified");
+  assert.equal(result.failures,52);
+  assert.deepEqual(calls,[]);
+  assert.deepEqual(result.diagnostics,{snapshot:"runtime-type-error"});
+  assert.doesNotMatch(JSON.stringify(result),/PRIVATE/);
+});
+test("snapshot probe uses simple request without nonportable cache extensions",async()=>{
+  const calls=[];const fetcher=async(url,init)=>{calls.push(init);return Response.json({generated:new Date(now-5*minute).toISOString(),zones:[{}],europe:[]});};
+  assert.equal(await probe(fetcher,now),5);assert.equal(calls.length,1);
+  assert.equal(calls[0].cache,undefined);assert.equal(calls[0].cf,undefined);
+  assert.equal(calls[0].redirect,"manual");
+});
+test("snapshot outgoing TypeError diagnosed separately and suppresses dispatch",async()=>{
+  let recovered=0;const state={failures:51};
+  const result=await tick(state,{probe:()=>probe(async()=>{throw new TypeError("PRIVATE");},now),recover:async()=>{recovered++},notify:async()=>{recovered++},save:async()=>{}},now);
+  assert.equal(result.diagnostics.snapshot,"snapshot-fetch-type-error");assert.equal(recovered,0);assert.equal(result.action,"probe-unverified");
+});

@@ -36,8 +36,18 @@ async function json(response,limit=MAX){
   const b=new Uint8Array(n);let pos=0;for(const c of chunks){b.set(c,pos);pos+=c.length;}return JSON.parse(new TextDecoder().decode(b));
 }
 export async function probe(fetcher=runtimeFetch,now=Date.now()){
-  const r=await request(SNAPSHOT,{cache:"no-store",headers:{"Cache-Control":"no-cache"},cf:{cacheTtl:0,cacheEverything:false}},fetcher);
-  const d=await json(r),t=Date.parse(d.generated);
+  let r;
+  try {
+    // Avoid origin-specific cache extension options: the probe must work
+    // through a plain external subrequest before treating the site as unhealthy.
+    r=await request(SNAPSHOT,{headers:{"Cache-Control":"no-cache"}},fetcher);
+  } catch(e){
+    if(codeOf(e)==="runtime-type-error")throw new Diagnostic("snapshot-fetch-type-error");
+    throw e;
+  }
+  let d;
+  try {d=await json(r);}catch(e){if(codeOf(e)==="runtime-type-error")throw new Diagnostic("snapshot-body-type-error");throw e;}
+  const t=Date.parse(d.generated);
   if(!Number.isFinite(t)||t>now||!Array.isArray(d.zones)||!d.zones.length||!Array.isArray(d.europe))throw new Diagnostic("invalid-snapshot");
   return Math.floor((now-t)/MIN);
 }
@@ -67,10 +77,13 @@ export async function tick(state,io,now=Date.now()){
   const diagnostics={};
   let age=null;try{age=await io.probe();}catch(e){diagnostics.snapshot=codeOf(e);}
   state.failures=age===null?(state.failures||0)+1:0;
-  const unhealthy=age===null?state.failures>=2:age>=110;
-  const shouldRecover=age===null?state.failures>=2:age>=90;
+  // A local runtime incompatibility is *not* evidence of stale Energy data.
+  // Do not re-dispatch GitHub or send an Energy outage alert for a broken probe.
+  const localProbeError=["snapshot-fetch-type-error","snapshot-body-type-error"].includes(diagnostics.snapshot);
+  const unhealthy=!localProbeError&&(age===null?state.failures>=2:age>=110);
+  const shouldRecover=!localProbeError&&(age===null?state.failures>=2:age>=90);
   const healthy=age!==null&&age<70;
-  let action="none";
+  let action=localProbeError?"probe-unverified":"none";
   if(shouldRecover&&(!state.lastAttempt||now-state.lastAttempt>=30*MIN)){
     state.lastAttempt=now;await io.save(state);
     try{action=await io.recover();}catch(e){action="recovery-check-failed";diagnostics.github=codeOf(e);}
