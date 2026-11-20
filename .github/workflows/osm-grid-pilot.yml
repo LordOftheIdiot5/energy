@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - scripts/osm_grid_pilot.py
+      - scripts/osm_extract_sources.py
       - tests/test_osm_grid_pilot.py
       - .github/workflows/osm-grid-pilot.yml
   workflow_dispatch:
@@ -13,16 +14,18 @@ jobs:
   pilot:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        region: [IS, LU]
     steps:
       - uses: actions/checkout@v7
       - run: python -m pip install 'osmium>=4,<5' 'shapely>=2,<3'
       - run: python -m unittest discover -s tests -p test_osm_grid_pilot.py -v
-      - name: Collect two bounded regional public extracts
-        run: |
-          python -u scripts/osm_grid_pilot.py --region IS --out "$RUNNER_TEMP/osm-grid-pilot"
-          python -u scripts/osm_grid_pilot.py --region LU --out "$RUNNER_TEMP/osm-grid-pilot"
+      - name: Collect one bounded regional public extract
+        run: python -u scripts/osm_grid_pilot.py --region ${{ matrix.region }} --out "$RUNNER_TEMP/osm-grid-pilot"
       - uses: actions/upload-artifact@v4
         with:
-          name: osm-grid-pilot
+          name: osm-grid-pilot-${{ matrix.region }}
           path: ${{ runner.temp }}/osm-grid-pilot/
           if-no-files-found: error

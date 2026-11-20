@@ -59,21 +59,13 @@ def extract(path):
     Handler().apply_file(str(path),locations=True,idx="flex_mem")
     return sorted(rows.values(),key=lambda r:r["id"]),dict(rejected)
 def collect(region,out):
-    url=f"https://download.geofabrik.de/europe/{REGIONS[region]}-latest.osm.pbf"
+    from osm_extract_sources import download
     with tempfile.TemporaryDirectory() as tmp:
-        p=Path(tmp)/"source.osm.pbf";headers=Path(tmp)/"headers.txt"
-        subprocess.run(["curl","--ipv4","--fail","--location","--retry","2","--retry-delay","3","--connect-timeout","20","--max-time","180","--max-filesize","150000000","--user-agent","Nordl Energy (https://energy.nordl.dev/)","--dump-header",str(headers),"--output",str(p),url],check=True)
-        h=hashlib.sha256();size=0
-        with p.open("rb") as src:
-            while chunk:=src.read(1024*1024):
-                size+=len(chunk)
-                if size>150000000:raise ValueError("Source cap")
-                h.update(chunk)
-        modified=next((line.split(":",1)[1].strip() for line in reversed(headers.read_text(errors="replace").splitlines()) if line.lower().startswith("last-modified:")),None)
+        p,source=download(region,tmp)
         rows,rejected=extract(p)
     counts=dict(Counter(r["category"] for r in rows))
     if not rows or not counts.get("overhead_line") or not counts.get("substation"):raise ValueError("Empty network cohort")
-    doc={"schema_version":1,"provider":"osm","region":region,"source":url,"source_sha256":h.hexdigest(),"source_last_modified":modified,"retrieved":datetime.now(timezone.utc).isoformat(),"license":LICENSE,"attribution":ATTRIBUTION,"source_records":len(rows),"category_counts":counts,"rejected_objects":rejected,"notice":"Regional generalized public map reference. Counts are source objects, not distinct grid circuits or verified facilities. Underwater includes rivers/lakes; not necessarily submarine. Missing voltage unknown. No measured flow, spare capacity, circuit connectivity or operational status inferred. No internal components, access or security attributes. Source geometry is generalized and unsuitable for engineering.","rows":rows}
+    doc={"schema_version":1,"provider":"osm","region":region,**source,"retrieved":datetime.now(timezone.utc).isoformat(),"license":LICENSE,"attribution":"© OpenStreetMap contributors; "+source["extract_provider"]+" regional extract; selected and normalized by Nordl","source_records":len(rows),"category_counts":counts,"rejected_objects":rejected,"notice":"Regional generalized public map reference. Counts are source objects, not distinct grid circuits or verified facilities. Underwater includes rivers/lakes; not necessarily submarine. Missing voltage unknown. No measured flow, spare capacity, circuit connectivity or operational status inferred. No internal components, access or security attributes. Source geometry is generalized and unsuitable for engineering.","rows":rows}
     out.mkdir(parents=True,exist_ok=True);(out/f"{region.lower()}-grid-pilot.json").write_text(json.dumps(doc,ensure_ascii=False,separators=(",",":")))
     print("OSM grid source validated",region,len(rows),"records",json.dumps(counts),"rejected",json.dumps(rejected))
 if __name__=="__main__":
