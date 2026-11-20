@@ -51,8 +51,9 @@ def stage(root,out):
             if kind=="weather-forecast" and r.get("source")!="https://api.met.no/weatherapi/locationforecast/2.0/":raise ValueError("Unapproved weather archive")
         copy(root,out,"data/"+item["path"])
     copy(root,out,"data/archive/index-v1.json")
-    # Keep the route useful but do not publish the pending third-party project register.
-    (out/"data/energy-projects-v1.json").write_text(json.dumps({"schema_version":1,"coverage":"Official source links only pending commercial review.","rows":[]}),encoding="utf-8")
+    # Only publish the already licensed NVE register; curated third-party records remain private.
+    from project_register import project_register
+    (out/"data/energy-projects-v1.json").write_text(json.dumps(project_register(load(root/"data/nve-projects-v1.json")),ensure_ascii=False),encoding="utf-8")
     from nordic_observations import public_files
     from ssb_energy import public_files as ssb_files
     from energinet_energy import public_files as denmark_files
