@@ -1,0 +1,62 @@
+name: US EIA-860M pinned data promotion
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - .github/workflows/us-eia860m-promote.yml
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/us-eia860m-promote.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: us-eia860m-promote
+  cancel-in-progress: false
+jobs:
+  verified-data:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - run: python -m unittest discover -s tests -p test_import_eia860m.py -v
+      - name: Download source-locked EIA September 2026 workbook
+        run: |
+          curl --fail --location --silent --show-error --retry 2 --max-time 120 \
+            'https://www.eia.gov/electricity/data/eia860m/xls/september_generator2026.xlsx' \
+            -o /tmp/eia860m-202609.xlsx
+          printf '%s  %s\n' bcef74e1af991680731aeecfda967f5950db4ce739bb584edd8b8774c7e6da17 /tmp/eia860m-202609.xlsx | sha256sum --check
+      - name: Exact identity and count-controlled generator normalization
+        run: |
+          python scripts/import_eia860m.py --source /tmp/eia860m-202609.xlsx --out data/eia860m-generators-v1.json
+          python - <<'PY'
+          import json
+          doc=json.load(open('data/eia860m-generators-v1.json'))
+          c=doc['counts']
+          assert c['source_rows']==40163 and c['mapped_rows']==40048
+          assert c['Operating_mapped']==28484 and c['Operating_PR_mapped']==228
+          assert c['Planned_mapped']==2354 and c['Planned_PR_mapped']==3
+          assert c['Retired_mapped']==7293 and c['Retired_PR_mapped']==10
+          assert c['Canceled or Postponed_mapped']==1676
+          assert c['missing_or_invalid_coordinates']==97
+          assert len({r['id'] for r in doc['rows']})==40048
+          print('Official EIA source and all mapped inventory counts confirmed:',c)
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: us-eia860m-reviewed-projection
+          path: data/eia860m-generators-v1.json
+          retention-days: 14
+      - name: Stage data in separate review branch; never publish automatically
+        if: github.event_name != 'pull_request'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git switch -c data/us-eia860m-202609
+          git add data/eia860m-generators-v1.json
+          git commit -m 'Data: 40,048 official EIA-860M geocoded generator records (September 2026)'
+          git push origin HEAD:refs/heads/data/us-eia860m-202609
