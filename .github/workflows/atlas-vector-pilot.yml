@@ -5,6 +5,9 @@ on:
     paths:
       - scripts/atlas_vector_tiles.py
       - tests/test_atlas_vector_tiles.py
+      - tests/atlas-vector-preview.html
+      - tests/atlas-vector-preview.js
+      - tests/test_atlas_vector_browser.cjs
       - .github/workflows/atlas-vector-pilot.yml
   workflow_dispatch:
 permissions:
@@ -24,7 +27,16 @@ jobs:
         run: python -m unittest discover -s tests -p test_atlas_vector_tiles.py -v
       - name: Build and fully decode vector archive
         run: python -u scripts/atlas_vector_tiles.py --source data/global-plants-wri-v130.json --out "$RUNNER_TEMP/atlas-vector-pilot"
+      - name: Install pinned browser libraries
+        run: |
+          npm install --no-save --package-lock=false maplibre-gl@5.6.1 pmtiles@4.5.0 playwright@1.58.2
+          npx playwright install chromium --with-deps
+      - name: Render actual range-served vector archive
+        env:
+          ATLAS_PILOT_DIR: ${{ runner.temp }}/atlas-vector-pilot
+        run: node tests/test_atlas_vector_browser.cjs
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: atlas-vector-pilot
           path: ${{runner.temp}}/atlas-vector-pilot/
