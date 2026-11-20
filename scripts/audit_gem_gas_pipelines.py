@@ -43,7 +43,7 @@ def audit(table,geo):
     ids=set()
     for r in items:
         slug=r.get("slug")
-        if not isinstance(slug,str) or not slug or slug in ids or not r.get("name") or not r.get("status"):
+        if not isinstance(slug,str) or not slug or slug in ids or not r.get("name"):
             issue="duplicate-slug" if isinstance(slug,str) and slug in ids else "missing-slug/name/status"
             raise ValueError("GEM pipeline row identity missing or duplicate: "+issue+
                 " row="+str(len(ids))+" slug="+repr(str(slug)[:100])+
@@ -53,7 +53,7 @@ def audit(table,geo):
             raise ValueError("GEM attribution not retained per row")
         if r.get("length_km") is not None and (not isinstance(r["length_km"],(int,float)) or r["length_km"]<0):
             raise ValueError("Unsafe GEM pipeline length")
-        statuses[r["status"]]+=1;ids.add(slug)
+        statuses[r["status"] if r.get("status") is not None else "Status not reported"]+=1;ids.add(slug)
     if geo.get("type")!="FeatureCollection" or not isinstance(geo.get("features"),list):
         raise ValueError("GEM pipeline geometry source changed")
     types=collections.Counter()
@@ -82,7 +82,7 @@ def audit(table,geo):
         "release":"November 2025","license":"CC BY 4.0","license_url":CC,
         "attribution":ATTR,
         "warning":"Routes are simplified map geometries (about 2 km) and may be approximations. Not survey-accurate, verified current, distribution/gathering or complete transmission coverage.",
-        "table_rows":len(items),"statuses":dict(statuses),
+        "table_rows":len(items),"statuses":dict(statuses),"missing_reported_status":statuses.get("Status not reported",0),
         "map_features":len(geo["features"]),"matched_routes":len(geom_ids),
         "unmatched_features":omitted,"geometry_types":dict(types),
         "route_coverage_pct":round(100*len(geom_ids)/EXPECTED,2)
