@@ -2,6 +2,11 @@ name: Production map smoke test
 on:
   push:
     branches: [chore/v78-production-map-verification-20261116]
+  pull_request:
+    branches: [main]
+    paths:
+      - tests/test_live_maps.cjs
+      - .github/workflows/production-map-smoke.yml
   workflow_dispatch:
   workflow_run:
     workflows: [Deploy]
