@@ -6,7 +6,20 @@ function load(){if(window.maplibregl)return Promise.resolve(window.maplibregl);r
 function queuePaint(){if(!paintFrame)paintFrame=requestAnimationFrame(()=>{paintFrame=0;paint();});}
 function clear(){for(const m of markers)m.remove();markers=[];host.dataset.projectVisible='0';host.dataset.projectViewportRecords='0';}
 function fallback(reason){active=false;clear();popup?.remove();host.hidden=true;old.removeAttribute('hidden');tools.hidden=false;status.textContent=reason;}
-function fit(){if(!active||!ready||!rows.length)return;const b=new window.maplibregl.LngLatBounds();for(const p of rows)for(const q of p.points)b.extend(q);map.resize();if(!b.isEmpty())map.fitBounds(b,{padding:40,maxZoom:8,duration:0});}
+function fit(){
+ if(!active||!ready||!map||!rows.length)return;
+ let west=Infinity,south=Infinity,east=-Infinity,north=-Infinity;
+ for(const p of rows)for(const q of (Array.isArray(p.points)?p.points:[])){
+  if(!Array.isArray(q)||q.length!==2||!q.every(Number.isFinite)||Math.abs(q[0])>180||Math.abs(q[1])>90)continue;
+  west=Math.min(west,q[0]);east=Math.max(east,q[0]);south=Math.min(south,q[1]);north=Math.max(north,q[1]);
+ }
+ if(!Number.isFinite(west))return;
+ const d=.025,pad=40,bounds=[[west===east?west-d:west,south===north?south-d:south],[west===east?east+d:east,south===north?north+d:north]];
+ // MapLibre versions may reject a mutable LngLatBounds instance during resize
+ // and render events. Explicit numeric corners avoid that transient state.
+ try{map.fitBounds(bounds,{padding:pad,maxZoom:8,duration:0,bearing:0,pitch:0});}
+ catch{try{map.jumpTo({center:[(west+east)/2,(south+north)/2],zoom:Math.max(2,Math.min(5,map.getZoom())),bearing:0,pitch:0});}catch{}}
+}
 function pick(p){$('projectSelect').value=p.id;$('projectSelect').dispatchEvent(new Event('change'));popup?.remove();}
 function paint(){clear();if(!active||!ready||!map||host.hidden||$('news').hidden)return;const canvas=map.getCanvas(),w=canvas.clientWidth,h=canvas.clientHeight,z=map.getZoom(),size=z>=13?22:48,cells=new Map();let included=0;for(const p of rows){const q=p.points[0],v=map.project(q);if(!Number.isFinite(v.x)||!Number.isFinite(v.y)||v.x<0||v.y<0||v.x>w||v.y>h)continue;const k=Math.floor(v.x/size)+':'+Math.floor(v.y/size);if(!cells.has(k))cells.set(k,[]);cells.get(k).push(p);included++;}
 for(const bucket of cells.values()){const multiple=bucket.length>1,p=bucket[0],coord=multiple?[bucket.reduce((a,x)=>a+x.points[0][0],0)/bucket.length,bucket.reduce((a,x)=>a+x.points[0][1],0)/bucket.length]:p.points[0],b=document.createElement('button');b.type='button';b.className='project-atlas-marker';b.dataset.projectCount=String(bucket.length);b.dataset.projectId=p.id;b.style.setProperty('--marker-color',colors[p.type]||'#536578');Object.assign(b.style,{width:multiple?'34px':'15px',height:multiple?'34px':'15px',backgroundColor:colors[p.type]||'#536578',color:'#fff',border:'2px solid white',borderRadius:'50%',fontSize:'11px',fontWeight:'700',padding:'0',boxShadow:'0 1px 5px #0008',cursor:'pointer'});b.textContent=multiple?String(bucket.length):'';b.title=multiple?bucket.length+' project records · click to expand':p.name;b.setAttribute('aria-label',b.title);if(bucket.some(x=>x.id===selected))b.classList.add('selected');
