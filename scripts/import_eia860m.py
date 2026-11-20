@@ -181,8 +181,11 @@ def normalize(raw, min_records=30000, expected_sha=EXPECTED_SHA):
                 state=txt(row.get("Plant State"))
                 if territory and state!="PR":
                     raise ValueError("Puerto Rico sheet has an unexpected state")
+                # A few official source rows with PR geography may occur in the
+                # general worksheets. Preserve their original source_tab and
+                # identify them as Puerto Rico; do not erase provenance.
                 if not territory and state=="PR":
-                    raise ValueError("US inventory includes PR without PR sheet")
+                    counts["pr_rows_in_general_sheets"]+=1
                 record={
                     "id":f"eia860m-{title.lower().replace(' ','_')}:{plant}:{gen}",
                     "inventory":kind,
@@ -193,7 +196,7 @@ def normalize(raw, min_records=30000, expected_sha=EXPECTED_SHA):
                     "entity":txt(row.get("Entity Name")),
                     "state":state,
                     "county":txt(row.get("County")),
-                    "territory":"Puerto Rico" if territory else "United States",
+                    "territory":"Puerto Rico" if state=="PR" else "United States",
                     "balancing_authority":txt(row.get("Balancing Authority Code")),
                     "technology":tech,
                     "fuel":txt(row.get("Energy Source Code")),
