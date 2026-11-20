@@ -1,0 +1,17 @@
+# Nordl competitive benchmark — 2026-11-20
+Aim: best-in-class integrated infrastructure research, not an unverified market leadership claim.
+- OpenGridWorks (https://opengridworks.com/): approved reference visual style; technology and voltage legends, dense point/line layers, capacity scaling. Third-party description reports 120k+ plants, 2.7m lines and 800k+ substations (https://www.digitalsubstation.com/article/opengridworks-open-world-power-infrastructure-map). Treat counts as reported coverage, not independently verified.
+- OpenInfraMap (https://openinframap.org/about): OSM, PostGIS, Tegola, MapLibre. Learn source separation, efficient tiles, zoom hierarchy; no bulk scraping or unreviewed code copying.
+- OverWatts (https://www.overwatts.com/atlas): reports 66,615 facilities in 199 countries, 57 sources. Learn source freshness, entity/asset pages, country summaries and verified ownership. Counts differ in scope from Nordl source records.
+- Electricity Maps (https://app.electricitymaps.com/docs): dated mix/flows/carbon/price time series, temporal granularity and explicit coverage.
+- TeleGeography (https://resources.telegeography.com/2026-submarine-cable-map): 694 systems and 1,893 landing stations in printed 2026 edition; cable/project detail. Underlying interactive data not approved for Nordl commercial use (https://www2.telegeography.com/cite-telegeography-map).
+- Infrapedia (https://www.infrapedia.com/about-us): digital networks and data centre directory. No assumed reuse rights.
+- Paces (https://www.paces.com/data-center-developers): workflow from regional candidate screening to engineering feasibility. Nordl cannot infer grid availability or guarantees.
+- GEM (https://globalenergymonitor.org/projects/global-integrated-power-tracker): 180k+ facilities Sept 2026. Admit exact workbook only; exclude NC TZ ID rows (https://www.gem.wiki/Global_Integrated_Power_Tracker_Methodology).
+- IEA Energy and AI Observatory (https://www.iea.org/data-and-statistics/data-tools/energy-and-ai-observatory): compare public aggregate data centre hubs against energy/telecom networks; verify rights before using its data.
+## Acceptance and differentiation
+Visual: map first, persistent Nordl menu, compact filters, independent colours, density-based symbols, clean world framing + regional drilldown, dark/light and accessible controls. No copied branding.
+Performance: GPU points/lines, actual range-read tests with 1440/1024/390 snapshots, initial bytes below full archive, measured load time and no silent disappearing assets. Keep stable fallback. 
+Data: exact source ID, licence, vintage, status and coordinate precision; per-layer counts and coverage. Do not equate facility counts with individual generating units or mapped line segments. 
+Business: one region comparison workspace combining reliable energy prices/mix/flows, climate and water, public infrastructure and documented projects/owners. Include cost scenarios, evidence quality and missingness; verified approvals and connection capacity only from authorities. Stockwatch joins use official identities and verified links.
+Milestone V90.6f2b: separate actual local GPU preview using pinned MapLibre/PMTiles and locally served HTTP range responses. Uses existing WRI and Natural Earth data. Not public replacement; R2 delivery and production integration still need validation.
