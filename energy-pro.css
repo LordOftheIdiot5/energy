@@ -103,3 +103,14 @@ body[data-theme=light] #atlasInfrastructureFocus{color:#126364}
 #usGeneratorInventory{background:var(--panel-lit);color:var(--ink);border:1px solid var(--line);border-radius:7px;min-height:36px;padding:6px;font:600 12px var(--sans)}
 #usGeneratorInspector p{overflow-wrap:anywhere}#usGeneratorInspector a{color:var(--accent);font-size:12px}
 @media(max-width:600px){#usGeneratorInventory{max-width:100%;width:100%}}
+
+/* August 2017 NACEI reference-only gas and oil facilities. */
+#atlasMap .atlas-nacei-marker{position:absolute;box-sizing:border-box;display:grid;place-items:center;min-width:18px;height:18px;padding:0;background:var(--nacei-color,#c39d54);border:2px solid #fff1cf;color:#152029;border-radius:50%;cursor:pointer;box-shadow:0 1px 6px #0008;font:700 11px/1 system-ui;z-index:7}
+#atlasMap .atlas-nacei-marker.cluster{min-width:33px;height:33px;padding:2px 6px}
+#atlasMap .atlas-nacei-marker:after{content:'';position:absolute;inset:-8px;border-radius:inherit}
+#atlasMap .atlas-nacei-marker.selected{outline:3px solid #fff;outline-offset:2px}
+#atlasMap .atlas-nacei-marker:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.atlas-nacei-view{min-height:36px;border:1px solid #b69b60;border-radius:7px;background:var(--panel-lit);color:var(--ink);padding:7px 11px;font:600 12px var(--sans);cursor:pointer}
+#naceiKind{background:var(--panel-lit);color:var(--ink);border:1px solid var(--line);border-radius:7px;min-height:36px;padding:6px;font:600 12px var(--sans)}
+#naceiInspector p{overflow-wrap:anywhere}
+@media(max-width:600px){#naceiKind{max-width:100%;width:100%}}
