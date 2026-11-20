@@ -83,3 +83,12 @@ body[data-theme=light] #atlasInfrastructureFocus{color:#126364}
 
 /* Retained snapshots: contextual status below KPIs, not a page-wide alarm. */
 #staleBar[data-state=retained].show{background:transparent;border:0;border-radius:0;padding:4px 0;margin:6px 0;color:var(--muted);font-size:12px;box-shadow:none}#staleBar[data-state=retained].show:before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:#dca84c;margin-right:7px;vertical-align:middle}
+
+/* UK REPD OGL project layer — distinct from Norwegian licences and historical plant data. */
+#atlasMap .atlas-uk-project-marker{position:absolute;box-sizing:border-box;display:grid;place-items:center;color:#fff;background:#7354a5;border:2px solid #e7d6ff;border-radius:50%;min-width:18px;height:18px;padding:0;cursor:pointer;box-shadow:0 1px 6px #0009;font:700 11px/1 system-ui;z-index:5}
+#atlasMap .atlas-uk-project-marker.cluster{min-width:33px;height:33px;padding:2px 6px;background:#63478c}
+#atlasMap .atlas-uk-project-marker:after{content:'';position:absolute;inset:-8px;border-radius:50%}
+#atlasMap .atlas-uk-project-marker.selected{border-color:#fff;box-shadow:0 0 0 3px #c6a3ef,0 2px 7px #0009}
+#atlasMap .atlas-uk-project-marker:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.atlas-uk-view{min-height:36px;border:1px solid #a48cc8;background:var(--panel-lit);color:var(--ink);padding:7px 11px;border-radius:7px;font:600 12px var(--sans);cursor:pointer}
+#ukProjectInspector p{overflow-wrap:anywhere}#ukProjectInspector a{color:var(--accent);font-size:12px}
