@@ -1,16 +1,10 @@
 name: Fetch
 
 on:
-  # A fallback, not the schedule. The hourly trigger is a systemd timer on the
-  # VPS, because GitHub's cron is best effort and has dropped eighteen
-  # consecutive hours on the sibling repo while reporting every run a success.
-  #
-  # Every six hours rather than hourly so the two do not race or double the
-  # commits. If the VPS goes down this keeps the page roughly current, and the
-  # page's own staleness banner - which trips at three hours - says plainly
-  # that something has stopped.
+  # VPS is primary. Independent twice-hourly fallback checks freshness and
+  # skips expensive collection when the current published snapshot is recent.
   schedule:
-    - cron: "20 */6 * * *"
+    - cron: "7,37 * * * *"
   workflow_dispatch:
   push:
     branches: [main]
@@ -18,6 +12,7 @@ on:
       - .github/workflows/fetch.yml
       - scripts/fetch.py
       - scripts/publish_fetch.sh
+      - scripts/freshness_guard.py
       - tests/test_asset_reference.py
       - scripts/hydro_extended.py
       - scripts/shared_energy.py
@@ -54,6 +49,9 @@ jobs:
     # than as a failure anyone notices. ubuntu-latest began migrating to
     # Ubuntu 26 on 2026-10-19; moving is fine, but on a day we choose.
     runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    outputs:
+      mode: ${{ steps.guard.outputs.mode }}
     steps:
       - uses: actions/checkout@v7
 
@@ -61,10 +59,16 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Decide freshness recovery action
+        id: guard
+        run: python scripts/freshness_guard.py --event "${{ github.event_name }}" --output "$GITHUB_OUTPUT"
+
       - name: Offline regression tests
+        if: steps.guard.outputs.mode == 'collect'
         run: python -m unittest discover -s tests -v
 
       - name: Fetch
+        if: steps.guard.outputs.mode == 'collect'
         env:
           # Only source here that needs a credential. GIE require a free
           # registration at agsi.gie.eu/account. Absent, the gas storage
@@ -80,12 +84,14 @@ jobs:
         run: python scripts/fetch.py
 
       - name: Sanity check
+        if: steps.guard.outputs.mode == 'collect'
         run: |
           python tests/test_payload.py
           python -m unittest discover -s tests -p test_energy_geography.py
           python -m unittest discover -s tests -p test_asset_reference.py
 
       - name: Commit results with bounded conflict recovery
+        if: steps.guard.outputs.mode == 'collect'
         env:
           # Only source here that needs a credential. GIE require a free
           # registration at agsi.gie.eu/account. Absent, the gas storage
@@ -107,7 +113,9 @@ jobs:
   # be noticed.
   deploy:
     needs: fetch
+    if: needs.fetch.outputs.mode != 'skip'
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     concurrency:
       group: pages
       cancel-in-progress: false
