@@ -1,0 +1,19 @@
+name: Independent watchdog validation
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'deploy/cloudflare-watchdog/**'
+      - .github/workflows/cloudflare-watchdog-validation.yml
+      - .github/workflows/fetch.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - run: node --test deploy/cloudflare-watchdog/worker.test.mjs
+      - run: python -m unittest discover -s tests -p test_freshness_guard.py -v

@@ -1,0 +1,15 @@
+name = "nordl-energy-watchdog"
+main = "worker.mjs"
+compatibility_date = "2026-11-20"
+workers_dev = false
+preview_urls = false
+
+[triggers]
+crons = ["2,17,32,47 * * * *"]
+
+[durable_objects]
+bindings = [{name = "WATCHDOG", class_name = "Watchdog"}]
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Watchdog"]
