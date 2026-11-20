@@ -61,7 +61,10 @@ def normalize(layer, data):
         if not isinstance(oid,int) or oid<1 or oid in seen:
             rejected["invalid_or_duplicate_id"]+=1;continue
         seen.add(oid)
-        if not name or not country:rejected["missing_name_country"]+=1;continue
+        if not country:rejected["missing_country"]+=1;continue
+        if not name:
+            rejected["facility_name_not_reported"]+=1
+            name="Facility name not reported (NACEI #"+str(oid)+")"
         if not finite(lng) or not finite(lat) or not (-170<=lng<=-50 and 14<=lat<=74):
             rejected["invalid_geography"]+=1;continue
         if country.lower() not in {"canada","united states","usa","united states of america","mexico"}:
@@ -75,7 +78,7 @@ def normalize(layer, data):
         cap=raw_cap if finite(raw_cap) and raw_cap>=0 else None
         output.append({
             "id":f"nacei-{layer}-{oid}","source_layer":layer,"source_objectid":oid,
-            "facility":name,"country":country,
+            "facility":name,"facility_name_reported":bool((attrs.get("Facility") or "").strip()),"country":country,
             "owner":attrs.get("Owner"),"operator":attrs.get("Operator"),
             "kind":kind,"type":attrs.get("Type") if kind=="refineries" else attrs.get("ImpExp") if kind=="lng_terminals" else "Processing facility",
             "reference_period":attrs.get("Period"),
