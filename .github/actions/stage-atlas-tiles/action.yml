@@ -1,0 +1,19 @@
+name: Stage optional Atlas tiles
+description: Build validated content-addressed historical power tiles from the allowlisted public artifact
+inputs:
+  public-dir:
+    description: Existing isolated website artifact
+    required: true
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        PUBLIC_DIR: ${{ inputs.public-dir }}
+      run: |
+        set -euo pipefail
+        venv="$(mktemp -d "$RUNNER_TEMP/atlas-venv.XXXXXX")"
+        trap 'rm -rf "$venv"' EXIT
+        python3 -m venv "$venv"
+        "$venv/bin/python" -m pip install --disable-pip-version-check 'pmtiles==3.8.1' 'mapbox-vector-tile==2.2.0'
+        "$venv/bin/python" -u scripts/stage_atlas_delivery.py --public "$PUBLIC_DIR"

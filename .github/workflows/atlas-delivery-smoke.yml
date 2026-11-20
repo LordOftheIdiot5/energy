@@ -1,0 +1,26 @@
+name: Atlas delivery smoke
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: [Deploy, Fetch, Nordic observations, OSM ODbL regional archive]
+    types: [completed]
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  verify:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+      - name: Verify real public byte ranges
+        run: |
+          for attempt in 1 2 3; do
+            if python3 scripts/probe_atlas_delivery.py --base https://energy.nordl.dev; then exit 0; fi
+            sleep 10
+          done
+          echo "::error::Public tile delivery is not verified. Keep existing renderer."
+          exit 1
