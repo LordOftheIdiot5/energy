@@ -1,0 +1,17 @@
+const assert=require('node:assert/strict'),fs=require('node:fs');
+const {validate,filter,EXPECTED}=require('../atlas-nacei-oilgas.js');
+const doc=JSON.parse(fs.readFileSync('data/nacei-oilgas-2017-v1.json','utf8'));
+assert.equal(validate(doc),doc);
+assert.equal(Object.values(EXPECTED).reduce((a,b)=>a+b,0),1461);
+assert.equal(doc.rows.refineries.filter(r=>!r.facility_name_reported).length,141);
+assert.ok(doc.rows.refineries.every(r=>!r.facility_name_reported?r.facility.includes('not reported'):true));
+assert.ok(Object.values(doc.rows).flat().every(r=>!('operating' in r)&&!('generation' in r)));
+const x=doc.rows.gas_processing[0];
+assert.equal(filter(doc.rows.gas_processing,{country:x.country,search:x.id})[0].id,x.id);
+assert.equal(filter(doc.rows.refineries,{search:'unlikely_missing_facility_string_xxyyzz'}).length,0);
+assert.throws(()=>validate({...doc,source_period:'2026-11'}));
+assert.throws(()=>validate({...doc,rights:'unknown'}));
+assert.throws(()=>validate({...doc,rows:{...doc.rows,lng_terminals:doc.rows.lng_terminals.slice(1)}}));
+const corrupted={...doc.rows.refineries[0],operating:true};
+assert.throws(()=>validate({...doc,rows:{...doc.rows,refineries:[corrupted,...doc.rows.refineries.slice(1)]}}));
+console.log('PASS source-locked historic NACEI 1,461 points, missing names, original capacity and no inferred current status');
