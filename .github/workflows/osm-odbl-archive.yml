@@ -1,0 +1,111 @@
+name: OSM ODbL regional archive
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - scripts/osm_publication.py
+      - tests/test_osm_publication.py
+      - .github/workflows/osm-odbl-archive.yml
+  push:
+    branches: [main]
+    paths:
+      - scripts/osm_publication.py
+      - .github/workflows/osm-odbl-archive.yml
+  schedule:
+    - cron: '25 4 * * 1'
+  workflow_dispatch:
+concurrency:
+  group: osm-odbl-${{ github.ref }}
+  cancel-in-progress: false
+permissions:
+  contents: read
+jobs:
+  collect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install collection tools
+        run: python -m pip install 'osmium>=4,<5' 'shapely>=2,<3'
+      - name: Publication unit tests
+        run: python -m unittest discover -s tests -p 'test_osm*.py' -v
+      - name: Collect both approved regional snapshots
+        run: |
+          python -u scripts/osm_datacentres.py --region IS --out /tmp/osm-source
+          python -u scripts/osm_datacentres.py --region LU --out /tmp/osm-source
+          python -u scripts/osm_publication.py --incoming /tmp/osm-source --root data/osm-odbl
+      - name: Stage separate licensed database and assert output
+        run: |
+          python scripts/build_public_site.py --out "$RUNNER_TEMP/energy-public"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          root=Path(os.environ["RUNNER_TEMP"])/"energy-public/data/osm-odbl"
+          index=json.loads((root/"index-v1.json").read_text())
+          assert len(index["datasets"])==2
+          assert not (root/"revisions").exists()
+          for r in index["datasets"]:
+              assert r["source_records"]>0
+              print("ODbL published cohort",r["region"],r["source_records"])
+          PY
+      - name: Commit approved separate ODbL snapshots
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: |
+          git config user.name "energy-osm-archive"
+          git config user.email "actions@github.com"
+          git add -- data/osm-odbl/
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "OSM ODbL regional snapshot: $(date -u +%FT%TZ)"
+          for attempt in 1 2 3; do
+            git fetch origin main
+            if ! git rebase origin/main; then git rebase --abort; exit 1; fi
+            if git push origin HEAD:main; then exit 0; fi
+            sleep 2
+          done
+          exit 1
+  deploy:
+    needs: collect
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    permissions:
+      actions: read
+      contents: read
+      pages: write
+      id-token: write
+    runs-on: ubuntu-24.04
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+      - run: python3 scripts/build_public_site.py --out "$RUNNER_TEMP/energy-public"
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        id: upload
+        with:
+          name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/energy-public
+      - name: Confirm uploaded Pages artifact metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARTIFACT_ID: ${{ steps.upload.outputs.artifact_id }}
+          ARTIFACT_NAME: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          for i in $(seq 1 12); do
+            if gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts?name=$ARTIFACT_NAME" --jq '.artifacts[] | select(.expired == false) | .id' | grep -Fxq "$ARTIFACT_ID"; then
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::Expected uploaded artifact not visible via Actions API"
+          exit 1
+      - id: deployment
+        uses: actions/deploy-pages@v5
+        with:
+          artifact_name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
