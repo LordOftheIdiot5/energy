@@ -18,7 +18,13 @@ function codeOf(e){
 async function request(url,init={},fetcher=runtimeFetch){
   const controller=new AbortController();
   const timer=setTimeout(()=>controller.abort(),7000);
-  try{return await fetcher(url,{...init,redirect:"error",signal:controller.signal});}
+  try{
+    // workerd supports manual/follow, not the standard "error" redirect mode.
+    // Never follow redirects carrying GitHub/Telegram credentials.
+    const r=await fetcher(url,{...init,redirect:"manual",signal:controller.signal});
+    if(r.status>=300&&r.status<400){await r.body?.cancel().catch(()=>{});throw new Diagnostic("redirect-http-"+r.status);}
+    return r;
+  }
   catch(e){throw new Diagnostic(controller.signal.aborted?"timeout":codeOf(e));}
   finally{clearTimeout(timer);}
 }
