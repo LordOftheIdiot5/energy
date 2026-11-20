@@ -114,7 +114,10 @@ def inspect(fetcher=fetch):
             data.extend(response.get("features",[]))
         if len(data)!=len(ids):raise ValueError("Partial NACEI official query")
         rows,exclusions=normalize(id,{"features":data})
-        if len(rows)<max(3,int(.7*len(ids))):raise ValueError("Unsafe NACEI record loss")
+        if len(rows)<max(3,int(.7*len(ids))):
+            countries=Counter((str((x.get("attributes") or {}).get("Country") or "<missing>")) for x in data)
+            periods=Counter((str((x.get("attributes") or {}).get("Period") or "<missing>")) for x in data)
+            raise ValueError("Unsafe NACEI record loss: layer="+kind+" source="+str(len(ids))+" mapped="+str(len(rows))+" exclusions="+repr(exclusions)+" country_values="+repr(dict(countries.most_common(14)))+" period_values="+repr(dict(periods.most_common(8))))
         collection[kind]=rows
         summaries[kind]={"source_rows":len(ids),"mapped_rows":len(rows),"excluded":exclusions,
             "layer_id":id,"copyright":meta["copyrightText"],"field_names":sorted(fields)}
