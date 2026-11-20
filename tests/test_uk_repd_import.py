@@ -60,7 +60,7 @@ class UkRepdImporterTests(unittest.TestCase):
         self.assertEqual(len(d["rows"]),1)
     def test_conflicting_duplicate_reference_rejected(self):
         raw=fixture().decode().splitlines()
-        with self.assertRaisesRegex(ValueError,"Duplicate"):
+        with self.assertRaisesRegex(ValueError,"Conflicting duplicate"):
             project(("\n".join(raw+[raw[-1].replace("North Test","Other Project")])+"\n").encode(),convert,1)
 
 if __name__=="__main__":
