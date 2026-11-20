@@ -1,10 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {fileURLToPath} from "node:url";
-import {Miniflare} from "miniflare";
+import {Miniflare,convertV4MiniflareOptions} from "miniflare";
 const fixture=fileURLToPath(new URL("./runtime-fixture.mjs",import.meta.url));
 test("actual workerd Request construction for snapshot and guarded GitHub dispatch",async()=>{
- const mf=new Miniflare({workers:[{name:"watchdog-fixture",modules:true,scriptPath:fixture,compatibilityDate:"2026-11-20"}]});
+ const mf=new Miniflare(convertV4MiniflareOptions({modules:true,scriptPath:fixture,compatibilityDate:"2026-11-20"}));
  try{
   const a=await (await mf.dispatchFetch("http://localhost/probe")).json();
   assert.equal(a.age,1);assert.equal(a.trace[0].redirect,"manual");
