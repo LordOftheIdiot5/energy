@@ -1,0 +1,45 @@
+name: GEM global gas pipeline reviewed data staging
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - scripts/build_gem_gas_snapshot.py
+      - tests/test_build_gem_gas_snapshot.py
+      - .github/workflows/gem-gas-pipelines-stage.yml
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/gem-gas-pipelines-stage.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: gem-gas-pipeline-source-stage
+  cancel-in-progress: false
+jobs:
+  stage:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - run: python -m unittest discover -s tests -p test_audit_gem_gas_pipelines.py -v
+      - run: python -m unittest discover -s tests -p test_build_gem_gas_snapshot.py -v
+      - name: Fingerprint and normalize GEM CC BY November 2025 source
+        run: python scripts/build_gem_gas_snapshot.py --out "data/gem-gas-202511"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gem-global-gas-202511-source-review
+          path: data/gem-gas-202511/
+          retention-days: 14
+      - name: Stage mapped lines and full project directory privately in branch
+        if: github.event_name != 'pull_request'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git switch -c data/gem-gas-202511
+          git add data/gem-gas-202511/
+          git commit -m 'Data: GEM GGIT November 2025 licensed gas pipelines, 4,246 projects, 3,921 routes'
+          git push origin HEAD:refs/heads/data/gem-gas-202511
