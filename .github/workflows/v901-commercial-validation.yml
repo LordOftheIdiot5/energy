@@ -15,6 +15,9 @@ on:
       - index.html
       - scripts/global_assets.py
       - global-atlas.js
+      - atlas-measured-flows.js
+      - tests/test_measured_flows.cjs
+      - tests/test_measured_flows_browser.cjs
       - energy-pro.css
       - scripts/sodir_production.py
       - scripts/energinet_energy.py
@@ -37,6 +40,7 @@ jobs:
           node tests/test_visual_terminal.cjs
           node tests/test_energy_data_access.cjs
           node tests/test_daily_monitor.cjs
+          node tests/test_measured_flows.cjs
           node tests/test_atlas.cjs
           node tests/test_atlas_assets.cjs
           node tests/test_hydro_atlas.cjs
@@ -54,7 +58,7 @@ jobs:
         if: contains(github.head_ref, 'v906c-sodir')
         run: python -u scripts/sodir_production.py --force
       - name: Download full licensed global power reference
-        if: (contains(github.head_ref, 'v906e-world-assets') || contains(github.head_ref, 'v906e2c-independent-atlas-layers'))
+        if: (contains(github.head_ref, 'v906e-world-assets') || contains(github.head_ref, 'v906e2c-independent-atlas-layers') || contains(github.head_ref, 'v906f1-measured-flows'))
         run: python -u scripts/global_assets.py --force
       - name: Generate full static directory
         run: python scripts/build_plant_pages.py
@@ -120,11 +124,15 @@ jobs:
         run: node tests/test_sodir_browser.cjs
 
       - name: Global source and responsive layout checks
-        if: (contains(github.head_ref, 'v906e-world-assets') || contains(github.head_ref, 'v906e2c-independent-atlas-layers'))
+        if: (contains(github.head_ref, 'v906e-world-assets') || contains(github.head_ref, 'v906e2c-independent-atlas-layers') || contains(github.head_ref, 'v906f1-measured-flows'))
         run: node tests/test_global_atlas_browser.cjs
       - uses: actions/upload-artifact@v4
-        if: always() && (contains(github.head_ref, 'v906e-world-assets') || contains(github.head_ref, 'v906e2c-independent-atlas-layers'))
+        if: always() && (contains(github.head_ref, 'v906e-world-assets') || contains(github.head_ref, 'v906e2c-independent-atlas-layers') || contains(github.head_ref, 'v906f1-measured-flows'))
         with:
           name: global-atlas-design-review
           path: /tmp/global-atlas-review/*.png
           if-no-files-found: warn
+
+      - name: Measured flow interval and layer browser checks
+        if: contains(github.head_ref, 'v906f1-measured-flows')
+        run: node tests/test_measured_flows_browser.cjs
