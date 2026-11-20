@@ -22,7 +22,11 @@ def admit(meta):
     if len(candidates)!=1:raise ValueError("Unexpected publisher archive")
     f=candidates[0]
     if type(f.get("size")) is not int or not 0<f["size"]<=500_000_000:raise ValueError("Archive outside pilot budget")
-    u=urlsplit(f["downloadUrl"])
+    # Figshare v2 returns downloadUrl in some clients, download_url in JSON.
+    url=f.get("download_url") or f.get("downloadUrl")
+    if not isinstance(url,str):raise ValueError("Missing publisher download URL; fields: "+", ".join(sorted(f)))
+    f={**f,"downloadUrl":url}
+    u=urlsplit(url)
     if u.scheme!="https" or u.hostname not in ("figshare.com","api.figshare.com","ndownloader.figshare.com") or not u.path:raise ValueError("Unexpected publisher download URL")
     return f
 def normalize(attrs,geometry):

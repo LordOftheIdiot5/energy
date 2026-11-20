@@ -11,5 +11,7 @@ class GDWTests(unittest.TestCase):
     def test_version_and_license(self):
         m={"doi":DOI,"version":1,"license":{"url":"https://creativecommons.org/licenses/by/4.0/"},"files":[{"name":"GDW_v1_0_shp.zip","size":1,"downloadUrl":"https://figshare.com/ndownloader/files/1"}]}
         self.assertEqual(admit(m)["size"],1)
+        f=m["files"][0].copy();f["download_url"]=f.pop("downloadUrl")
+        self.assertEqual(admit({**m,"files":[f]})["downloadUrl"],f["download_url"])
         with self.assertRaises(ValueError):admit({**m,"version":2})
         with self.assertRaises(ValueError):admit({**m,"license":{"url":"https://creativecommons.org/licenses/by-nc/4.0/"}})

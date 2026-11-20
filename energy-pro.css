@@ -70,3 +70,9 @@ body[data-workspace=energyMap] #mapInfo h4{font-size:12px;margin:8px 0 3px}
 body[data-theme=light] #atlasInfrastructureFocus{color:#126364}
 #atlasMap .maplibregl-ctrl-attrib.maplibregl-compact{max-width:calc(100vw - 42px);font-size:10px}
 @media(max-width:820px){body[data-workspace=energyMap] #energyMap .global-atlas-workspace #atlasMap{height:clamp(330px, min(95vw,55vh), 520px)}}
+
+/* Discoverable map symbols: 36px search envelope for GPU points, extra DOM target area. */
+#atlasMap .atlas-asset-tooltip{position:absolute;z-index:7;pointer-events:none;max-width:min(280px,85%);background:#132936f5;color:#f1f8fc;border:1px solid #537988;border-radius:6px;padding:7px 9px;font:12px/1.4 system-ui;box-shadow:0 3px 12px #0006}#atlasMap .atlas-asset-tooltip[hidden]{display:none!important}
+#atlasMap .atlas-selected-ring{width:28px;height:28px;border:2px solid #fff;border-radius:50%;box-shadow:0 0 0 3px #62d9d080;pointer-events:none;z-index:5}
+#atlasMap .global-atlas-marker:after,#atlasMap .atlas-dc-marker:after{content:'';position:absolute;inset:-9px;pointer-events:auto;border-radius:inherit}
+.atlas-nearby-list{display:grid;gap:6px;max-height:250px;overflow:auto;color:#172536;padding:6px 1px}.atlas-nearby-list button{min-height:40px;background:#edf5f9;color:#132936;border:1px solid #8da6b5;border-radius:5px;padding:7px;text-align:left;font:12px/1.4 system-ui;cursor:pointer}.atlas-nearby-list button:focus-visible{outline:3px solid #167b84}.atlas-inspect-action{display:inline-block;margin:8px 0 0 12px;min-height:36px;padding:6px 12px}
