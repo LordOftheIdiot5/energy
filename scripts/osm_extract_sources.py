@@ -9,10 +9,10 @@ SOURCES={
 CAP=150_000_000
 # DNS/connect/timeout/transient network failures; never retry HTTP access denials via alternative routes.
 TRANSPORT={5,6,7,18,28,52,55,56}
-def download(region,root,run=subprocess.run):
+def download(region,root,run=subprocess.run,*,sources=None):
     root=Path(root);p=root/"source.osm.pbf";headers=root/"headers.txt"
     failures=[]
-    for provider,url in SOURCES[region]:
+    for provider,url in (SOURCES if sources is None else sources)[region]:
         p.unlink(missing_ok=True);headers.unlink(missing_ok=True)
         result=run(["curl","--fail","--location","--proto","=https","--proto-redir","=https","--retry","0","--connect-timeout","12","--max-time","150","--max-filesize",str(CAP),"--user-agent","Nordl Energy (https://energy.nordl.dev/)","--dump-header",str(headers),"--output",str(p),url],check=False)
         if result.returncode:
