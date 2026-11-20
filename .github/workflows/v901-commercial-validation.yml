@@ -15,6 +15,8 @@ on:
       - index.html
       - scripts/global_assets.py
       - global-atlas.js
+      - atlas-gdw.js
+      - tests/test_atlas_gdw_browser.cjs
       - atlas-regional-grid.js
       - tests/test_atlas_regional_grid_browser.cjs
       - atlas-measured-flows.js
@@ -60,7 +62,7 @@ jobs:
         if: contains(github.head_ref, 'v906c-sodir')
         run: python -u scripts/sodir_production.py --force
       - name: Download full licensed global power reference
-        if: (contains(github.head_ref, 'v906e-world-assets') || contains(github.head_ref, 'v906e2c-independent-atlas-layers') || contains(github.head_ref, 'v906f1-measured-flows') || contains(github.head_ref, 'v906f2e-gpu-integration') || contains(github.head_ref, 'v906f3a-atlas-focus') || contains(github.head_ref, 'v906f3d-world-water-layer') || contains(github.head_ref, 'v906f3f-regional-grid-map'))
+        if: (contains(github.head_ref, 'v906e-world-assets') || contains(github.head_ref, 'v906e2c-independent-atlas-layers') || contains(github.head_ref, 'v906f1-measured-flows') || contains(github.head_ref, 'v906f2e-gpu-integration') || contains(github.head_ref, 'v906f3a-atlas-focus') || contains(github.head_ref, 'v906f3d-world-water-layer') || contains(github.head_ref, 'v906f3f-regional-grid-map') || contains(github.head_ref, 'v906f3h-water-gpu'))
         run: python -u scripts/global_assets.py --force
       - name: Generate full static directory
         run: python scripts/build_plant_pages.py
@@ -126,7 +128,7 @@ jobs:
         run: node tests/test_sodir_browser.cjs
 
       - name: Global source and responsive layout checks
-        if: (contains(github.head_ref, 'v906e-world-assets') || contains(github.head_ref, 'v906e2c-independent-atlas-layers') || contains(github.head_ref, 'v906f1-measured-flows') || contains(github.head_ref, 'v906f2e-gpu-integration') || contains(github.head_ref, 'v906f3a-atlas-focus') || contains(github.head_ref, 'v906f3d-world-water-layer') || contains(github.head_ref, 'v906f3f-regional-grid-map'))
+        if: (contains(github.head_ref, 'v906e-world-assets') || contains(github.head_ref, 'v906e2c-independent-atlas-layers') || contains(github.head_ref, 'v906f1-measured-flows') || contains(github.head_ref, 'v906f2e-gpu-integration') || contains(github.head_ref, 'v906f3a-atlas-focus') || contains(github.head_ref, 'v906f3d-world-water-layer') || contains(github.head_ref, 'v906f3f-regional-grid-map') || contains(github.head_ref, 'v906f3h-water-gpu'))
         run: node tests/test_global_atlas_browser.cjs
 
       - name: Measured flow interval and layer browser checks
@@ -142,13 +144,13 @@ jobs:
           python scripts/stage_atlas_delivery.py --public "$ATLAS_PUBLIC_DIR"
           node tests/test_atlas_gpu_integration.cjs
       - name: World water infrastructure browser checks
-        if: contains(github.head_ref, 'v906f3d-world-water-layer')
+        if: contains(github.head_ref, 'v906f3d-world-water-layer') || contains(github.head_ref, 'v906f3h-water-gpu')
         run: node tests/test_atlas_gdw_browser.cjs
       - name: Regional grid real-data browser checks
         if: contains(github.head_ref, 'v906f3f-regional-grid-map')
         run: node tests/test_atlas_regional_grid_browser.cjs
       - uses: actions/upload-artifact@v4
-        if: always() && (contains(github.head_ref, 'v906e-world-assets') || contains(github.head_ref, 'v906e2c-independent-atlas-layers') || contains(github.head_ref, 'v906f1-measured-flows') || contains(github.head_ref, 'v906f2e-gpu-integration') || contains(github.head_ref, 'v906f3a-atlas-focus') || contains(github.head_ref, 'v906f3d-world-water-layer') || contains(github.head_ref, 'v906f3f-regional-grid-map'))
+        if: always() && (contains(github.head_ref, 'v906e-world-assets') || contains(github.head_ref, 'v906e2c-independent-atlas-layers') || contains(github.head_ref, 'v906f1-measured-flows') || contains(github.head_ref, 'v906f2e-gpu-integration') || contains(github.head_ref, 'v906f3a-atlas-focus') || contains(github.head_ref, 'v906f3d-world-water-layer') || contains(github.head_ref, 'v906f3f-regional-grid-map') || contains(github.head_ref, 'v906f3h-water-gpu'))
         with:
           name: global-atlas-design-review
           path: /tmp/global-atlas-review/*.png

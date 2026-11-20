@@ -83,3 +83,5 @@ body[data-theme=light] #atlasInfrastructureFocus{color:#126364}
 
 /* Retained snapshots: contextual status below KPIs, not a page-wide alarm. */
 #staleBar[data-state=retained].show{background:transparent;border:0;border-radius:0;padding:4px 0;margin:6px 0;color:var(--muted);font-size:12px;box-shadow:none}#staleBar[data-state=retained].show:before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:#dca84c;margin-right:7px;vertical-align:middle}
+
+#atlasMap .atlas-gdw-marker.compact{width:var(--gdw-size,10px);min-width:0;height:var(--gdw-size,10px);padding:0;border-radius:50%;background:#67c9efaa;border:1px solid #164f77;box-shadow:none}#atlasMap .atlas-gdw-marker.compact:after{inset:-9px}#atlasMap .atlas-gdw-marker.compact:hover{outline:2px solid #d4f4ff}
