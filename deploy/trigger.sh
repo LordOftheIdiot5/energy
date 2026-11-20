@@ -47,12 +47,15 @@ api() {
 # Skip when a run is already going. Two fetches racing would both try to commit
 # to data/ and one would lose to a non-fast-forward push - which looks like a
 # fetch failure rather than what it is.
-running=$(api "https://api.github.com/repos/${REPO}/actions/workflows/${WORKFLOW}/runs?status=in_progress&per_page=1" \
-  | grep -c '"id"' || true)
-if [[ "$running" -gt 0 ]]; then
-  echo "a fetch is already running, skipping"
-  exit 0
-fi
+for status in in_progress queued pending waiting requested; do
+  # A failed API read must not be misreported as an idle workflow.
+  body=$(api "https://api.github.com/repos/${REPO}/actions/workflows/${WORKFLOW}/runs?status=${status}&per_page=1")
+  running=$(printf '%s' "$body" | python3 -c 'import json,sys; print(json.load(sys.stdin)["total_count"])')
+  if [[ "$running" -gt 0 ]]; then
+    echo "a fetch is ${status}, skipping"
+    exit 0
+  fi
+done
 
 echo "dispatching ${WORKFLOW} on ${REPO}@${REF}"
 
