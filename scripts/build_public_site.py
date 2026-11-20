@@ -71,6 +71,8 @@ def stage(root,out):
     (out/"data/observations").mkdir(exist_ok=True)
     (out/"data/observations/index-v1.json").write_text(json.dumps({"schema_version":1,"datasets":observations},indent=2)+"\n",encoding="utf-8")
     generate(out)
+    from osm_publication import stage_osm
+    stage_osm(root/"data"/"osm-odbl",out/"data"/"osm-odbl")
     assert_public(out)
     print("Public artifact:",len(list(out.rglob("*.html"))),"HTML pages")
 if __name__=="__main__":
