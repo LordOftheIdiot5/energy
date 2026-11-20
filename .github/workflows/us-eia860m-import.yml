@@ -1,0 +1,46 @@
+name: US EIA-860M normalized generator data validation
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - scripts/import_eia860m.py
+      - tests/test_import_eia860m.py
+      - .github/workflows/us-eia860m-import.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  import:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Offline schema, identity and status separation tests
+        run: python -m unittest discover -s tests -p test_import_eia860m.py -v
+      - name: Download exact official EIA monthly workbook
+        run: |
+          curl --fail --location --silent --show-error --retry 2 --max-time 120 \
+            'https://www.eia.gov/electricity/data/eia860m/xls/september_generator2026.xlsx' \
+            --output /tmp/eia860m-202609.xlsx
+          printf '%s  %s\n' bcef74e1af991680731aeecfda967f5950db4ce739bb584edd8b8774c7e6da17 /tmp/eia860m-202609.xlsx | sha256sum --check
+      - name: Normalize full official generator inventory without guessed geocoding
+        run: |
+          python scripts/import_eia860m.py --source /tmp/eia860m-202609.xlsx --out /tmp/eia-review/eia860m-generators-v1.json
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/eia-review/eia860m-generators-v1.json'))
+          assert d['source_sha256']=='bcef74e1af991680731aeecfda967f5950db4ce739bb584edd8b8774c7e6da17'
+          assert len(d['rows'])>=30000
+          assert all(x['coordinates'][0]!=0 and x['coordinates'][1]!=0 for x in d['rows'])
+          assert len({r['id'] for r in d['rows']})==len(d['rows'])
+          print('Verified US generator inventory:',d['counts'])
+          PY
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: us-eia860m-normalized-review
+          path: /tmp/eia-review/eia860m-generators-v1.json
+          retention-days: 14
