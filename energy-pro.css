@@ -92,3 +92,14 @@ body[data-theme=light] #atlasInfrastructureFocus{color:#126364}
 #atlasMap .atlas-uk-project-marker:focus-visible{outline:3px solid #fff;outline-offset:3px}
 .atlas-uk-view{min-height:36px;border:1px solid #a48cc8;background:var(--panel-lit);color:var(--ink);padding:7px 11px;border-radius:7px;font:600 12px var(--sans);cursor:pointer}
 #ukProjectInspector p{overflow-wrap:anywhere}#ukProjectInspector a{color:var(--accent);font-size:12px}
+
+/* V90.6f4: EIA status-aware generator unit markers, distinct from UK projects. */
+#atlasMap .atlas-us-generator-marker{position:absolute;box-sizing:border-box;display:grid;place-items:center;min-width:17px;height:17px;padding:0;color:#fff;background:var(--us-color,#b9782d);border:2px solid #f9e6bd;border-radius:50%;cursor:pointer;box-shadow:0 1px 6px #0009;font:700 11px/1 system-ui;z-index:6}
+#atlasMap .atlas-us-generator-marker.cluster{min-width:34px;height:34px;padding:2px 5px}
+#atlasMap .atlas-us-generator-marker:after{content:'';position:absolute;inset:-8px;border-radius:inherit}
+#atlasMap .atlas-us-generator-marker.selected{box-shadow:0 0 0 3px #fff9,0 2px 8px #0009}
+#atlasMap .atlas-us-generator-marker:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.atlas-us-view{min-height:36px;border:1px solid #c89245;border-radius:7px;background:var(--panel-lit);padding:7px 11px;color:var(--ink);font:600 12px var(--sans);cursor:pointer}
+#usGeneratorInventory{background:var(--panel-lit);color:var(--ink);border:1px solid var(--line);border-radius:7px;min-height:36px;padding:6px;font:600 12px var(--sans)}
+#usGeneratorInspector p{overflow-wrap:anywhere}#usGeneratorInspector a{color:var(--accent);font-size:12px}
+@media(max-width:600px){#usGeneratorInventory{max-width:100%;width:100%}}
