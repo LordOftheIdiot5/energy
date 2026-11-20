@@ -26,5 +26,5 @@ function attach(m,on){if(m!==map){map?.off('click',click);map?.off('idle',tally)
 toggle.addEventListener('change',load);for(const id of ['globalGridRegion','globalGridCategory','globalGridVoltage','globalGridFind'])$(id).addEventListener(id==='globalGridFind'?'input':'change',update);
 $('globalGridResults').addEventListener('change',()=>inspect(rows.find(r=>key(r)===$('globalGridResults').value),true));
 for(const region of Object.keys(regions))$('gridView'+region).addEventListener('click',()=>{$('globalGridRegion').value=region;update();if(map&&active)map.fitBounds(region==='IS'?[[-25,63],[-13,67]]:[[5.65,49.42],[6.55,50.22]],{padding:40,duration:0,maxZoom:9});});
-window.NordlRegionalGrid={attach,getMap:()=>map};
+window.NordlRegionalGrid={attach,getMap:()=>map,getBounds:()=>window.NordlEnergyAtlas?.extent(rows.map(r=>r.geometry?.coordinates))||null};
 })();
