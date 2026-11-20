@@ -79,4 +79,6 @@ body[data-theme=light] #atlasInfrastructureFocus{color:#126364}
 
 #atlasMap .atlas-gdw-marker{position:absolute;display:grid;place-items:center;box-sizing:border-box;min-width:24px;height:23px;padding:2px 5px;border-radius:7px;background:#123f57;color:#dff6ff;border:1px solid #6fd4ed;font:700 10px/1 system-ui;cursor:pointer;z-index:4}#atlasMap .atlas-gdw-marker.single{border-radius:50%;font-size:17px}#atlasMap .atlas-gdw-marker:after{content:'';position:absolute;inset:-8px;border-radius:inherit}#atlasMap .atlas-gdw-marker:focus-visible{outline:3px solid white;outline-offset:2px}#globalGdwInspector a{font-size:12px}body[data-workspace=energyMap] #energyMap .global-atlas-workspace:has(#globalGdw:checked):not(:has(#globalMarketOverlay:checked)) #mapInfo{display:none}
 
+.grid-layer-legend{font-size:11px;border-left:2px solid #deb969;padding-left:8px}#globalGridInspector a{font-size:12px}body[data-workspace=energyMap] #energyMap .global-atlas-workspace:has(#globalGrid:checked):not(:has(#globalMarketOverlay:checked)) #mapInfo{display:none}
+
 #atlasMap .atlas-gdw-marker.compact{width:var(--gdw-size,10px);min-width:0;height:var(--gdw-size,10px);padding:0;border-radius:50%;background:#67c9efaa;border:1px solid #164f77;box-shadow:none}#atlasMap .atlas-gdw-marker.compact:after{inset:-9px}#atlasMap .atlas-gdw-marker.compact:hover{outline:2px solid #d4f4ff}
