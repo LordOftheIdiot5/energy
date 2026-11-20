@@ -58,7 +58,7 @@ jobs:
         if: contains(github.head_ref, 'v906c-sodir')
         run: python -u scripts/sodir_production.py --force
       - name: Download full licensed global power reference
-        if: (contains(github.head_ref, 'v906e-world-assets') || contains(github.head_ref, 'v906e2c-independent-atlas-layers') || contains(github.head_ref, 'v906f1-measured-flows'))
+        if: (contains(github.head_ref, 'v906e-world-assets') || contains(github.head_ref, 'v906e2c-independent-atlas-layers') || contains(github.head_ref, 'v906f1-measured-flows') || contains(github.head_ref, 'v906f2e-gpu-integration'))
         run: python -u scripts/global_assets.py --force
       - name: Generate full static directory
         run: python scripts/build_plant_pages.py
@@ -124,14 +124,23 @@ jobs:
         run: node tests/test_sodir_browser.cjs
 
       - name: Global source and responsive layout checks
-        if: (contains(github.head_ref, 'v906e-world-assets') || contains(github.head_ref, 'v906e2c-independent-atlas-layers') || contains(github.head_ref, 'v906f1-measured-flows'))
+        if: (contains(github.head_ref, 'v906e-world-assets') || contains(github.head_ref, 'v906e2c-independent-atlas-layers') || contains(github.head_ref, 'v906f1-measured-flows') || contains(github.head_ref, 'v906f2e-gpu-integration'))
         run: node tests/test_global_atlas_browser.cjs
 
       - name: Measured flow interval and layer browser checks
         if: contains(github.head_ref, 'v906f1-measured-flows')
         run: node tests/test_measured_flows_browser.cjs
+      - name: Integrated GPU preview and standard fallback
+        if: contains(github.head_ref, 'v906f2e-gpu-integration')
+        env:
+          ATLAS_PUBLIC_DIR: ${{ runner.temp }}/energy-public
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1 pmtiles@4.5.0
+          python -m pip install 'pmtiles==3.8.1' 'mapbox-vector-tile==2.2.0'
+          python scripts/stage_atlas_delivery.py --public "$ATLAS_PUBLIC_DIR"
+          node tests/test_atlas_gpu_integration.cjs
       - uses: actions/upload-artifact@v4
-        if: always() && (contains(github.head_ref, 'v906e-world-assets') || contains(github.head_ref, 'v906e2c-independent-atlas-layers') || contains(github.head_ref, 'v906f1-measured-flows'))
+        if: always() && (contains(github.head_ref, 'v906e-world-assets') || contains(github.head_ref, 'v906e2c-independent-atlas-layers') || contains(github.head_ref, 'v906f1-measured-flows') || contains(github.head_ref, 'v906f2e-gpu-integration'))
         with:
           name: global-atlas-design-review
           path: /tmp/global-atlas-review/*.png

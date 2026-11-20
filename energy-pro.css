@@ -59,3 +59,5 @@ body[data-workspace=energyMap] .en-main>.en-top{position:relative;top:auto}body[
 
 /* Separate schematic observed exchange overlay; no effect on physical infrastructure. */
 #atlasMap .atlas-measured-overlay{position:absolute;inset:0;width:100%;height:100%;max-height:none;pointer-events:none;z-index:2;overflow:hidden}#atlasMap .atlas-measured-overlay[hidden]{display:none}#atlasMap .atlas-flow-line{pointer-events:stroke;cursor:pointer}.atlas-flow-records{display:grid;gap:4px}.atlas-flow-records button,.atlas-digital-controls #atlasFlowRefresh{font-size:11px;text-align:left;padding:6px;white-space:normal;min-width:0}.atlas-flow-records button:focus-visible{outline:2px solid #5ce5df}body[data-workspace=energyMap] #energyMap .global-atlas-workspace:has(#atlasMeasuredFlows:checked):not(:has(#globalMarketOverlay:checked)) #mapInfo{display:none}
+
+#globalGpuStatus{font-size:11px;color:#a8c6d4;line-height:1.4;margin:0}.global-atlas-controls label:has(#globalGpu){border-top:1px solid #31465b;padding-top:8px}
