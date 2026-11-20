@@ -91,3 +91,5 @@ V90.6f1: independent schematic reported directional flows from the already licen
 
 ## Competitive research checkpoint
 See docs/ATLAS-COMPETITIVE-BENCHMARK.md for source-specific design and product benchmarks, performance and evidence standards. V90.6f1 merged and deployment workflow passed; V90.6f2a generator verified 34,936 source records per zoom. V90.6f2b local GPU/range-request prototype in CI, preserve public Atlas until visual and production tests pass.
+
+V90.6f2b validated and merged: local GPU browser range requests, all 34,936 source records verified, 3,242 desktop symbols on initial world view, 64,295 initial archive bytes. V90.6f2c adds Natural Earth 5.1.2 generalized boundary lines (331, public-domain), independent power/border/data-centre toggles, Nordic view preset and square mobile world map. Validate actual full longitude framing at 390 px and independent ODbL pilot rendering. Prototype only; cloud delivery and existing Atlas integration remain separate gates.
