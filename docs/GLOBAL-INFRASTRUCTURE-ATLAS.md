@@ -111,5 +111,7 @@ V90.6f3e: exact baseline ODbL cohorts permanently archived on main; 2,189 source
 ### V90.6f3g — Infrastructure project tracker recovery
 Use the existing NVE NLOD hydro licensing registry for the public project tracker; keep curated third-party rows withheld. Preserve original licensing code and date, separate reported licensing MW from operating generation, cluster detailed map points, retain SVG overview and limit initial cards to 60. Next: validate the staged and live page, then integrate licensed project layers into the unified atlas and add source-specific status history, country filters and approved international registers.
 
+V90.6f3g2: user confirmed register loaded but detailed map showed no points. Replace tracker GPU-only points with bounded viewport HTML clusters independent of style layers, report visible marker and in-view record counts, use dark/light basemap and enforce rendered marker checks in staged and live smoke. Retain the existing overview. Root cause of GPU omission not independently reproduced.
+
 ### V90.6f3h — Shared atlas project layer
 Independent opt-in clustered layer reads the same public NVE licensing projection as the infrastructure tracker. Search by name, municipality and ID; filter by original source code and minimum reported licensing MW. Never infer construction, operating status or generation. Source inspection and direct tracker link; underlying market and other asset layers retained. Validate staged register, filter behavior, source isolation and map rendering before production acceptance.
