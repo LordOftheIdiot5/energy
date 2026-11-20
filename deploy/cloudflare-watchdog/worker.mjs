@@ -79,7 +79,7 @@ export async function tick(state,io,now=Date.now()){
   state.failures=age===null?(state.failures||0)+1:0;
   // A local runtime incompatibility is *not* evidence of stale Energy data.
   // Do not re-dispatch GitHub or send an Energy outage alert for a broken probe.
-  const localProbeError=["snapshot-fetch-type-error","snapshot-body-type-error"].includes(diagnostics.snapshot);
+  const localProbeError=["snapshot-fetch-type-error","snapshot-body-type-error","runtime-type-error"].includes(diagnostics.snapshot);
   const unhealthy=!localProbeError&&(age===null?state.failures>=2:age>=110);
   const shouldRecover=!localProbeError&&(age===null?state.failures>=2:age>=90);
   const healthy=age!==null&&age<70;
