@@ -1,0 +1,29 @@
+name: NACEI historic oil and gas facility source audit
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - scripts/audit_nacei_oilgas.py
+      - tests/test_audit_nacei_oilgas.py
+      - .github/workflows/nacei-oilgas-audit.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - run: python -m unittest discover -s tests -p test_audit_nacei_oilgas.py -v
+      - name: Query exact official NACEI ArcGIS point service
+        run: python scripts/audit_nacei_oilgas.py --out "$RUNNER_TEMP/nacei-audit/nacei-oilgas-2017.json"
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: nacei-oilgas-2017-review
+          path: "${{ runner.temp }}/nacei-audit/nacei-oilgas-2017.json"
+          retention-days: 14
