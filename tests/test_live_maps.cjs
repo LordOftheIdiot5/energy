@@ -43,7 +43,7 @@ fs.mkdirSync(out,{recursive:true});
   await shot('05-weather','#atlasMap');
   await page.goto(base+'#news',{waitUntil:'domcontentloaded',timeout:60000});
   const projects=await page.request.get(base+'data/energy-projects-v1.json');assert.ok(projects.ok());const projectData=await projects.json();
-  assert.ok(projectData.rows.length>0);assert.ok(projectData.rows.every(r=>r.id.startsWith('nve-')));await page.waitForFunction(()=>document.querySelectorAll('#projectSelect option').length>0);await ready('#projectAtlas canvas');assert.ok(await page.locator('.en-project-sources a').first().isVisible());
+  assert.ok(projectData.rows.length>0);assert.ok(projectData.rows.every(r=>r.id.startsWith('nve-')));await page.waitForFunction(()=>document.querySelectorAll('#projectSelect option').length>0);await ready('#projectAtlas button[data-project-count]');await page.waitForFunction(()=>Number(document.querySelector('#projectAtlas').dataset.projectViewportRecords)>0);assert.ok(await page.locator('.en-project-sources a').first().isVisible());
   await shot('06-projects','#projectAtlas');
   await page.goto(base+'#gas',{waitUntil:'domcontentloaded',timeout:60000});
   await ready('#gasAtlas [data-gas-code]');
