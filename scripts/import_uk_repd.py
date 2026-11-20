@@ -60,9 +60,9 @@ def project(data: bytes, transform, minimum: int = 5000):
     columns = set(reader.fieldnames or ())
     if not set(REQUIRED).issubset(columns):
         raise ValueError("Unexpected REPD column schema")
-    seen, rows = set(), []
+    seen, rows = {}, []
     counts = {"source_records": 0, "missing_location": 0, "invalid_location": 0,
-              "outside_great_britain": 0, "missing_identity": 0}
+              "outside_great_britain": 0, "missing_identity": 0, "duplicate_source_rows": 0}
     for r in reader:
         counts["source_records"] += 1
         ident = clean(r.get("Ref ID"))
@@ -70,9 +70,17 @@ def project(data: bytes, transform, minimum: int = 5000):
         if not ident or not ident.isdigit() or not name:
             counts["missing_identity"] += 1
             continue
+        signature = tuple(clean(r.get(k)) for k in (
+            "Site Name", "Technology Type", "Country", "Development Status",
+            "Development Status (short)", "Installed Capacity (MWelec)",
+            "X-coordinate", "Y-coordinate", "Record Last Updated (dd/mm/yyyy)"
+        ))
         if ident in seen:
-            raise ValueError("Duplicate REPD Ref ID")
-        seen.add(ident)
+            if seen[ident] != signature:
+                raise ValueError("Conflicting duplicate REPD Ref ID")
+            counts["duplicate_source_rows"] += 1
+            continue
+        seen[ident] = signature
         country = clean(r.get("Country"))
         if country not in PLACES:
             counts["outside_great_britain"] += 1
