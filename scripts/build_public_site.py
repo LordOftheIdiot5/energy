@@ -5,8 +5,8 @@ from publication_policy import write_projection,project_snapshot,project_economi
 from price_rights import permitted
 from build_plant_pages import generate
 ROOT=Path(__file__).resolve().parents[1]
-SITE="index.html guide.html CNAME robots.txt style.css workspace.css portal.css energy-map.css research-tools.css premium.css terminal.css geography.css visual-terminal.css energy-pro.css asset-pages.css energy-contours.svg asset-research.js data-cache.js energy-atlas.js atlas-measured-flows.js atlas-gdw.js atlas-regional-grid.js atlas-projects.js atlas-gpu.js global-atlas.js atlas-assets.js hydro-atlas.js energy-land.js energy-map.js energy-topo.js feed-freshness.js geo-labels.js geography.js hydro-intelligence.js infrastructure.js map-navigation.js market-reference.js nordl-charts.js chart-lab.js ssb-energy.js energinet-energy.js plant-profile.js plant-tile-map.js portal.js project-atlas.js public-grid-map.js regional-atlas.js release-research.js research-tools.js satellite-layer.js shared-energy.js terminal.js terrain-relief.js visual-terminal.js weather-geography.js workspace.js nordic-observations.js energy-data-access.js daily-monitor.js brand/energy-mark.svg brand/energy-wordmark-dark.svg brand/energy-wordmark-light.svg brand/energy-social.svg brand/energy-social.png brand/energy-brand.css".split()
-DATA="atlas-world-borders-v512.json atlas-world-land-v512.json catalog-v1.json commercial-catalog-v1.json hydro-v1.json hydro-plants-v1.json hydro-owners-v1.json hydro-validation-v1.json norway-zones-v1.json nve-catchments-v1.json nve-projects-v1.json nve-reservoirs-v1.json nve-stations-v1.json europe-plants-v1.json weather-geography-v1.json weather-vintages-v1.json owner-company-links-v1.json".split()
+SITE="index.html guide.html CNAME robots.txt style.css workspace.css portal.css energy-map.css research-tools.css premium.css terminal.css geography.css visual-terminal.css energy-pro.css asset-pages.css energy-contours.svg asset-research.js data-cache.js energy-atlas.js atlas-measured-flows.js atlas-gdw.js atlas-regional-grid.js atlas-projects.js atlas-uk-projects.js atlas-gpu.js global-atlas.js atlas-assets.js hydro-atlas.js energy-land.js energy-map.js energy-topo.js feed-freshness.js geo-labels.js geography.js hydro-intelligence.js infrastructure.js map-navigation.js market-reference.js nordl-charts.js chart-lab.js ssb-energy.js energinet-energy.js plant-profile.js plant-tile-map.js portal.js project-atlas.js public-grid-map.js regional-atlas.js release-research.js research-tools.js satellite-layer.js shared-energy.js terminal.js terrain-relief.js visual-terminal.js weather-geography.js workspace.js nordic-observations.js energy-data-access.js daily-monitor.js brand/energy-mark.svg brand/energy-wordmark-dark.svg brand/energy-wordmark-light.svg brand/energy-social.svg brand/energy-social.png brand/energy-brand.css".split()
+DATA="atlas-world-borders-v512.json atlas-world-land-v512.json catalog-v1.json commercial-catalog-v1.json hydro-v1.json hydro-plants-v1.json hydro-owners-v1.json hydro-validation-v1.json norway-zones-v1.json nve-catchments-v1.json nve-projects-v1.json uk-repd-projects-v1.json nve-reservoirs-v1.json nve-stations-v1.json europe-plants-v1.json weather-geography-v1.json weather-vintages-v1.json owner-company-links-v1.json".split()
 DOCS="V89-API.md v85-benchmark-results.json v86-price-benchmark-results.json".split()
 KINDS={"day-ahead","entsoe-series","gas-storage","snow-water","weather-forecast"}
 def load(p):return json.loads(p.read_text(encoding="utf-8"))
@@ -19,10 +19,26 @@ def assert_public(root):
     for file,fn in (("energy.json",project_snapshot),("economic-reference-v1.json",project_economic),("entsoe-open.json",project_shared)):
         d=load(root/"data"/file)
         if d!=fn(d):raise ValueError("Unapproved source snapshot: "+file)
+def validate_uk_repd(d):
+    if d.get("schema_version") != 1 or d.get("release") != "2026-10" or d.get("published") != "2026-11-13" or d.get("license") != "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" or d.get("source") != "https://www.gov.uk/government/publications/renewable-energy-planning-database-quarterly-extract" or d.get("source_sha256") != "48e76c49f33a1090e78108d1ea9bfe689b35963ea3be1bb4f6516d038a5ff862":
+        raise ValueError("Unapproved UK REPD project provenance")
+    counts = d.get("counts", {})
+    rows = d.get("rows")
+    if counts.get("source_records") != 14968 or counts.get("mapped_records") != 14388 or counts.get("duplicate_source_rows") != 1 or not isinstance(rows, list) or len(rows) != 14388:
+        raise ValueError("Unexpected UK REPD project coverage")
+    seen = set()
+    for r in rows:
+        ident, g = r.get("id"), r.get("geometry")
+        if not isinstance(ident, str) or not re.fullmatch(r"uk-repd-\d+", ident) or ident in seen or not isinstance(g, list) or len(g) != 2 or not all(isinstance(v,(int,float)) and not isinstance(v,bool) and -180<=v<=180 for v in g) or not (-13<=g[0]<=6 and 48<=g[1]<=63) or r.get("country") not in ("England","Scotland","Wales") or not r.get("status") or "generation_mw" in r or "operational" in r:
+            raise ValueError("Unsafe UK REPD project record")
+        seen.add(ident)
+    return True
+
 def stage(root,out):
     root=root.resolve();out=out.resolve()
     if out==root or out.is_relative_to(root) or root.is_relative_to(out) or out.exists():raise ValueError("Use a new separate output directory")
     assert_public(root)
+    validate_uk_repd(load(root/"data/uk-repd-projects-v1.json"))
     out.mkdir(parents=True)
     for p in SITE:copy(root,out,p)
     for p in DATA:copy(root,out,"data/"+p)
