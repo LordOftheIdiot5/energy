@@ -52,10 +52,16 @@ class UkRepdImporterTests(unittest.TestCase):
     def test_no_empty_source_or_large_source(self):
         with self.assertRaises(ValueError):
             project(b"",convert,1)
-    def test_duplicate_reference_rejected(self):
+    def test_identical_duplicate_reference_collapsed(self):
+        raw=fixture().decode().splitlines()
+        d=project(("\n".join(raw+[raw[-1]])+"\n").encode(),convert,1)
+        self.assertEqual(d["counts"]["source_records"],2)
+        self.assertEqual(d["counts"]["duplicate_source_rows"],1)
+        self.assertEqual(len(d["rows"]),1)
+    def test_conflicting_duplicate_reference_rejected(self):
         raw=fixture().decode().splitlines()
         with self.assertRaisesRegex(ValueError,"Duplicate"):
-            project(("\n".join(raw+[raw[-1]])+"\n").encode(),convert,1)
+            project(("\n".join(raw+[raw[-1].replace("North Test","Other Project")])+"\n").encode(),convert,1)
 
 if __name__=="__main__":
     unittest.main()
