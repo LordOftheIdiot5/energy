@@ -77,7 +77,15 @@ try{
 }
 function attach(m,on){if(m!==map){map?.off('moveend',queue);map?.off('resize',queue);clear();close();map=m;map?.on('moveend',queue);map?.on('resize',queue);}active=!!on;if(active&&toggle.checked&&!doc)load(true);else update();}
 toggle.addEventListener('change',()=>load(true));
-$('usGeneratorInventory').addEventListener('change',()=>load(true));
+$('usGeneratorInventory').addEventListener('change',()=>{
+ // Inventory categories have different valid status/technology values.
+ // Clear only inventory-specific filters so switching never looks empty
+ // because the preceding category had a different EIA status code.
+ for(const id of ['usGeneratorState','usGeneratorTechnology','usGeneratorStage'])$(id).value='';
+ $('usGeneratorFind').value='';
+ $('usGeneratorInspector').hidden=true;
+ load(true);
+});
 for(const id of ['usGeneratorState','usGeneratorTechnology','usGeneratorStage','usGeneratorFind'])$(id).addEventListener(id==='usGeneratorFind'?'input':'change',()=>{close();update();});
 $('usGeneratorResults').addEventListener('change',()=>inspect(rows.find(r=>r.id===$('usGeneratorResults').value),true));
 $('usGeneratorView').addEventListener('click',viewUS);
