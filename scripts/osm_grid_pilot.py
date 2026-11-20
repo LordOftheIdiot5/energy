@@ -58,10 +58,10 @@ def extract(path):
             except (RuntimeError,ValueError):rejected["substation"]+=1
     Handler().apply_file(str(path),locations=True,idx="flex_mem")
     return sorted(rows.values(),key=lambda r:r["id"]),dict(rejected)
-def collect(region,out):
+def collect(region,out,*,sources=None):
     from osm_extract_sources import download
     with tempfile.TemporaryDirectory() as tmp:
-        p,source=download(region,tmp)
+        p,source=download(region,tmp,sources=sources)
         rows,rejected=extract(p)
     counts=dict(Counter(r["category"] for r in rows))
     if not rows or not counts.get("overhead_line") or not counts.get("substation"):raise ValueError("Empty network cohort")
