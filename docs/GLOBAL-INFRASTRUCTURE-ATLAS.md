@@ -83,3 +83,5 @@ Layer group checkboxes; technology, region/country, reported capacity ranges, vo
 7. V90.7–V91: site screening, forecasts, Stockwatch, time series, professional workspace/API and integrated audit.
 
 Acceptance: actual screenshots at 1440/1024/390, route and sidebar, point/line visibility at each zoom, full-world view on mobile (current view clips edges), non-overlapping cluster labels, independent toggles/filters, verified sample record counts, measured time-series direction tests and stale fallback, keyboard access, performance measured at scale. No unsupported worldwide completeness or all-live claims.
+
+V90.6e2c implementation: independent public ODbL data-centre layer (two pilot regions only), separate search, region filter, source inspectors and licensing; power capacity filter, dominant-technology cluster colours, smaller symbols and negative world zoom for narrow viewports. Existing market and regional modes retained. Real staged browser checks validate both independently and simultaneously. No current capacity, connectivity or operating status inferred. Further GPU/PMTiles and network layers remain planned.
