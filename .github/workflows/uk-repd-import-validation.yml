@@ -1,0 +1,61 @@
+name: UK REPD international-project import validation
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - scripts/import_uk_repd.py
+      - tests/test_uk_repd_import.py
+      - .github/workflows/uk-repd-import-validation.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Unit tests without network or raw data
+        run: python -m unittest discover -s tests -p test_uk_repd_import.py -v
+      - name: Install coordinate converter
+        run: pip install pyproj==3.7.2
+      - name: Obtain official UK DESNZ quarterly CSV
+        run: |
+          curl --fail --location --silent --show-error --retry 2 --max-time 90 \
+            'https://assets.publishing.service.gov.uk/media/6af42ff0a4004bdbe54e54a5/REPD_Publication_Q3_2026.csv' \
+            --output /tmp/uk-repd.csv
+      - name: Audit official duplicate project IDs before projection
+        run: |
+          python - <<'PY'
+          import csv,collections
+          path='/tmp/uk-repd.csv'
+          try:
+            rows=list(csv.DictReader(open(path,encoding='utf-8-sig',newline='')))
+          except UnicodeDecodeError:
+            rows=list(csv.DictReader(open(path,encoding='cp1252',newline='')))
+          by=collections.defaultdict(list)
+          for r in rows: by[r.get('Ref ID','').strip()].append(r)
+          collision={k:v for k,v in by.items() if k and len(v)>1}
+          print('Official REPD rows',len(rows),'unique refs',len(by),'duplicate IDs',len(collision),'repeated rows',sum(len(v)-1 for v in collision.values()))
+          for k,v in list(collision.items())[:12]:
+            print('REPD duplicate',k,[(x.get('Site Name'),x.get('Development Status'),x.get('X-coordinate'),x.get('Y-coordinate')) for x in v[:3]])
+          PY
+      - name: Normalize and validate actual records
+        run: |
+          python scripts/import_uk_repd.py --source-csv /tmp/uk-repd.csv --out /tmp/uk-repd-review/uk-repd-projects-v1.json
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/uk-repd-review/uk-repd-projects-v1.json'))
+          assert d['counts']['mapped_records']>=5000
+          assert all(r['country'] in ('England','Scotland','Wales') for r in d['rows'])
+          print('REPD projected:',d['counts'])
+          PY
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: uk-repd-review-projection
+          path: /tmp/uk-repd-review/uk-repd-projects-v1.json
+          retention-days: 14
