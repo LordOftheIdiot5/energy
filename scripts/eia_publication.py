@@ -36,7 +36,7 @@ def check(doc):
         tab=row.get("source_tab")
         point=row.get("coordinates")
         mw=row.get("nameplate_mw")
-        if inventory not in SPLITS or TABS.get(tab)!=inventory or not isinstance(rid,str) or rid in seen or not re.fullmatch(r"eia860m-[a-z_]+:[0-9]{1,8}:[^\s:]{1,40}",rid) or not rid.startswith("eia860m-"+tab.lower().replace(" ","_")+":"):
+        if inventory not in SPLITS or TABS.get(tab)!=inventory or not isinstance(rid,str) or rid in seen or not re.fullmatch(r"eia860m-[a-z_]+:[0-9]{1,8}:[^:]{1,40}",rid) or not rid.startswith("eia860m-"+tab.lower().replace(" ","_")+":") or rid.rsplit(":",1)[-1]!=row.get("generator_id"):
             raise ValueError("Unsafe EIA generator identity/category")
         if not row.get("plant") or not row.get("technology") or not row.get("status") or not row.get("plant_id") or not row.get("generator_id") or not row.get("state"):
             raise ValueError("Missing EIA generator identity or classification")
