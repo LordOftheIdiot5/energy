@@ -44,7 +44,11 @@ def audit(table,geo):
     for r in items:
         slug=r.get("slug")
         if not isinstance(slug,str) or not slug or slug in ids or not r.get("name") or not r.get("status"):
-            raise ValueError("GEM pipeline row identity missing or duplicate")
+            issue="duplicate-slug" if isinstance(slug,str) and slug in ids else "missing-slug/name/status"
+            raise ValueError("GEM pipeline row identity missing or duplicate: "+issue+
+                " row="+str(len(ids))+" slug="+repr(str(slug)[:100])+
+                " name_present="+str(bool(r.get("name")))+" status="+repr(r.get("status"))+
+                " keys="+repr(sorted(r.keys())))
         if r.get("data_source")!=ATTR:
             raise ValueError("GEM attribution not retained per row")
         if r.get("length_km") is not None and (not isinstance(r["length_km"],(int,float)) or r["length_km"]<0):
