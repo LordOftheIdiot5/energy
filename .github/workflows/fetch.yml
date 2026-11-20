@@ -17,6 +17,7 @@ on:
     paths:
       - .github/workflows/fetch.yml
       - scripts/fetch.py
+      - scripts/publish_fetch.sh
       - tests/test_asset_reference.py
       - scripts/hydro_extended.py
       - scripts/shared_energy.py
@@ -84,26 +85,20 @@ jobs:
           python -m unittest discover -s tests -p test_energy_geography.py
           python -m unittest discover -s tests -p test_asset_reference.py
 
-      - name: Commit results
-        run: |
-          git config user.name "energy"
-          git config user.email "actions@github.com"
-          python scripts/build_public_site.py --check-only
-          git add data/
-          git diff --staged --quiet || git commit -m "fetch: $(date -u '+%Y-%m-%d %H:%M UTC')"
-          for attempt in 1 2 3; do
-            git fetch origin main
-            if ! git rebase origin/main; then
-              git rebase --abort
-              echo "::warning::Concurrent data changes; refusing to overwrite remote observations"
-              exit 1
-            fi
-            python scripts/build_public_site.py --check-only
-            if git push origin HEAD:main; then exit 0; fi
-            sleep 5
-          done
-          echo "::error::Unable to publish after three safe retries"
-          exit 1
+      - name: Commit results with bounded conflict recovery
+        env:
+          # Only source here that needs a credential. GIE require a free
+          # registration at agsi.gie.eu/account. Absent, the gas storage
+          # panel is skipped and everything else runs unchanged.
+          GIE_API_KEY: ${{ secrets.GIE_API_KEY }}
+          NORDIC_OBSERVATIONS_DEDICATED: "1"
+          NVE_HYDAPI_KEY: ${{ secrets.NVE_HYDAPI_KEY }}
+          HYDAPI_API_KEY: ${{ secrets.HYDAPI_API_KEY }}
+          HYDAPI_KEY: ${{ secrets.HYDAPI_KEY }}
+          NVE_HYDAPI_API_KEY: ${{ secrets.NVE_HYDAPI_API_KEY }}
+          FINGRID_API_KEY: ${{ secrets.FINGRID_API_KEY }}
+          FINGRID_KEY: ${{ secrets.FINGRID_KEY }}
+        run: bash scripts/publish_fetch.sh
 
   # A push made with the built-in GITHUB_TOKEN deliberately does not start
   # another workflow, so a Deploy job listening for pushes would never hear
