@@ -1,0 +1,91 @@
+name: OSM electrical network archive
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - scripts/osm_grid_publication.py
+      - tests/test_osm_grid_publication.py
+      - .github/workflows/osm-grid-archive.yml
+  push:
+    branches: [main]
+    paths:
+      - scripts/osm_grid_publication.py
+      - .github/workflows/osm-grid-archive.yml
+  schedule:
+    - cron: '40 4 * * 2'
+  workflow_dispatch:
+concurrency:
+  group: osm-grid-archive-${{ github.ref }}
+  cancel-in-progress: false
+permissions:
+  contents: read
+  actions: read
+jobs:
+  archive:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      actions: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v7
+      - name: Test regional archive and transport handling
+        run: python -m unittest discover -s tests -p 'test_osm_grid*.py' -v
+      - name: Preserve first successful pilot or collect a fresh cohort
+        run: |
+          set -euo pipefail
+          incoming="$RUNNER_TEMP/grid-source"
+          mkdir -p "$incoming"
+          if [ ! -f data/osm-grid-odbl/is-grid-pilot.json ] && [ ! -f data/osm-grid-odbl/lu-grid-pilot.json ]; then
+            gh run download 44659872956 -n osm-grid-pilot-IS -D "$incoming"
+            gh run download 44659872956 -n osm-grid-pilot-LU -D "$incoming"
+            python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"grid-source"
+          assert json.loads((p/"is-grid-pilot.json").read_text())["source_records"]==1057
+          assert json.loads((p/"lu-grid-pilot.json").read_text())["source_records"]==1132
+          PY
+          elif [ "${{ github.event_name }}" = pull_request ]; then
+            cp data/osm-grid-odbl/*-grid-pilot.json "$incoming/"
+          else
+            python -m pip install 'osmium>=4,<5' 'shapely>=2,<3'
+            python -u scripts/osm_grid_pilot.py --region IS --out "$incoming"
+            python -u scripts/osm_grid_pilot.py --region LU --out "$incoming"
+          fi
+          python scripts/osm_grid_publication.py --incoming "$incoming" --root data/osm-grid-odbl
+      - name: Validate exact public artifact
+        run: |
+          python scripts/build_public_site.py --out "$RUNNER_TEMP/energy-public"
+          python - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          root=Path(os.environ["RUNNER_TEMP"])/"energy-public/data/osm-grid-odbl"
+          i=json.loads((root/"index-v1.json").read_text())
+          assert len(i["datasets"])==2 and not (root/"revisions").exists()
+          for e in i["datasets"]:
+              assert hashlib.sha256((root/e["path"]).read_bytes()).hexdigest()==e["sha256"]
+              assert e["source_records"]==sum(e["category_counts"].values())
+          print("PASS ODbL electrical grid projection",sum(e["source_records"] for e in i["datasets"]))
+          PY
+      - name: Retain approved snapshots on main
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: |
+          git config user.name energy-grid-archive
+          git config user.email actions@github.com
+          git add -- data/osm-grid-odbl/
+          if ! git diff --cached --quiet; then
+            git commit -m "Archive validated regional ODbL electricity grid snapshots"
+            for attempt in 1 2 3; do
+              git fetch origin main
+              if ! git rebase origin/main; then git rebase --abort; exit 1; fi
+              if git push origin HEAD:main; then exit 0; fi
+              sleep 3
+            done
+            exit 1
+          fi
+      - name: Request shared Pages deployment
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: gh workflow run pages.yml --ref main
