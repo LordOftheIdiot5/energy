@@ -1,0 +1,27 @@
+name: Atlas viewport interaction validation
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'energy-atlas.js'
+      - 'atlas-gdw.js'
+      - 'atlas-projects.js'
+      - 'atlas-regional-grid.js'
+      - 'index.html'
+      - 'energy-map.css'
+      - 'tests/test_atlas_view_browser.cjs'
+      - '.github/workflows/atlas-viewport-validation.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v7
+      - run: node --check energy-atlas.js && node --check atlas-gdw.js && node --check atlas-projects.js && node --check atlas-regional-grid.js && node tests/test_atlas.cjs
+      - run: python scripts/build_public_site.py --out "$RUNNER_TEMP/energy-public"
+      - run: npm install --no-save --no-package-lock playwright@1.56.1 && npx playwright install chromium
+      - run: |
+          python -m http.server 8766 --bind 127.0.0.1 --directory "$RUNNER_TEMP/energy-public" >/tmp/energy-atlas.log 2>&1 &
+          node tests/test_atlas_view_browser.cjs
