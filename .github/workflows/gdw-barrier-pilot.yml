@@ -1,0 +1,26 @@
+name: Global Dam Watch barrier pilot
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - scripts/gdw_barriers.py
+      - tests/test_gdw_barriers.py
+      - .github/workflows/gdw-barrier-pilot.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  pilot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - run: python -m pip install 'pyshp==2.3.1' 'pyproj==3.7.2'
+      - run: python -m unittest discover -s tests -p test_gdw_barriers.py -v
+      - name: Acquire and validate exact licensed publisher release
+        run: python -u scripts/gdw_barriers.py --out "$RUNNER_TEMP/gdw-pilot"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gdw-barriers-pilot
+          path: ${{ runner.temp }}/gdw-pilot/
+          if-no-files-found: error
