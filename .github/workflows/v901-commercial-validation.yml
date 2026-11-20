@@ -54,7 +54,7 @@ jobs:
         if: contains(github.head_ref, 'v906c-sodir')
         run: python -u scripts/sodir_production.py --force
       - name: Download full licensed global power reference
-        if: contains(github.head_ref, 'v906e-world-assets')
+        if: (contains(github.head_ref, 'v906e-world-assets') || contains(github.head_ref, 'v906e2c-independent-atlas-layers'))
         run: python -u scripts/global_assets.py --force
       - name: Generate full static directory
         run: python scripts/build_plant_pages.py
@@ -120,10 +120,10 @@ jobs:
         run: node tests/test_sodir_browser.cjs
 
       - name: Global source and responsive layout checks
-        if: contains(github.head_ref, 'v906e-world-assets')
+        if: (contains(github.head_ref, 'v906e-world-assets') || contains(github.head_ref, 'v906e2c-independent-atlas-layers'))
         run: node tests/test_global_atlas_browser.cjs
       - uses: actions/upload-artifact@v4
-        if: always() && contains(github.head_ref, 'v906e-world-assets')
+        if: always() && (contains(github.head_ref, 'v906e-world-assets') || contains(github.head_ref, 'v906e2c-independent-atlas-layers'))
         with:
           name: global-atlas-design-review
           path: /tmp/global-atlas-review/*.png
