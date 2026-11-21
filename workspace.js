@@ -30,7 +30,7 @@
     const reservoir=Object.entries(d.reservoirs?.zones||{}).filter(([,v])=>Number.isFinite(v.vsNormal)).sort((a,b)=>a[1].vsNormal-b[1].vsNormal)[0];
     const no3=(d.zones||[]).find(z=>z.zone==='NO3');
     const no3Day=no3?.today;
-    const no3Complete=no3Day?.complete===true&&/^\\d{4}-\\d{2}-\\d{2}$/.test(no3Day.date||'')&&Array.isArray(no3Day.eur)&&no3Day.eur.length>0&&no3Day.eur.every(Number.isFinite);
+    const no3Complete=no3Day?.complete===true&&/^\d{4}-\d{2}-\d{2}$/.test(no3Day.date||'')&&Array.isArray(no3Day.eur)&&no3Day.eur.length>0&&no3Day.eur.every(Number.isFinite);
     const no3Avg=no3Complete?no3Day.eur.reduce((a,b)=>a+b,0)/no3Day.eur.length*100:null;
     const no3Note=no3Complete?no3Day.date+' delivery · '+(window.NordlData.comparable(no3)?'current':'last known / unverified')+' · EUR cents/kWh · '+(no3.displaySource||'Nordic provider'):'No complete NO3 delivery series · see Power prices';
     const nveWeek=d.reservoirs?.year&&d.reservoirs?.week?'NVE '+d.reservoirs.year+' W'+d.reservoirs.week:'NVE report date unavailable';
