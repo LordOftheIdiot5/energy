@@ -18,15 +18,55 @@ function validate(d){
  }
  return d;
 }
+// Only retry temporary transport/server failures. A failed licence, vintage,
+// identity or schema check must stop immediately and never publish fallback rows.
+const MAX_ATTEMPTS=3,REQUEST_LIMITS_MS=[10000,12000,16000],RETRY_PAUSES_MS=[250,750];
+function sourceError(reason,retryable){
+ return Object.assign(new Error('NACEI reviewed archive '+reason),{reason,retryable});
+}
+async function reviewedArchive({fetcher,pause=(ms)=>new Promise(resolve=>setTimeout(resolve,ms)),limits=REQUEST_LIMITS_MS,onProgress=()=>{}}={}){
+ if(typeof fetcher!=='function')throw Error('A fetch implementation is required');
+ for(let attempt=1;attempt<=MAX_ATTEMPTS;attempt++){
+  onProgress({state:'loading',attempt,reason:''});
+  const controller=new AbortController();let timer=0;
+  const deadline=new Promise((_,reject)=>{timer=setTimeout(()=>{controller.abort();reject(sourceError('timeout',true));},limits[attempt-1]);});
+  const request=(async()=>{
+   let response;
+   try{response=await fetcher(FILE,{cache:'no-cache',signal:controller.signal});}
+   catch{throw sourceError(controller.signal.aborted?'timeout':'network',true);}
+   if(!response?.ok){
+    const code=Number(response?.status)||0;
+    throw sourceError('http-'+code,[408,425,429].includes(code)||(code>=500&&code<=599));
+   }
+   let payload;
+   try{payload=await response.json();}
+   catch{throw sourceError('invalid-json',false);}
+   try{return validate(payload);}
+   catch{throw sourceError('invalid-provenance',false);}
+  })();
+  try{
+   const doc=await Promise.race([request,deadline]);
+   return {doc,attempt};
+  }catch(e){
+   if(!e?.retryable||attempt>=MAX_ATTEMPTS)throw Object.assign(e,{attempt});
+   onProgress({state:'retrying',attempt,reason:e.reason||'network'});
+   await pause(RETRY_PAUSES_MS[attempt-1]);
+  }finally{clearTimeout(timer);}
+ }
+ throw sourceError('attempt-limit',false);
+}
 function filter(rows,{country='',search=''}={}){const q=String(search).trim().toLowerCase();return rows.filter(r=>(!country||r.country===country)&&(!q||[r.facility,r.owner,r.operator,r.id,r.city,r.reference_period].some(v=>String(v||'').toLowerCase().includes(q))));}
-if(typeof module!=='undefined'&&module.exports){module.exports={validate,filter,EXPECTED};return;}
+if(typeof module!=='undefined'&&module.exports){module.exports={validate,filter,reviewedArchive,EXPECTED};return;}
 const $=id=>document.getElementById(id),host=$('atlasMap'),toggle=$('globalNaceiHistoric');if(!host||!toggle)return;
 const E=(tag,value)=>{const el=document.createElement(tag);if(value!==undefined)el.textContent=String(value);return el;};
 let map=null,active=false,doc=null,loading=null,failed=false,rows=[],markers=[],frame=0,selected='',popup=null;
+let sourcePhase='off',sourceAttempt=0,sourceReason='';
 const display=n=>Number(n).toLocaleString('en-CA');
 function clear(){for(const marker of markers)marker.remove();markers=[];host.dataset.naceiMarkers='0';host.dataset.naceiVisible='0';}
 function close(){popup?.remove();popup=null;}
 function status(s){$('naceiStatus').textContent=s;}
+function sourceState(phase,attempt,reason=''){sourcePhase=phase;sourceAttempt=attempt;sourceReason=reason;host.dataset.naceiSourceState=phase;host.dataset.naceiSourceAttempt=String(attempt);host.dataset.naceiSourceReason=reason;}
+function loadStatus(){if(sourcePhase==='retrying')return 'NACEI 2017 archive: attempt '+sourceAttempt+' failed ('+sourceReason+'). Retrying approved source…';if(sourcePhase==='loading')return 'Loading approved NACEI 2017 archive · request '+sourceAttempt+' of '+MAX_ATTEMPTS+'…';if(sourcePhase==='unavailable')return sourceReason==='invalid-provenance'||sourceReason==='invalid-json'?'NACEI 2017 archive failed source validation; no records displayed. Turn the layer off and on to retry.':'NACEI 2017 archive unavailable ('+sourceReason+'); no records displayed. Turn the layer off and on to retry.';return 'Loading archived North American facilities…';}
 function layer(){return $('naceiKind').value;}
 function bounds(){if(!rows.length)return null;let w=Infinity,s=Infinity,e=-Infinity,n=-Infinity;for(const r of rows){const [x,y]=r.geometry;w=Math.min(w,x);e=Math.max(e,x);s=Math.min(s,y);n=Math.max(n,y);}return [[w,s],[e,n]];}
 function fit(){if(!active||!map)return;const b=bounds();if(!b){status('No matching historical facility coordinates');return;}const [[w,s],[e,n]]=b,p=.035;map.fitBounds([[w===e?w-p:w,s===n?s-p:s],[w===e?e+p:e,s===n?n+p:n]],{padding:40,maxZoom:10,duration:0,bearing:0,pitch:0});queue();}
@@ -74,19 +114,27 @@ function update(){
  host.dataset.naceiRecords=String(rows.length);
  const s=$('naceiResults');s.replaceChildren(Object.assign(E('option','Choose historic facility'),{value:''}));
  for(const r of rows.slice(0,250))s.append(Object.assign(E('option',r.facility),{value:r.id}));
- status(!toggle.checked?'Historic NACEI layer off':failed?'2017 archive unavailable; turn layer off and on to retry':!doc?'Loading archived North American facilities…':display(rows.length)+' matching August 2017 reference records'+(!active?' · detailed map required':' · drawing symbols'));
+ status(!toggle.checked?'Historic NACEI layer off':failed||!doc?loadStatus():display(rows.length)+' matching August 2017 reference records'+(!active?' · detailed map required':' · drawing symbols'));
  if(!toggle.checked){clear();close();$('naceiInspector').hidden=true;}queue();
 }
 async function load(){
  if(!toggle.checked){update();return;}if(doc){update();return;}if(loading)return;
- failed=false;update();loading=window.NordlData.json(FILE).then(validate);
- try{doc=await loading;selectors('naceiCountry',Object.values(doc.rows).flat().map(r=>r.country),'All countries');}catch{failed=true;}finally{loading=null;update();}
+ failed=false;sourceState('loading',1);update();
+ loading=reviewedArchive({
+  fetcher:(path,options)=>window.fetch(path,options),
+  onProgress:({state,attempt,reason})=>{sourceState(state,attempt,reason);if(toggle.checked)status(loadStatus());}
+ });
+ try{
+  const result=await loading;doc=result.doc;sourceState('ready',result.attempt);
+  selectors('naceiCountry',Object.values(doc.rows).flat().map(r=>r.country),'All countries');
+ }catch(e){failed=true;doc=null;sourceState('unavailable',e?.attempt||sourceAttempt,e?.reason||'network');}
+ finally{loading=null;update();}
 }
 function attach(m,on){if(map!==m){map?.off('moveend',queue);map?.off('resize',queue);clear();close();map=m;map?.on('moveend',queue);map?.on('resize',queue);}active=!!on;if(active&&toggle.checked&&!doc&&!loading)load();else update();}
-toggle.addEventListener('change',()=>{if(toggle.checked)load();else update();});
+toggle.addEventListener('change',()=>{if(toggle.checked)load();else{if(!loading)sourceState('off',0);update();}});
 $('naceiKind').addEventListener('change',()=>{$('naceiSearch').value='';$('naceiCountry').value='';$('naceiInspector').hidden=true;close();update();});
 for(const id of ['naceiCountry','naceiSearch'])$(id).addEventListener(id==='naceiSearch'?'input':'change',()=>{close();update();});
 $('naceiResults').addEventListener('change',()=>inspect(rows.find(r=>r.id===$('naceiResults').value),true));
 $('naceiView').addEventListener('click',fit);
-window.NordlNaceiAtlas={attach,getBounds:bounds,getRendered:()=>markers.length};
+window.NordlNaceiAtlas={attach,getBounds:bounds,getRendered:()=>markers.length,sourceState:()=>({state:sourcePhase,attempt:sourceAttempt,reason:sourceReason})};
 })();
