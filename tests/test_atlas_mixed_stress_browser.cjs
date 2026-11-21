@@ -41,7 +41,7 @@ async function captureHeap(cdp){
   const memMixed=await captureHeap(cdp),snapshots=[];
   for(const [name,lng,lat,zoom] of [
    ['continental-us',-98,39,3],['britain',-2,54,4],['norway',12,62,4],
-   ['western-dateline',179.4,43,3],['eastern-dateline',-179.4,43,3],
+   ['western-dateline',179.4,43,8],['eastern-dateline',-179.4,43,8],
    ['north-america',-105,45,3],['global',0,15,1],
   ]){
    await page.evaluate(([x,y,z])=>{
