@@ -42,6 +42,17 @@ jobs:
           node --check deploy/cloudflare-history/worker.mjs
           PRIVATE_ENVELOPE="$ENVELOPE" node --test deploy/cloudflare-history/worker.test.mjs
           test ! -e deploy/cloudflare-history/wrangler.toml
+      - name: Install pinned Wrangler workerd runtime for real R2/D1 integration
+        run: npm install --no-save --no-package-lock wrangler@4.164.0
+      - name: Run private archive against actual local Cloudflare Workers runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          PRIVATE="$RUNNER_TEMP/energy-workerd-private-replay"
+          ENVELOPE="$RUNNER_TEMP/workerd-reviewed-gem.json"
+          python scripts/private_asset_history.py bootstrap-gem --archive "$PRIVATE"
+          python scripts/export_private_cloudflare_envelope.py --archive "$PRIVATE" --out "$ENVELOPE"
+          PRIVATE_ENVELOPE="$ENVELOPE" CLOUDFLARE_CF_FETCH_ENABLED=false node --test deploy/cloudflare-history/worker.runtime.test.mjs
       - name: Assert disabled private Worker and intended separate storage bindings
         shell: bash
         run: |
