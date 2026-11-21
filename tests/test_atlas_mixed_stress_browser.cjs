@@ -67,7 +67,8 @@ async function captureHeap(cdp){
    assert.equal(state.naceiRecords,1278);
    assert.equal(state.visibleGem,'visible');
    assert.ok(Number.isFinite(state.center[0])&&Number.isFinite(state.center[1]));
-   assert.ok(wrapDistance(state.center[0],lng)<2,'Camera crossed to wrong longitude at '+name);
+   console.log('V90.6g4b camera',width,name,JSON.stringify({requested:[lng,lat,zoom],actual:state.center,zoom:state.zoom,markers:[state.ukMarkers,state.usMarkers,state.naceiMarkers]}));
+   assert.ok(wrapDistance(state.center[0],lng)<2,'Camera crossed to wrong longitude at '+name+': got '+state.center[0]+' wanted '+lng);
    assert.ok(state.ukMarkers>=0&&state.usMarkers>=0&&state.naceiMarkers>=0);
    assert.ok(state.ukMarkers+state.usMarkers+state.naceiMarkers<1500,'Unbounded DOM marker generation '+name);
    if(name==='continental-us'||name==='north-america')assert.ok(state.usMarkers>0&&state.naceiMarkers>0,'US and NACEI should be visible together');
