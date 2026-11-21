@@ -23,12 +23,23 @@
   function element(tag,value){const e=document.createElement(tag);e.textContent=String(value);return e;}
   function kpi(label,value,note){const e=document.createElement('article');e.className='en-kpi';e.append(element('small',label),element('b',value),element('span',note));return e;}
   function render(d){if(!get('enKpis'))return;const rows=[];
-    for(const z of d.zones||[]){const v=z.today?.eur;if(window.NordlData.comparable(z)&&Array.isArray(v)&&v.length&&v.every(Number.isFinite))rows.push({code:z.zone,value:v.reduce((a,b)=>a+b,0)/v.length*100});}
-    for(const z of d.europe||[]){const v=z.cents;if(window.NordlData.comparable(z)&&Array.isArray(v)&&v.length&&v.every(Number.isFinite)&&!rows.some(r=>r.code===z.zone))rows.push({code:z.zone,value:v.reduce((a,b)=>a+b,0)/v.length});}
+    for(const z of d.zones||[]){const v=z.today?.eur;if(window.NordlData.comparable(z)&&Array.isArray(v)&&v.length&&v.every(Number.isFinite))rows.push({code:z.zone,date:z.today.date,value:v.reduce((a,b)=>a+b,0)/v.length*100});}
+    for(const z of d.europe||[]){const v=z.cents;if(window.NordlData.comparable(z)&&Array.isArray(v)&&v.length&&v.every(Number.isFinite)&&!rows.some(r=>r.code===z.zone))rows.push({code:z.zone,date:z.date,value:v.reduce((a,b)=>a+b,0)/v.length});}
     rows.sort((a,b)=>a.value-b.value);
     const low=rows[0], high=rows.at(-1), fmt=v=>v.toFixed(1)+' ¢';
     const reservoir=Object.entries(d.reservoirs?.zones||{}).filter(([,v])=>Number.isFinite(v.vsNormal)).sort((a,b)=>a[1].vsNormal-b[1].vsNormal)[0];
-    get('enKpis').replaceChildren(kpi('Power zones',rows.length||'—','With usable price series; stale European rows excluded'),kpi('Lowest average',low?fmt(low.value):'—',low?low.code+' · EUR cents/kWh':'Not available'),kpi('Highest average',high?fmt(high.value):'—',high?high.code+' · EUR cents/kWh':'Not available'),kpi('Hydro vs seasonal median',reservoir?(reservoir[1].vsNormal*100).toFixed(1)+' pp':'—',reservoir?reservoir[0]+' · lowest available deviation':'Not available'));
+    const no3=(d.zones||[]).find(z=>z.zone==='NO3');
+    const no3Day=no3?.today;
+    const no3Complete=no3Day?.complete===true&&/^\\d{4}-\\d{2}-\\d{2}$/.test(no3Day.date||'')&&Array.isArray(no3Day.eur)&&no3Day.eur.length>0&&no3Day.eur.every(Number.isFinite);
+    const no3Avg=no3Complete?no3Day.eur.reduce((a,b)=>a+b,0)/no3Day.eur.length*100:null;
+    const no3Note=no3Complete?no3Day.date+' delivery · '+(window.NordlData.comparable(no3)?'current':'last known / unverified')+' · EUR cents/kWh · '+(no3.displaySource||'Nordic provider'):'No complete NO3 delivery series · see Power prices';
+    const nveWeek=d.reservoirs?.year&&d.reservoirs?.week?'NVE '+d.reservoirs.year+' W'+d.reservoirs.week:'NVE report date unavailable';
+    get('enKpis').replaceChildren(
+      kpi('NO3 day-ahead average',no3Avg===null?'—':fmt(no3Avg),no3Note),
+      kpi('Lowest average',low?fmt(low.value):'—',low?low.code+' · '+low.date+' · EUR cents/kWh':'No current comparable series'),
+      kpi('Highest average',high?fmt(high.value):'—',high?high.code+' · '+high.date+' · EUR cents/kWh':'No current comparable series'),
+      kpi('Hydro vs seasonal median',reservoir?(reservoir[1].vsNormal*100).toFixed(1)+' pp':'—',reservoir?reservoir[0]+' · '+nveWeek+(d.reservoirs?.stale?' · retained':''):'No reported comparison · '+nveWeek)
+    );
     const stamp=Date.parse(d.generated), hours=(Date.now()-stamp)/36e5;
     const status=!Number.isFinite(stamp)||hours<-.1?'Unknown snapshot time':hours>3?'Stale snapshot':'Published snapshot';
     get('enTape').textContent=status+' · '+(Number.isFinite(stamp)?new Date(stamp).toLocaleString():'timestamp unavailable')+(rows.length?' · '+rows.length+' usable price zones':'');
