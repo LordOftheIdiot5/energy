@@ -31,6 +31,15 @@ function filterRows(rows,{status='',country='',search=''}={}){
  const q=String(search||'').trim().toLowerCase();
  return rows.filter(r=>(!status||r.status===status)&&(!country||[r.start_country,r.end_country].includes(country))&&(!q||[r.id,r.name,r.start_place,r.end_place,r.start_country,r.end_country,r.countries].some(s=>String(s??'').toLowerCase().includes(q))));
 }
+// Source-attribute filters avoid large native-ID expressions for common controls.
+// Search still uses exact source IDs because route geometry carries no full names.
+function routeLayerFilter({status='',country='',search=''}={},matched=[]){
+ const parts=['all'];
+ if(status)parts.push(['==',['get','status'],status]);
+ if(country)parts.push(['any',['==',['get','start_country'],country],['==',['get','end_country'],country]]);
+ if(String(search||'').trim())parts.push(['in',['get','pipeline_id'],['literal',matched.map(r=>r.id)]]);
+ return parts.length===1?null:parts.length===2?parts[1]:parts;
+}
 function enrich(tab,geo){
  const byId=new Map(tab.rows.map(r=>[r.id,r]));return {type:'FeatureCollection',features:geo.features.map(f=>{
   const r=byId.get(f.properties.pipeline_id);if(!r)throw Error('Unmatched source line');
@@ -38,14 +47,15 @@ function enrich(tab,geo){
    start_country:r.start_country||'',end_country:r.end_country||'',color:COLORS[r.status]}};
  })};
 }
-if(typeof module!=='undefined'&&module.exports){module.exports={validateCatalog,validateRoutes,filterRows,enrich,STATUS};return;}
+if(typeof module!=='undefined'&&module.exports){module.exports={validateCatalog,validateRoutes,filterRows,routeLayerFilter,enrich,STATUS};return;}
 const $=id=>document.getElementById(id),host=$('atlasMap'),opt=$('globalGemPipelines');if(!host||!opt)return;
 const node=(tag,v)=>{const el=document.createElement(tag);if(v!==undefined)el.textContent=String(v);return el;};
 let map=null,active=false,catalog=null,routeData=null,features=null,fetchPromise=null,failed=false,filtered=[],byId=new Map(),routeIds=new Set(),highlight=null,selected='',loadToken=0;
+let mapFilterKey=null,mapLayout=null,mapFilterTimer=0;
 function stat(msg){$('gemPipelineStatus').textContent=msg;}
 const display=n=>Number(n).toLocaleString('en-GB');
 function selectedClear(){selected='';if(map?.getSource(HIGHLIGHT))map.getSource(HIGHLIGHT).setData({type:'FeatureCollection',features:[]});}
-function dispose(m){if(!m)return;try{m.off('click',IDS[0],onClick);m.off('mouseenter',IDS[0],enter);m.off('mouseleave',IDS[0],leave);for(const id of IDS)if(m.getLayer(id))m.removeLayer(id);for(const id of [HIGHLIGHT,SRC])if(m.getSource(id))m.removeSource(id);}catch{}}
+function dispose(m){clearTimeout(mapFilterTimer);mapFilterTimer=0;mapFilterKey=null;mapLayout=null;if(!m)return;try{m.off('click',IDS[0],onClick);m.off('mouseenter',IDS[0],enter);m.off('mouseleave',IDS[0],leave);for(const id of IDS)if(m.getLayer(id))m.removeLayer(id);for(const id of [HIGHLIGHT,SRC])if(m.getSource(id))m.removeSource(id);}catch{}}
 function enter(){if(map)map.getCanvas().style.cursor='pointer';}function leave(){if(map)map.getCanvas().style.cursor='';}
 function onClick(e){const hit=e.features?.[0],record=byId.get(hit?.properties?.pipeline_id);if(record)inspect(record,false);}
 function inspector(row){
@@ -84,18 +94,26 @@ function getBounds(){
 }
 function fit(){if(!active||!map){stat('Switch to the detailed map first');return;}if(!features){stat('Enable the route layer to load the data');return;}const bounds=getBounds();if(!bounds){stat('No mapped routes match these filters; use the directory search');return;}showBounds(bounds);}
 function populate(id,items,placeholder){const s=$(id);s.replaceChildren(Object.assign(node('option',placeholder),{value:''}));for(const x of [...new Set(items.filter(Boolean))].sort())s.append(Object.assign(node('option',x),{value:x}));}
-function update(){
- filtered=opt.checked&&catalog?filterRows(catalog.rows,{status:$('gemStatus').value,country:$('gemCountry').value,search:$('gemSearch').value}):[];
+function update(deferMap=false){
+ const controls={status:$('gemStatus').value,country:$('gemCountry').value,search:$('gemSearch').value};
+ filtered=opt.checked&&catalog?filterRows(catalog.rows,controls):[];
  host.dataset.gemRecords=String(filtered.length);
  const choices=$('gemResults');choices.replaceChildren(Object.assign(node('option','Choose pipeline record'),{value:''}));
  for(const r of filtered.slice(0,250))choices.append(Object.assign(node('option',r.name+' · '+r.status),{value:r.id}));
  const mapped=filtered.filter(r=>routeIds.has(r.id)).length;
  host.dataset.gemMatchingRoutes=String(mapped);
  if(map?.getLayer(IDS[0])){
-  const visible=!!(opt.checked&&active&&features);
-  for(const id of IDS)map.setLayoutProperty(id,'visibility',visible?'visible':'none');
-  if(visible){const filter=['in',['get','pipeline_id'],['literal',filtered.filter(r=>routeIds.has(r.id)).map(r=>r.id)]];
-   map.setFilter(IDS[0],filter);}
+  const m=map,visible=!!(opt.checked&&active&&features),layout=visible?'visible':'none';
+  if(layout!==mapLayout){for(const id of IDS)m.setLayoutProperty(id,'visibility',layout);mapLayout=layout;}
+  clearTimeout(mapFilterTimer);mapFilterTimer=0;
+  if(visible){
+   const key=JSON.stringify([controls.status,controls.country,controls.search]);
+   const matching=filtered;
+   const apply=()=>{mapFilterTimer=0;if(m!==map||!active||!opt.checked||!m.getLayer(IDS[0])||key===mapFilterKey)return;
+    m.setFilter(IDS[0],routeLayerFilter(controls,matching));mapFilterKey=key;};
+   if(deferMap&&key!==mapFilterKey)mapFilterTimer=setTimeout(apply,150);
+   else apply();
+  }
  }
  stat(!opt.checked?'Global gas pipeline layer off':failed?'GEM 2025 archive unavailable; switch off and on to retry':!catalog?'Loading licensed pipeline data and simplified routes…':
   display(filtered.length)+' pipeline records · '+display(mapped)+' mapped routes · November 2025 GEM tracker, CC BY 4.0 · simplified lines, current operating status unverified.');
@@ -111,7 +129,7 @@ function initialize(){
     paint:{'line-color':['get','color'],'line-opacity':.78,'line-width':['interpolate',['linear'],['zoom'],0,.6,4,1.4,8,3.5,12,6]}});
   map.addLayer({id:IDS[1],source:HIGHLIGHT,type:'line',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#fff3c4','line-opacity':.98,'line-width':['interpolate',['linear'],['zoom'],0,2,7,5,12,10]}});
   map.on('click',IDS[0],onClick);map.on('mouseenter',IDS[0],enter);map.on('mouseleave',IDS[0],leave);
-  host.dataset.gemRenderedFeatures=String(features.features.length);update();
+  mapFilterKey=null;mapLayout=null;host.dataset.gemRenderedFeatures=String(features.features.length);update();
  }catch{failed=true;dispose(map);stat('MapLibre pipeline layer unavailable; existing infrastructure layers remain visible.');}
 }
 async function load(){
@@ -133,7 +151,7 @@ function attach(m,on){
  active=!!on;if(active&&opt.checked)load();else update();
 }
 opt.addEventListener('change',()=>{if(opt.checked)load();else update();});
-for(const id of ['gemStatus','gemCountry','gemSearch'])$(id).addEventListener(id==='gemSearch'?'input':'change',()=>{selectedClear();update();});
+for(const id of ['gemStatus','gemCountry','gemSearch'])$(id).addEventListener(id==='gemSearch'?'input':'change',()=>{selectedClear();update(id==='gemSearch');});
 $('gemResults').addEventListener('change',()=>inspect(byId.get($('gemResults').value),true));
 $('gemView').addEventListener('click',fit);
 window.NordlGemPipelines={attach,getBounds,renderCount:()=>map?.getLayer(IDS[0])?features?.features.length||0:0};
