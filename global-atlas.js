@@ -2,7 +2,7 @@
 (()=>{'use strict';const $=id=>document.getElementById(id),E=(t,v)=>{const e=document.createElement(t);if(v!==undefined)e.textContent=String(v);return e;};
 const colors={Solar:'#f6c65b',Wind:'#31d8dd',Hydro:'#48a9ff',Nuclear:'#5de0a2',Gas:'#b18cff',Coal:'#a4a9b3',Oil:'#ed777f',Biomass:'#a6dc70',Geothermal:'#f09359',Waste:'#c2a1df',Storage:'#f48bcf',Unknown:'#9da9b8'};
 const file='global-plants-wri-v130.json',toggle=$('globalWri'),legacy=$('atlasPlants'),host=$('atlasMap');
-let map=null,on=false,doc=null,rows=[],seq=0,markers=[],scheduled=0,popup=null,worldLand=null,landRequest=null,landSvg=null,landKey='',landTick=0,landPaints=0,lastFilterKey='';
+let map=null,on=false,doc=null,rows=[],seq=0,markers=[],scheduled=0,popup=null,worldLand=null,landRequest=null,landSvg=null,landKey='',landTick=0,landPaints=0,lastFilterKey='',filterPasses=0;
 const dcToggle=$('globalDc');let dcDocs=[],dcReady=false,dcLoading=false,dcMarkers=[],dcVisible=[];
 const ns='http://www.w3.org/2000/svg';const regionalIds=['atlasPlants','atlasNveStations','atlasHydapiStations','atlasReservoirs','atlasCatchments','atlasTransfers'];
 function worldMode(){return on&&map&&(toggle.checked||dcToggle.checked||$('atlasMeasuredFlows').checked||$('globalGdw').checked)&&map.getZoom()<=2.4&&!$('globalMarketOverlay').checked&&!($('globalGrid')?.checked)&&!regionalIds.some(id=>$(id)?.checked)&&($('atlasPhysicalGrid')?.value||'off')==='off';}
@@ -63,7 +63,7 @@ function inspect(r,focus=false){if(!r)return;const box=$('globalInspector');box.
 function update(){
  const key=JSON.stringify([toggle.checked,!!doc,$('globalFuel').value,$('globalCountry').value,$('globalMinMw').value,$('globalFind').value]);
  if(key!==lastFilterKey){
-  lastFilterKey=key;rows=toggle.checked?filter():[];
+  lastFilterKey=key;if(toggle.checked&&doc){filterPasses++;host.dataset.globalFilterPasses=String(filterPasses);}rows=toggle.checked?filter():[];
   const select=$('globalResults');select.replaceChildren(Object.assign(E('option','Choose an asset'),{value:''}));
   for(const r of rows.slice(0,200))select.append(Object.assign(E('option',r.name+' · '+r.country+' · '+r.fuel),{value:r.id}));
  }$('globalStatus').textContent=toggle.checked?(doc?rows.length.toLocaleString()+' matching historical source records · first 200 in search list'+(!on?' · map unavailable; search still works':''):'Loading global source…'):'Global power layer off';schedule();}
