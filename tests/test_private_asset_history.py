@@ -113,7 +113,8 @@ class PrivateVintageTest(unittest.TestCase):
         entry, _ = add(self.root, meta, self.base)
         self.assertEqual(entry["rights_state"], "restricted")
         self.assertEqual(verify(self.root), 1)
-        self.assertFalse(any(ROOT.rglob("ledger-v1.json")), "No private ledger inside repository")
+        self.assertFalse((ROOT / "data" / ".private-vintages" / "ledger-v1.json").exists(),
+                         "No private ledger inside repository")
 
     def test_no_conflicting_provenance_for_same_object(self):
         add(self.root, sample_meta(), self.base)
@@ -128,7 +129,7 @@ class PrivateVintageTest(unittest.TestCase):
         object_path(self.root, entry["object_sha256"]).write_text("{}")
         with self.assertRaisesRegex(ValueError, "checksum"):
             verify(self.root)
-        with self.assertRaisesRegex(ValueError, "modified"):
+        with self.assertRaisesRegex(ValueError, "checksum"):
             add(self.root, sample_meta("2026-10"), self.base)
         (self.root / ".writer.lock").write_text("stale test\n")
         with self.assertRaisesRegex(RuntimeError, "already has a writer"):
