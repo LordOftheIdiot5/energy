@@ -17,6 +17,7 @@ const INBOX = "inbox/reviewed-gem-gas-pipelines-2025-11.json";
 const digest = bytes => createHash("sha256").update(bytes).digest("hex");
 
 async function runtime(enabled) {
+  console.log("workerd: constructing isolated runtime", enabled ? "import" : "disabled");
   const mf = new Miniflare(convertV4MiniflareOptions({
     modules: [{ type: "ESModule", path: worker, contents: readFileSync(worker, "utf8") }],
     compatibilityDate: "2026-11-21",
@@ -25,8 +26,11 @@ async function runtime(enabled) {
     r2Buckets: { ARCHIVE: "private-archive", ARCHIVE_BACKUP: "private-archive-backup" },
     d1Databases: { DB: "private-vintage-index" },
   }));
+  console.log("workerd: obtaining D1 binding");
   const db = await mf.getD1Database("DB");
+  console.log("workerd: applying private D1 migration");
   await db.exec(readFileSync(sql, "utf8"));
+  console.log("workerd: binding isolated R2 stores");
   const primary = await mf.getR2Bucket("ARCHIVE");
   const backup = await mf.getR2Bucket("ARCHIVE_BACKUP");
   return { mf, db, primary, backup, scheduler: await mf.getWorker() };
@@ -40,6 +44,7 @@ test("workerd: disabled importer preserves private staging and exposes no HTTP A
     const response = await mf.dispatchFetch("http://localhost/ingest", { method: "POST" });
     assert.equal(response.status, 404);
     assert.equal(await response.text(), "Not Found");
+    console.log("workerd: invoking scheduled event in disabled mode");
     const result = await scheduler.scheduled({ cron: "31 3 * * *" });
     assert.equal(result.outcome, "ok");
     assert.equal(await count(db), 0);
@@ -53,6 +58,7 @@ test("workerd: real R2 conditional objects + D1 index + cron idempotence", async
   const { mf, db, primary, backup, scheduler } = await runtime(true);
   try {
     await primary.put(INBOX, approved);
+    console.log("workerd: invoking real R2+D1 scheduled import");
     const first = await scheduler.scheduled({ cron: "31 3 * * *" });
     assert.equal(first.outcome, "ok");
     assert.equal(await count(db), 1);
@@ -68,6 +74,7 @@ test("workerd: real R2 conditional objects + D1 index + cron idempotence", async
     assert.equal(digest(b), HASH);
     assert.equal(a.byteLength, b.byteLength);
     await primary.put(INBOX, approved);
+    console.log("workerd: invoking idempotent second scheduled import");
     const second = await scheduler.scheduled({ cron: "31 3 * * *" });
     assert.equal(second.outcome, "ok");
     assert.equal(await count(db), 1, "No new version on duplicate run");
