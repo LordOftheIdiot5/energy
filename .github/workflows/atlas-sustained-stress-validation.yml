@@ -38,7 +38,7 @@ jobs:
         run: |
           npm install --no-save --no-package-lock playwright@1.56.1 pmtiles@4.5.0
           npx playwright install chromium
-      - name: Long-duration stress on desktop, tablet and mobile viewports
+      - name: Long-duration stress, short-budget regression and dam continuity on three viewports
         env:
           ATLAS_PUBLIC_DIR: /tmp/energy-public
           ENERGY_TEST_URL: http://127.0.0.1:8766/
@@ -46,13 +46,6 @@ jobs:
           set -euo pipefail
           python -m http.server 8766 --bind 127.0.0.1 --directory /tmp/energy-public >/tmp/atlas-stress-http.log 2>&1 &
           node tests/test_atlas_sustained_stress_browser.cjs
-      - name: Preserve original short-budget and independent dam regressions
-        env:
-          ATLAS_PUBLIC_DIR: /tmp/energy-public
-          ENERGY_TEST_URL: http://127.0.0.1:8766/
-        run: |
-          set -euo pipefail
-          python -m http.server 8766 --bind 127.0.0.1 --directory /tmp/energy-public >/tmp/atlas-compat-http.log 2>&1 &
           node tests/test_atlas_render_budget_browser.cjs
           node tests/test_atlas_gdw_browser.cjs
       - name: Upload quantitative JSON and map captures
