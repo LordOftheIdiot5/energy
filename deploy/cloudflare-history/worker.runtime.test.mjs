@@ -26,14 +26,26 @@ async function runtime(enabled) {
     r2Buckets: { ARCHIVE: "private-archive", ARCHIVE_BACKUP: "private-archive-backup" },
     d1Databases: { DB: "private-vintage-index" },
   }));
-  console.log("workerd: obtaining D1 binding");
-  const db = await mf.getD1Database("DB");
-  console.log("workerd: applying private D1 migration");
-  await db.exec(readFileSync(sql, "utf8"));
-  console.log("workerd: binding isolated R2 stores");
-  const primary = await mf.getR2Bucket("ARCHIVE");
-  const backup = await mf.getR2Bucket("ARCHIVE_BACKUP");
-  return { mf, db, primary, backup, scheduler: await mf.getWorker() };
+  try {
+    console.log("workerd: obtaining D1 binding");
+    const db = await mf.getD1Database("DB");
+    console.log("workerd: applying private D1 migration statements");
+    // D1 exec() parses newline-delimited input. The published migration is
+    // multiline SQL; Wrangler migration tooling handles that format, while
+    // this local test applies complete statements via prepare().run().
+    const statements = readFileSync(sql, "utf8")
+      .replace(/^--.*$/gm, "").split(";").map(x => x.replace(/\s+/g, " ").trim())
+      .filter(Boolean);
+    assert.equal(statements.length, 3);
+    for (const statement of statements) await db.prepare(statement).run();
+    console.log("workerd: binding isolated R2 stores");
+    const primary = await mf.getR2Bucket("ARCHIVE");
+    const backup = await mf.getR2Bucket("ARCHIVE_BACKUP");
+    return { mf, db, primary, backup, scheduler: await mf.getWorker() };
+  } catch (error) {
+    await mf.dispose();
+    throw error;
+  }
 }
 const count = async db => (await db.prepare("SELECT count(*) AS n FROM asset_vintages").first()).n;
 
