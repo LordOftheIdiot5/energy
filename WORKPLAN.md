@@ -45,6 +45,10 @@ Avoid summing these counts as unique assets: datasets can overlap, and records a
 - [ ] **V90.9 — Public Data Hub and potential paid managed API.** Dataset search, source dates, export/schema examples and version history first; scoped authentication, quotas, operational SLAs and commercial pricing only after rights, demand and live service readiness.
 - [ ] **V91 — Integrated audit.** Navigation and visual simplicity; dark/light and mobile UX, no empty or stale-unlabeled data, live data/collector resilience, dataset continuity, map visibility at all zooms, accessibility, SEO, licensing, privacy and traffic.
 
+### Parallel visitor experience quality gate (cross-cutting, not a new version)
+
+- [ ] Integrate the [2026-11-21 visitor-quality assessment](docs/ENERGY-MASTER-ROADMAP-V91.md#2026-11-21-visitor-quality-assessment--align-external-review-to-existing-phases) with V90.3b/V90.6/V91 acceptance: verify initial `Loading` states actually resolve in browser, show accurate last-available dated snapshots during source failure, keep map overlays discoverable, and link relevant data/tool journeys. User-provided review is a hypothesis, not a measured failure. Do not reorder the first unblocked source-rights tasks without fresh evidence.
+
 ### Parallel maintenance / unresolved branches
 
 - [ ] Review older open rendering/atlas PRs [#68](https://github.com/LordOftheIdiot5/energy/pull/68), [#69](https://github.com/LordOftheIdiot5/energy/pull/69) and [#70](https://github.com/LordOftheIdiot5/energy/pull/70) against current `main`. Rebase/close only after checking their actual changes and redundant regressions; **do not blindly merge**.
