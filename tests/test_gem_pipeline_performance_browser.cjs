@@ -44,7 +44,7 @@ const PIPE='/data/gem-gas-202511/';
   await page.waitForFunction(()=>window.NordlEnergyAtlas.getMap().getFilter('nordl-gem-gas-routes')?.[2]==='proposed');
   await page.locator('#gemStatus').selectOption('');
   await page.waitForFunction(()=>document.querySelector('#atlasMap').dataset.gemRecords==='4246');
-  await page.waitForFunction(()=>window.NordlEnergyAtlas.getMap().getFilter('nordl-gem-gas-routes')===null);
+  await page.waitForFunction(()=>window.NordlEnergyAtlas.getMap().getFilter('nordl-gem-gas-routes')==null);
   const controls=page.locator('#globalGemPipelines').locator('xpath=ancestor::div[contains(@class,"atlas-digital-controls")]');
   await controls.locator('details').evaluate(e=>e.open=true);
   await page.locator('#gemCountry').selectOption(candidate.start_country);
