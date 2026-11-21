@@ -1,0 +1,77 @@
+name: V90.6g3 private Cloudflare R2 D1 archive validation
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'deploy/cloudflare-history/**'
+      - scripts/export_private_cloudflare_envelope.py
+      - scripts/private_asset_history.py
+      - tests/test_cloudflare_archive_sql.py
+      - .github/workflows/private-cloudflare-history-validation.yml
+      - WORKPLAN.md
+      - .gitignore
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  private-r2-d1:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate D1 schema on real SQLite
+        run: python -m unittest discover -s tests -p test_cloudflare_archive_sql.py -v
+      - name: Validate local history provenance and reject malformed sources
+        run: python -m unittest discover -s tests -p test_private_asset_history.py -v
+      - name: Prepare reviewed GEM source WITHOUT placing private envelope in git checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          PRIVATE="$RUNNER_TEMP/energy-private-replay"
+          ENVELOPE="$RUNNER_TEMP/gem-approved-inbox.json"
+          python scripts/private_asset_history.py bootstrap-gem --archive "$PRIVATE"
+          python scripts/private_asset_history.py verify --archive "$PRIVATE"
+          python scripts/export_private_cloudflare_envelope.py --archive "$PRIVATE" --out "$ENVELOPE"
+          test -s "$ENVELOPE"
+          node --check deploy/cloudflare-history/worker.mjs
+          PRIVATE_ENVELOPE="$ENVELOPE" node --test deploy/cloudflare-history/worker.test.mjs
+          test ! -e deploy/cloudflare-history/wrangler.toml
+      - name: Assert disabled private Worker and intended separate storage bindings
+        shell: bash
+        run: |
+          python - <<'PY'
+          import pathlib,tomllib
+          p=pathlib.Path('deploy/cloudflare-history/wrangler.template.toml')
+          doc=tomllib.loads(p.read_text())
+          assert doc['workers_dev'] is False
+          assert doc['preview_urls'] is False
+          assert doc['vars']['IMPORT_ENABLED']=='false'
+          assert doc['d1_databases'][0]['binding']=='DB'
+          assert doc['d1_databases'][0]['database_id']=='REPLACE_WITH_REAL_D1_DATABASE_UUID'
+          buckets=doc['r2_buckets']
+          assert len(buckets)==2
+          assert {b['binding'] for b in buckets}=={'ARCHIVE','ARCHIVE_BACKUP'}
+          assert len({b['bucket_name'] for b in buckets})==2
+          worker=pathlib.Path('deploy/cloudflare-history/worker.mjs').read_text()
+          assert 'async fetch() { return new Response("Not Found", { status: 404' in worker
+          assert 'IMPORT_ENABLED !== "true"' in worker
+          print('Private Worker template is disabled and has no public URL.')
+          PY
+      - name: Build the published site and prove no private resource leak
+        shell: bash
+        run: |
+          set -euo pipefail
+          PUBLIC="$RUNNER_TEMP/energy-allowlisted-public"
+          python scripts/build_public_site.py --out "$PUBLIC"
+          test ! -d "$PUBLIC/deploy/cloudflare-history"
+          test ! -f "$PUBLIC/scripts/export_private_cloudflare_envelope.py"
+          test ! -f "$PUBLIC/worker.mjs"
+          test ! -d "$PUBLIC/objects"
+          test ! -d "$PUBLIC/data/.private-vintages"
+          echo "PASS: R2/D1 scripts, private index and history are absent from public artifact."
