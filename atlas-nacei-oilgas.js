@@ -118,7 +118,7 @@ function update(){
  if(!toggle.checked){clear();close();$('naceiInspector').hidden=true;}queue();
 }
 async function load(){
- if(!toggle.checked){update();return;}if(doc){update();return;}if(loading)return;
+ if(!toggle.checked){update();return;}if(doc){sourceState('ready',sourceAttempt||1);update();return;}if(loading)return;
  failed=false;sourceState('loading',1);update();
  loading=reviewedArchive({
   fetcher:(path,options)=>window.fetch(path,options),
