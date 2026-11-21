@@ -1,0 +1,63 @@
+name: V90.6g4d Atlas render and transfer budget
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - atlas-gpu.js
+      - global-atlas.js
+      - tests/test_atlas_render_budget_browser.cjs
+      - docs/V90.6g4d-ATLAS-RENDER-BUDGET.md
+      - .github/workflows/atlas-render-budget-validation.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  render-and-resources:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 28
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Syntax, legacy Atlas model and delivery safety
+        run: |
+          node --check atlas-gpu.js
+          node --check global-atlas.js
+          node --check tests/test_atlas_render_budget_browser.cjs
+          node tests/test_atlas.cjs
+          node tests/test_atlas_assets.cjs
+          python -m unittest discover -s tests -p test_atlas_delivery.py -v
+      - name: Build public allowlisted site
+        run: python scripts/build_public_site.py --out /tmp/energy-public
+      - uses: ./.github/actions/stage-atlas-tiles
+        with:
+          public-dir: /tmp/energy-public
+      - name: Install browser and local pinned PMTiles
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1 pmtiles@4.5.0
+          npx playwright install chromium
+      - name: Run real map resource and GPU-frame acceptance on three viewports
+        shell: bash
+        env:
+          ATLAS_PUBLIC_DIR: /tmp/energy-public
+          ENERGY_TEST_URL: http://127.0.0.1:8766/
+        run: |
+          set -euo pipefail
+          python -m http.server 8766 --bind 127.0.0.1 --directory /tmp/energy-public >/tmp/atlas-perf.log 2>&1 &
+          node tests/test_atlas_render_budget_browser.cjs
+      - name: Existing opt-in vector and standard renderer compatibility
+        env:
+          ATLAS_PUBLIC_DIR: /tmp/energy-public
+        run: |
+          node tests/test_atlas_gpu_integration.cjs
+          node tests/test_global_atlas_browser.cjs
+      - name: Existing independent water layer
+        run: node tests/test_atlas_gdw_browser.cjs
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: atlas-v90g4d-browser-paints
+          path: /tmp/global-atlas-review/*.png
+          if-no-files-found: warn
+          retention-days: 7
