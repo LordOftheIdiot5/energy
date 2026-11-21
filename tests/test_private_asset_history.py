@@ -152,6 +152,8 @@ class PrivateVintageTest(unittest.TestCase):
         self.assertEqual(entry["rows"], 4246)
         self.assertEqual(entry["release"], "2025-11")
         self.assertEqual(entry["rights_state"], "approved_public")
+        self.assertRegex(entry["upstream_sha256"], r"^[a-f0-9]{64}$")
+        self.assertRegex(entry["geometry_upstream_sha256"], r"^[a-f0-9]{64}$")
         self.assertEqual(verify(self.root), 1)
         # Every source ID remains exact; no geometry synthesized for the 325 without routes.
         self.assertEqual(len(read_snapshot(self.root, entry)["rows"]), 4246)
