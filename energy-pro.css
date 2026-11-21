@@ -114,3 +114,9 @@ body[data-theme=light] #atlasInfrastructureFocus{color:#126364}
 #naceiKind{background:var(--panel-lit);color:var(--ink);border:1px solid var(--line);border-radius:7px;min-height:36px;padding:6px;font:600 12px var(--sans)}
 #naceiInspector p{overflow-wrap:anywhere}
 @media(max-width:600px){#naceiKind{max-width:100%;width:100%}}
+
+/* GEM CC BY 4.0, 2025 public GeoJSON routes and inspection controls */
+.atlas-gem-view{min-height:36px;border:1px solid #58bba9;border-radius:7px;background:var(--panel-lit);color:var(--ink);padding:7px 11px;font:600 12px var(--sans);cursor:pointer}
+#gemStatus{background:var(--panel-lit);color:var(--ink);border:1px solid var(--line);border-radius:7px;min-height:36px;padding:6px;font:600 12px var(--sans)}
+#gemPipelineInspector p{overflow-wrap:anywhere}#gemPipelineInspector a{color:var(--accent);font-size:12px}
+@media(max-width:600px){#gemStatus{max-width:100%;width:100%}}
