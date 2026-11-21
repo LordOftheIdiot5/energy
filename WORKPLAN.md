@@ -33,6 +33,10 @@
 
 Avoid summing these counts as unique assets: datasets can overlap, and records are at different granularities/vintages.
 
+## 2026-11-21 active checkpoint — V91-P0 visitor recovery
+
+**In progress, not deployed.** Branch `feature/v91-p0-bounded-snapshot-retry-20261121` adds a 12-second timeout to the initial public snapshot request, preserves the last successful snapshot on subsequent request failure, exposes a manual retry and official market-source link on first-load failure, and replays early failure events to deferred homepage modules. A new Playwright regression runs against the allowlisted public build at 1440 and 390 CSS px, testing failed initial requests and recovery. **CI result and production/browser acceptance pending**; do not mark V91-P0 complete until the failed, normal and slow-source scenarios and production smoke are verified. No new market data, licence permissions or atlas layers are introduced.
+
 ## Next work in priority order
 
 - [ ] **V91-P0 — Visitor-first data visibility and fallback acceptance (2026-11-21 triage).** Before adding another low-priority atlas layer, verify *rendered* Energy home/monitor at 390/1440 CSS px under normal, slow and failed source requests; measure whether any `Loading published energy data…`, price/NO3, reservoir or Fingrid placeholder stays unresolved. Make the latest already-authorized observation or specific dated unavailable reason useful in the first fold, with its zone, unit, source date and next action; never generate fake values. Check no broken map/base navigation, add browser regression and a real production smoke. This is a **quality gate and time-boxed P0 investigation**, not licence approval, a new version stream or cancellation of the source/archive queue. Long-term specifics: [V91 visitor-quality assessment](docs/ENERGY-MASTER-ROADMAP-V91.md#2026-11-21-visitor-quality-assessment--align-external-review-to-existing-phases).
