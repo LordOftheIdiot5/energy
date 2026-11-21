@@ -748,6 +748,10 @@ fetch("data/energy.json?cb=" + Date.now(),{cache:"no-cache",signal:controller.si
     $("staleBar").dataset.state="unavailable";
     showSnapshotFailure("Energy snapshot unavailable or timed out. No current values can be verified. Retry or consult the official source.");
     window.dispatchEvent(new Event("energy:unavailable"));
+    // A fast failure can precede deferred UI listeners; replay once after they register.
+    if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>{
+      if(!DATA)window.dispatchEvent(new Event("energy:unavailable"));
+    },{once:true});
     $("stamp").classList.add("stale");
     console.error("energy.json", e);
   }).finally(()=>{clearTimeout(deadline);snapshotLoading=false;});}
