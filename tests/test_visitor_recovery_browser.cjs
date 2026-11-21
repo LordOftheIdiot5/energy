@@ -32,7 +32,20 @@ const routePattern='**/data/energy.json?cb=*';
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+12),'Horizontal overflow at '+width);
       assert.deepEqual(errors,[]);
       await page.screenshot({path:'visitor-recovery-'+width+'.png'});
-      console.log('V91-P0',width,'failed-source UI, retry, live local artifact recovery and overflow passed');
+      if(width===1440){
+        const before=await page.locator('#enKpis').innerText();
+        // Leave the request pending: the page must abort it after 12 seconds.
+        await page.route(routePattern,()=>{});
+        await page.evaluate(()=>refreshPublished());
+        await page.waitForFunction(
+          ()=>document.querySelector('#staleBar')?.textContent?.includes('Refresh failed or timed out'),
+          null,{timeout:20000}
+        );
+        assert.equal(await page.locator('#enKpis').innerText(),before,'Stalled refresh must retain validated data');
+        assert.equal(await page.locator('#staleBar button').innerText(),'Retry snapshot');
+        await page.unroute(routePattern);
+      }
+      console.log('V91-P0',width,'initial outage, retry, stalled refresh and layout passed');
       await page.close();
     }
   }finally{await browser.close();}
