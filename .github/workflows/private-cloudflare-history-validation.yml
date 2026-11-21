@@ -52,7 +52,7 @@ jobs:
           ENVELOPE="$RUNNER_TEMP/workerd-reviewed-gem.json"
           python scripts/private_asset_history.py bootstrap-gem --archive "$PRIVATE"
           python scripts/export_private_cloudflare_envelope.py --archive "$PRIVATE" --out "$ENVELOPE"
-          PRIVATE_ENVELOPE="$ENVELOPE" CLOUDFLARE_CF_FETCH_ENABLED=false node --test deploy/cloudflare-history/worker.runtime.test.mjs
+          PRIVATE_ENVELOPE="$ENVELOPE" CLOUDFLARE_CF_FETCH_ENABLED=false timeout 120s node --test deploy/cloudflare-history/worker.runtime.test.mjs
       - name: Assert disabled private Worker and intended separate storage bindings
         shell: bash
         run: |
