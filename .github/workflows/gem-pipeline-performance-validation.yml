@@ -1,0 +1,46 @@
+name: V90.6g4 GEM pipeline filter and map interaction budget
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - atlas-gem-pipelines.js
+      - tests/test_gem_pipeline_filter_budget.cjs
+      - tests/test_gem_pipeline_performance_browser.cjs
+      - docs/V90.6g4-GEM-MAP-BUDGET.md
+      - .github/workflows/gem-pipeline-performance-validation.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  gem-map-budget:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Exact reviewed 2025 source and compact MapLibre expressions
+        run: |
+          node --check atlas-gem-pipelines.js
+          node --check tests/test_gem_pipeline_filter_budget.cjs
+          node --check tests/test_gem_pipeline_performance_browser.cjs
+          node tests/test_atlas_gem_pipelines.cjs
+          node tests/test_gem_pipeline_filter_budget.cjs
+          python -m unittest discover -s tests -p test_gem_pipeline_publication.py -v
+      - name: Build rights-allowlisted public Pages artifact
+        run: python scripts/build_public_site.py --out "$RUNNER_TEMP/energy-public"
+      - name: Install pinned Chromium for responsive GEM browser acceptance
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1
+          npx playwright install chromium
+      - name: Exercise actual map controls, 1440 / 1024 / 390, filters and camera
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m http.server 8766 --bind 127.0.0.1 --directory "$RUNNER_TEMP/energy-public" >/tmp/gem-map-budget.log 2>&1 &
+          ENERGY_TEST_URL=http://127.0.0.1:8766/ node tests/test_atlas_gem_pipelines_browser.cjs
+          ENERGY_TEST_URL=http://127.0.0.1:8766/ node tests/test_gem_pipeline_performance_browser.cjs
