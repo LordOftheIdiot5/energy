@@ -1,0 +1,49 @@
+name: GEM CC BY global gas pipeline public atlas validation
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - data/gem-gas-202511/**
+      - atlas-gem-pipelines.js
+      - index.html
+      - energy-atlas.js
+      - energy-pro.css
+      - scripts/build_public_site.py
+      - scripts/gem_pipeline_publication.py
+      - tests/test_gem_pipeline_publication.py
+      - tests/test_atlas_gem_pipelines.cjs
+      - tests/test_atlas_gem_pipelines_browser.cjs
+      - .github/workflows/gem-gas-public-atlas.yml
+  workflow_run:
+    workflows: [Deploy]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  staged:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - run: node --check atlas-gem-pipelines.js && node --check energy-atlas.js && node tests/test_atlas_gem_pipelines.cjs
+      - run: python -m unittest discover -s tests -p test_gem_pipeline_publication.py -v
+      - run: python scripts/build_public_site.py --out "$RUNNER_TEMP/energy-public"
+      - run: npm install --no-save --no-package-lock playwright@1.56.1 && npx playwright install chromium
+      - run: |
+          python -m http.server 8766 --bind 127.0.0.1 --directory "$RUNNER_TEMP/energy-public" >/tmp/gem-pipelines.log 2>&1 &
+          ENERGY_TEST_URL=http://127.0.0.1:8766/ node tests/test_atlas_gem_pipelines_browser.cjs
+  live:
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 17
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+      - run: npm install --no-save --no-package-lock playwright@1.56.1 && npx playwright install chromium
+      - env:
+          ENERGY_TEST_URL: https://energy.nordl.dev/
+        run: node tests/test_atlas_gem_pipelines_browser.cjs
