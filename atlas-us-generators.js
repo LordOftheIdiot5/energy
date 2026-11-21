@@ -7,20 +7,41 @@ function validateIndex(d){if(d?.schema_version!==1||d.release!=='2026-09'||d.pub
 const ids=new Set();for(const e of d.inventories){if(!Object.hasOwn(PARTS,e.id)||e.records!==PARTS[e.id]||e.path!=='data/eia860m/'+e.id+'-v1.json'||typeof e.sha256!=='string'||!/^[0-9a-f]{64}$/.test(e.sha256)||ids.has(e.id))throw Error('Unapproved EIA inventory partition');ids.add(e.id);}return d;}
 function validatePart(d,kind){if(d?.schema_version!==1||d.release!=='2026-09'||d.inventory!==kind||d.source_sha256!==SHA||d.source!==SOURCE||d.rights!==RIGHTS||!Array.isArray(d.rows)||d.rows.length!==PARTS[kind])throw Error('Unapproved EIA generator data');const seen=new Set();
 for(const r of d.rows){const p=r.coordinates;if(r.inventory!==kind||typeof r.id!=='string'||!r.id.startsWith('eia860m-')||seen.has(r.id)||!r.plant||!r.generator_id||!r.status||!Array.isArray(p)||p.length!==2||!p.every(Number.isFinite)||Math.abs(p[0])>180||Math.abs(p[1])>90||'generation_mw' in r||'is_operational' in r)throw Error('Unsafe EIA generator unit');seen.add(r.id);}return d;}
+// Select the shortest circular longitude interval, preserving eastern-hemisphere
+// territory coordinates and assets either side of the international dateline.
+// Bounds may intentionally use an unwrapped east longitude above 180 degrees;
+// MapLibre fitBounds accepts this and avoids a nearly-worldwide wrong-way fit.
+function sourceBounds(records){
+ const points=records.map(r=>r.coordinates).filter(p=>Array.isArray(p)&&p.length===2&&p.every(Number.isFinite)&&Math.abs(p[0])<=180&&Math.abs(p[1])<=90);
+ if(!points.length)return null;
+ const longs=points.map(p=>(p[0]+360)%360).sort((a,b)=>a-b);
+ let gap=-1,after=-1;
+ for(let i=0;i<longs.length;i++){
+  const span=(i===longs.length-1?longs[0]+360:longs[i+1])-longs[i];
+  if(span>gap){gap=span;after=i;}
+ }
+ let west=longs[(after+1)%longs.length];
+ let east=longs[after]+(after===longs.length-1?0:360);
+ if(west>=180){west-=360;east-=360;}
+ let south=Infinity,north=-Infinity;
+ for(const p of points){south=Math.min(south,p[1]);north=Math.max(north,p[1]);}
+ return [[west,south],[east,north]];
+}
 function filtered(records,{state='',technology='',status='',search=''}={}){const q=String(search).trim().toLowerCase();return records.filter(r=>(!state||r.state===state)&&(!technology||r.technology===technology)&&(!status||r.status===status)&&(!q||[r.plant,r.id,r.plant_id,r.generator_id,r.county,r.entity].some(v=>String(v||'').toLowerCase().includes(q))));}
-if(typeof module!=='undefined'&&module.exports){module.exports={validateIndex,validatePart,filtered,PARTS};return;}
+if(typeof module!=='undefined'&&module.exports){module.exports={validateIndex,validatePart,filtered,sourceBounds,PARTS};return;}
 const $=id=>document.getElementById(id),host=$('atlasMap'),toggle=$('globalUsGenerators');if(!host||!toggle)return;
 const E=(tag,v)=>{const el=document.createElement(tag);if(v!==undefined)el.textContent=String(v);return el;};
 let map=null,active=false,manifest=null,indexPromise=null,doc=null,rows=[],pending=new Map(),cache=new Map(),seq=0,frame=0,markers=[],selected='',popup=null,failed=false;
+const MAX_CACHED_INVENTORIES=2;
 const number=n=>Number(n).toLocaleString('en-US');
 function clear(){for(const x of markers)x.remove();markers=[];host.dataset.usMarkers='0';host.dataset.usViewportRecords='0';}
 function close(){popup?.remove();popup=null;}
 function status(t){$('usGeneratorStatus').textContent=t;}
-function bounds(){if(!rows.length)return null;let west=Infinity,south=Infinity,east=-Infinity,north=-Infinity;for(const r of rows){const [x,y]=r.coordinates;if(x>0)continue;west=Math.min(west,x);east=Math.max(east,x);south=Math.min(south,y);north=Math.max(north,y);}return Number.isFinite(west)?[[west,south],[east,north]]:null;}
+function bounds(){return sourceBounds(rows);}
 function viewUS(){if(!active||!map){status('Open detailed map to explore US generator units');return;}
 let b=bounds();if(!b){status('No matching US generator coordinates');return;}
 const [[w,s],[e,n]]=b,p=.04;
-if(rows.length>150&&e-w>30&&n-s>15)b=[[-169,17],[-64,72]];
+if(rows.length>150&&e-w>30&&n-s>15&&!$('usGeneratorState').value&&!$('usGeneratorFind').value)b=[[-169,17],[-64,72]];
 else b=[[w===e?w-p:w,s===n?s-p:s],[w===e?e+p:e,s===n?n+p:n]];
 try{map.fitBounds(b,{padding:Math.max(32,Math.min(70,Math.floor(host.clientWidth/10))),maxZoom:10,duration:0,bearing:0,pitch:0});}catch{map.jumpTo({center:[-98,38],zoom:3});}
 queue();}
@@ -58,22 +79,37 @@ const select=$('usGeneratorResults');select.replaceChildren(Object.assign(E('opt
 for(const r of rows.slice(0,250))select.append(Object.assign(E('option',r.plant+' · '+r.generator_id+' · '+r.status),{value:r.id}));
 status(!toggle.checked?'US generator layer off':failed?'US official dataset currently unavailable; toggle to retry':!doc?'Loading official EIA '+$('usGeneratorInventory').value+' units…':number(rows.length)+' matching '+doc.inventory.replace('_',' / ')+' source units · '+(!active?'Detailed map required':'rendering symbols'));
 if(!toggle.checked){clear();close();$('usGeneratorInspector').hidden=true;}queue();}
+// Keep up to two validated source partitions for fast inventory switches; completed
+// fetch promises must never retain all four inventories indefinitely.
+function rememberPart(kind,part){
+ cache.delete(kind);cache.set(kind,part);
+ while(cache.size>MAX_CACHED_INVENTORIES)cache.delete(cache.keys().next().value);
+}
+function loadPart(kind){
+ if(cache.has(kind)){const data=cache.get(kind);rememberPart(kind,data);return Promise.resolve(data);}
+ if(pending.has(kind))return pending.get(kind);
+ let request;
+ request=window.NordlData.json('data/eia860m/'+kind+'-v1.json').then(d=>validatePart(d,kind)).then(
+  part=>{if(pending.get(kind)===request)pending.delete(kind);rememberPart(kind,part);return part;},
+  error=>{if(pending.get(kind)===request)pending.delete(kind);throw error;}
+ );
+ pending.set(kind,request);
+ return request;
+}
 async function load(fit=false){const token=++seq;if(!toggle.checked){doc=null;update();return;}
 failed=false;doc=null;close();selected='';update();
 const kind=$('usGeneratorInventory').value;
 try{
  if(!indexPromise)indexPromise=window.NordlData.json('data/eia860m/index-v1.json').then(validateIndex).catch(e=>{indexPromise=null;throw e;});
  manifest=await indexPromise;
- let promise=pending.get(kind);
- if(!promise){promise=cache.has(kind)?Promise.resolve(cache.get(kind)):window.NordlData.json('data/eia860m/'+kind+'-v1.json').then(d=>validatePart(d,kind));pending.set(kind,promise);}
- const part=await promise;
+ const part=await loadPart(kind);
  if(token!==seq||!toggle.checked||kind!==$('usGeneratorInventory').value)return;
- cache.set(kind,part);doc=part;
+ doc=part;
  opts('usGeneratorState',part.rows.map(x=>x.state),'All states');
  opts('usGeneratorTechnology',part.rows.map(x=>x.technology),'All technologies');
  opts('usGeneratorStage',part.rows.map(x=>x.status),'All source statuses');
  update();if(fit&&active)viewUS();
-}catch(e){if(token===seq){pending.delete(kind);failed=true;doc=null;update();}}
+}catch(e){if(token===seq){failed=true;doc=null;update();}}
 }
 function attach(m,on){if(m!==map){map?.off('moveend',queue);map?.off('resize',queue);clear();close();map=m;map?.on('moveend',queue);map?.on('resize',queue);}active=!!on;if(active&&toggle.checked&&!doc)load(true);else update();}
 toggle.addEventListener('change',()=>load(true));
@@ -89,5 +125,5 @@ $('usGeneratorInventory').addEventListener('change',()=>{
 for(const id of ['usGeneratorState','usGeneratorTechnology','usGeneratorStage','usGeneratorFind'])$(id).addEventListener(id==='usGeneratorFind'?'input':'change',()=>{close();update();});
 $('usGeneratorResults').addEventListener('change',()=>inspect(rows.find(r=>r.id===$('usGeneratorResults').value),true));
 $('usGeneratorView').addEventListener('click',viewUS);
-window.NordlUsGenerators={attach,getBounds:bounds,getMap:()=>map,getRendered:()=>markers.length};
+window.NordlUsGenerators={attach,getBounds:bounds,getMap:()=>map,getRendered:()=>markers.length,cacheStatus:()=>({cached:[...cache.keys()],pending:[...pending.keys()]})};
 })();
