@@ -147,7 +147,6 @@ export async function ingestEnvelope(env, bytes) {
   const parsed = await validateEnvelope(bytes); // No storage writes before all source gates.
   const meta = parsed.metadata, key = objectKey(parsed.digest);
   const token = await acquire(env.DB);
-  let completed = false;
   try {
     const existing = await indexRow(env.DB, meta);
     const clean = indexMeta(meta);
@@ -156,7 +155,6 @@ export async function ingestEnvelope(env, bytes) {
             existing.rows === SOURCE.rows && existing.object_key === key, "indexed-provenance-conflict");
       await verifyObject(env.ARCHIVE, key, parsed.digest);
       await verifyObject(env.ARCHIVE_BACKUP, key, parsed.digest);
-      completed = true;
       return { status: "already-indexed", sha256: parsed.digest, rows: SOURCE.rows };
     }
     // Both primary AND independent backup commit before the D1 pointer can exist.
@@ -168,7 +166,6 @@ export async function ingestEnvelope(env, bytes) {
            meta.retrieved_at, meta.rights_state, meta.license, clean,
            new Date().toISOString()).run();
     guard(result.success === true && result.meta?.changes === 1, "index-commit-failed");
-    completed = true;
     return { status: "indexed", sha256: parsed.digest, rows: SOURCE.rows };
   } finally {
     // Never automatically discard the lock if we cannot account for its token.
