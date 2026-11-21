@@ -29,6 +29,13 @@ const routePattern='**/data/energy.json?cb=*';
       assert.doesNotMatch(await page.locator('#visualPrice').innerText(),/Awaiting published data/i);
       assert.doesNotMatch(await page.locator('#visualHydro').innerText(),/Awaiting reservoir data/i);
       assert.doesNotMatch(await page.locator('#enKpis').innerText(),/Loading published energy data/i);
+      const no3=await page.evaluate(()=>DATA.zones.find(z=>z.zone==='NO3'));
+      const first=await page.locator('#enKpis .en-kpi').first().innerText();
+      assert.match(first,/NO3 day-ahead average/);
+      if(no3?.today?.complete){
+        assert.ok(first.includes(no3.today.date),'NO3 delivery date must be visible');
+        assert.match(first,/EUR cents\/kWh/);
+      }
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+12),'Horizontal overflow at '+width);
       assert.deepEqual(errors,[]);
       await page.screenshot({path:'visitor-recovery-'+width+'.png'});
