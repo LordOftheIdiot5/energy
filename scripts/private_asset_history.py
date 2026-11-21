@@ -80,6 +80,10 @@ def check_metadata(meta):
     # This records an existing rights review; it never approves a new licence.
     if meta["rights_state"] == "approved_public" and not meta.get("rights_evidence"):
         raise ValueError("Public rights state needs a reviewed evidence reference")
+    for field in ("upstream_sha256", "geometry_upstream_sha256"):
+        if field in meta and (not isinstance(meta[field], str) or
+                              not DIGEST.fullmatch(meta[field])):
+            raise ValueError("Upstream package fingerprint must be SHA-256")
     utc(meta["retrieved_at"])
     return meta
 
@@ -298,7 +302,9 @@ def bootstrap_reviewed_gem(root, source_folder):
             "retrieved_at": datetime.now(timezone.utc).isoformat(),
             "attribution": doc["attribution"], "license": doc["license_url"],
             "rights_state": "approved_public", "coverage": "complete", "id_field": "id",
-            "rights_evidence": "Reviewed Nordl Energy PR #93, GEM CC BY 4.0 November 2025 package"}
+            "rights_evidence": "Reviewed Nordl Energy PR #93, GEM CC BY 4.0 November 2025 package",
+            "upstream_sha256": doc["table_sha256"],
+            "geometry_upstream_sha256": doc["routes_sha256"]}
     return add(root, meta, doc["rows"])
 
 
