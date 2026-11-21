@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
-import { Miniflare } from "miniflare";
+import { Miniflare, convertV4MiniflareOptions } from "miniflare";
 
 const worker = fileURLToPath(new URL("./worker.mjs", import.meta.url));
 const sql = fileURLToPath(new URL("./migrations/0001_source_vintages.sql", import.meta.url));
@@ -17,15 +17,14 @@ const INBOX = "inbox/reviewed-gem-gas-pipelines-2025-11.json";
 const digest = bytes => createHash("sha256").update(bytes).digest("hex");
 
 async function runtime(enabled) {
-  const mf = new Miniflare({
-    modules: true,
-    scriptPath: worker,
+  const mf = new Miniflare(convertV4MiniflareOptions({
+    modules: [{ type: "ESModule", path: worker, contents: readFileSync(worker, "utf8") }],
     compatibilityDate: "2026-11-21",
     cf: false,
     bindings: { IMPORT_ENABLED: enabled ? "true" : "false" },
     r2Buckets: { ARCHIVE: "private-archive", ARCHIVE_BACKUP: "private-archive-backup" },
     d1Databases: { DB: "private-vintage-index" },
-  });
+  }));
   const db = await mf.getD1Database("DB");
   await db.exec(readFileSync(sql, "utf8"));
   const primary = await mf.getR2Bucket("ARCHIVE");
