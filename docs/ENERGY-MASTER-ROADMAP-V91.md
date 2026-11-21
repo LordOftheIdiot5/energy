@@ -1,4 +1,6 @@
 # Nordl Energy — master development roadmap (V90.2 → V91)
+
+**Current authoritative checkpoint:** [WORKPLAN.md](../WORKPLAN.md) (updated 2026-11-21). This document is the long-range plan; the historical progress notes below are not the latest release status. Start each session from the root workplan and verify GitHub Actions before continuing.
 Planning baseline: 19 November 2026. Product scope: energy.nordl.dev. This is the ordered implementation plan, not an assertion that proposed capabilities are live.
 
 ## Product objective
