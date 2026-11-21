@@ -3,14 +3,14 @@
 if(!host||!opt)return;
 const SRC='nordl-wri-vector',layers=['nordl-wri-clusters','nordl-wri-detail'],geo='nordl-world-geo',border='nordl-world-border',baseLayers=['nordl-world-ocean','nordl-world-land','nordl-world-coast','nordl-world-borders'];
 const colors={Solar:'#f5ca60',Wind:'#46d9e1',Hydro:'#559dff',Nuclear:'#49df9c',Gas:'#b58eff',Coal:'#b7bec8',Oil:'#e8868e',Biomass:'#a4d77e',Geothermal:'#f3a367',Waste:'#d4a9ed',Storage:'#e896ce'};
-let map=null,ready=false,loading=false,failed=false,protocol=null,seq=0,timer=null,context=null,library=null,signature='',worldShown=null,visible=null,tip=null,choices=null,halo=null,hoverFrame=0,lastPointer=null;
+let map=null,ready=false,loading=false,failed=false,protocol=null,seq=0,timer=null,context=null,library=null,signature='',worldShown=null,visible=null,tip=null,choices=null,halo=null,hoverFrame=0,lastPointer=null,featureScans=0;
 const HIT=18;function node(tag,text){const e=document.createElement(tag);if(text!==undefined)e.textContent=String(text);return e;}function clearHover(){if(tip)tip.hidden=true;if(map)map.getCanvas().style.cursor='';}function clearSelection(){choices?.remove();choices=null;halo?.remove();halo=null;}function label(p){return p.id?(p.name||p.id)+' · '+p.fuel+(Number.isFinite(p.capacity_mw)?' · '+p.capacity_mw.toLocaleString()+' MW reported':' · capacity unknown'):(p.count||0)+' historical '+p.fuel+' records · '+p.country;}
 function candidates(point){if(!map||!ready||!wanted()||!map.getLayer(layers[0]))return [];const out=new Map();for(const f of map.queryRenderedFeatures([[point.x-HIT,point.y-HIT],[point.x+HIT,point.y+HIT]],{layers})){if(f.geometry?.type!=='Point')continue;const p=f.properties,q=map.project(f.geometry.coordinates),distance=Math.hypot(q.x-point.x,q.y-point.y);if(distance>HIT+12)continue;const key=p.id||JSON.stringify([f.geometry.coordinates,p.fuel,p.country,p.capacity_band]);const entry={f,p,distance};if(!out.has(key)||out.get(key).distance>distance)out.set(key,entry);}return [...out.values()].sort((a,b)=>a.distance-b.distance);}
 function hover(e){lastPointer=e;if(hoverFrame)return;hoverFrame=requestAnimationFrame(()=>{hoverFrame=0;const v=lastPointer;if(!v||!wanted()||map?.isMoving()||v.originalEvent?.target?.closest?.('button,.maplibregl-popup,.atlas-flow-line')){clearHover();return;}const hits=candidates(v.point);if(!hits.length){clearHover();return;}if(!tip){tip=node('div');tip.className='atlas-asset-tooltip';tip.setAttribute('aria-hidden','true');host.append(tip);}tip.textContent=label(hits[0].p)+(hits.length>1?' · '+hits.length+' nearby symbols':'');tip.hidden=false;tip.style.left=Math.max(4,Math.min(host.clientWidth-tip.offsetWidth-4,v.point.x+15))+'px';tip.style.top=Math.max(4,Math.min(host.clientHeight-tip.offsetHeight-4,v.point.y+15))+'px';map.getCanvas().style.cursor='pointer';});}
 function leave(){lastPointer=null;clearHover();}
 function selectHit(hit){clearSelection();clearHover();const {p,f}=hit;if(p.id){context.inspect(p.id);const ring=node('div');ring.className='atlas-selected-ring';ring.setAttribute('aria-hidden','true');halo=new window.maplibregl.Marker({element:ring,anchor:'center'}).setLngLat(f.geometry.coordinates).addTo(map);}else map.easeTo({center:f.geometry.coordinates,zoom:Math.max(5,map.getZoom()+2)});}
 function notify(){window.dispatchEvent(new Event('atlas:gpu-state'));}
-function dispose(){clearTimeout(timer);leave();clearSelection();if(map){for(const id of [...layers,...baseLayers])if(map.getLayer(id))map.removeLayer(id);for(const id of [SRC,geo,border])if(map.getSource(id))map.removeSource(id);}ready=false;loading=false;signature='';worldShown=null;visible=null;host.dataset.gpuSymbols='0';}
+function dispose(){clearTimeout(timer);leave();clearSelection();if(map){for(const id of [...layers,...baseLayers])if(map.getLayer(id))map.removeLayer(id);for(const id of [SRC,geo,border])if(map.getSource(id))map.removeSource(id);}ready=false;loading=false;signature='';worldShown=null;visible=null;host.dataset.gpuSymbols='0';host.dataset.gpuFeatureScans='0';host.dataset.gpuFeatureScanMs='0';featureScans=0;}
 function fail(message){seq++;failed=true;dispose();status.textContent=message+' · using standard map';notify();}
 function libraryLoad(){if(window.pmtiles)return Promise.resolve();if(library)return library;library=new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/pmtiles@4.5.0/dist/pmtiles.js';const t=setTimeout(()=>{s.remove();reject(Error('PMTiles library timeout'));},12000);s.onload=()=>{clearTimeout(t);window.pmtiles?resolve():reject(Error('PMTiles unavailable'));};s.onerror=()=>{clearTimeout(t);s.remove();reject(Error('PMTiles unavailable'));};document.head.append(s);}).catch(e=>{library=null;throw e;});return library;}
 async function json(path){const r=await fetch(path,{cache:'no-cache'});if(!r.ok)throw Error('Missing tile or geography data');return r.json();}
@@ -36,10 +36,24 @@ for(const [i,id] of layers.entries())map.addLayer({id,type:'circle',source:SRC,'
 apply();timer=setTimeout(()=>{if(!ready)fail('Vector render timed out');},20000);
 }catch(e){if(token===seq)fail(e.message||'GPU unavailable');}finally{if(token===seq)loading=false;}}
 function inspect(e){if(!ready||!wanted()||e.originalEvent?.target?.closest?.('button,.maplibregl-popup,.atlas-flow-line'))return;const hits=candidates(e.point);if(!hits.length){clearSelection();return;}const closest=hits[0];const nearby=hits.filter(h=>h.distance<=closest.distance+8);if(nearby.length===1){selectHit(closest);return;}clearSelection();clearHover();const panel=node('div');panel.className='atlas-nearby-list';panel.append(node('strong','Choose a nearby infrastructure symbol'));for(const hit of nearby.slice(0,20)){const b=node('button',label(hit.p));b.type='button';b.onclick=()=>selectHit(hit);panel.append(b);}if(nearby.length>20)panel.append(node('p','First 20 nearby matches. Zoom in or narrow the filters.'));choices=new window.maplibregl.Popup({maxWidth:'300px',closeButton:true}).setLngLat(e.lngLat).setDOMContent(panel).addTo(map);panel.querySelector('button')?.focus({preventScroll:true});}
-function render(){if(!map||!wanted()||!map.getLayer(layers[0]))return;let n;try{n=map.queryRenderedFeatures({layers}).length;}catch{return;}host.dataset.gpuSymbols=String(n);if(n>0&&!ready){ready=true;clearTimeout(timer);status.textContent='GPU vector mode · historical power plants';notify();}}
+// Before first ready, inspect after render until vector tiles arrive. Once ready,
+ // only enumerate rendered vector features at idle (after camera/style settles).
+ // Avoid O(viewport features) enumeration on every animated MapLibre frame.
+function render(){
+ if(!map||!wanted()||!map.getLayer(layers[0]))return;
+ let n;const start=performance.now();
+ try{n=map.queryRenderedFeatures({layers}).length;}catch{return;}
+ featureScans++;host.dataset.gpuFeatureScans=String(featureScans);
+ host.dataset.gpuFeatureScanMs=(performance.now()-start).toFixed(2);
+ host.dataset.gpuSymbols=String(n);
+ if(host.dataset.globalRenderer==='gpu-vector')host.dataset.globalVisibleSymbols=String(n);
+ if(n>0&&!ready){ready=true;clearTimeout(timer);status.textContent='GPU vector mode · historical power plants';notify();}
+}
+function firstRender(){if(!ready)render();}
+
 function error(e){if(e.sourceId===SRC||String(e.error?.message||'').includes('pmtiles://'))fail('Vector tiles unavailable');}
-function detach(){if(!map)return;map.off('idle',render);map.off('render',render);map.off('error',error);map.off('click',inspect);map.off('mousemove',hover);map.off('mouseout',leave);map.off('movestart',leave);seq++;dispose();}
-function sync(m,c){if(map!==m){detach();map=m;failed=false;if(map){map.on('idle',render);map.on('render',render);map.on('error',error);map.on('click',inspect);map.on('mousemove',hover);map.on('mouseout',leave);map.on('movestart',leave);}}context=c;
+function detach(){if(!map)return;map.off('idle',render);map.off('render',firstRender);map.off('error',error);map.off('click',inspect);map.off('mousemove',hover);map.off('mouseout',leave);map.off('movestart',leave);seq++;dispose();}
+function sync(m,c){if(map!==m){detach();map=m;failed=false;if(map){map.on('idle',render);map.on('render',firstRender);map.on('error',error);map.on('click',inspect);map.on('mousemove',hover);map.on('mouseout',leave);map.on('movestart',leave);}}context=c;
 if(!wanted()){leave();clearSelection();if(loading){seq++;dispose();}apply();if(!opt.checked)status.textContent='Standard map selected';else if(c.query)status.textContent='Text search uses standard map';else if(!c.count)status.textContent='No matching records';return false;}
 if(!map?.getSource(SRC)&&!loading&&!ready)init();apply();return ready&&wanted();}
 opt.addEventListener('change',()=>{failed=false;if(!opt.checked){seq++;dispose();}notify();});
