@@ -52,7 +52,7 @@ class SourceArchiveSchemaTest(unittest.TestCase):
             self.insert("abc")
         with self.assertRaises(sqlite3.IntegrityError):
             self.insert(rows=0)
-        with self.assertRaises(sqlite3.OperationalError):
+        with self.assertRaises(sqlite3.IntegrityError):
             self.db.execute(
                 """INSERT INTO asset_vintages VALUES
                    ('gem-gas-pipelines','2025-11',?, 'objects/x.json',4246,'https://example.com',
