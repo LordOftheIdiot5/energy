@@ -179,6 +179,9 @@ def add(root, meta, rows):
              "located_rows": sum(x.get("geometry") is not None for x in rows)}
     with single_writer(root):
         current = ledger(root)
+        # Fail closed on a broken object before accepting another revision.
+        if current["vintages"]:
+            verify(root)
         for prior in current["vintages"]:
             if prior["dataset"] == entry["dataset"] and prior["release"] == entry["release"] \
                     and prior["object_sha256"] == digest:
@@ -243,10 +246,12 @@ def differences(root, old_sha, new_sha):
     new = row_index(read_snapshot(root, b)["rows"], key)
     added = sorted(set(new) - set(old))
     missing = sorted(set(old) - set(new))
-    changed = [{"id": ident, "fields": sorted({*old[ident], *new[ident]} -
-              {field for field in {*old[ident], *new[ident]}
-               if old[ident].get(field) == new[ident].get(field)})}
-              for ident in sorted(set(old) & set(new)) if old[ident] != new[ident]]
+    changed = [{"id": ident, "fields": sorted(
+                   field for field in old[ident].keys() | new[ident].keys()
+                   if field not in old[ident] or field not in new[ident]
+                   or old[ident][field] != new[ident][field])}
+               for ident in sorted(set(old) & set(new))
+               if old[ident] != new[ident]]
     explicit_terminal = [ident for ident in sorted(set(old) & set(new))
                          if str(old[ident].get("status") or "").casefold() not in TERMINAL
                          and str(new[ident].get("status") or "").casefold() in TERMINAL]
