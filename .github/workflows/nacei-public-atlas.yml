@@ -13,6 +13,9 @@ on:
       - tests/test_nacei_publication.py
       - tests/test_atlas_nacei.cjs
       - tests/test_atlas_nacei_browser.cjs
+      - tests/test_nacei_source_resilience.cjs
+      - tests/test_nacei_source_recovery_browser.cjs
+      - tests/test_atlas_gem_pipelines_browser.cjs
       - .github/workflows/nacei-public-atlas.yml
   workflow_run:
     workflows: [Deploy]
@@ -28,13 +31,15 @@ jobs:
     timeout-minutes: 18
     steps:
       - uses: actions/checkout@v7
-      - run: node --check atlas-nacei-oilgas.js && node --check energy-atlas.js && node tests/test_atlas_nacei.cjs
+      - run: node --check atlas-nacei-oilgas.js && node --check energy-atlas.js && node --check tests/test_nacei_source_resilience.cjs && node --check tests/test_nacei_source_recovery_browser.cjs && node tests/test_atlas_nacei.cjs && node tests/test_nacei_source_resilience.cjs
       - run: python -m unittest discover -s tests -p test_nacei_publication.py -v
       - run: python scripts/build_public_site.py --out "$RUNNER_TEMP/energy-public"
       - run: npm install --no-save --no-package-lock playwright@1.56.1 && npx playwright install chromium
       - run: |
           python -m http.server 8766 --bind 127.0.0.1 --directory "$RUNNER_TEMP/energy-public" >/tmp/nacei-atlas.log 2>&1 &
           ENERGY_TEST_URL=http://127.0.0.1:8766/ node tests/test_atlas_nacei_browser.cjs
+          ENERGY_TEST_URL=http://127.0.0.1:8766/ node tests/test_nacei_source_recovery_browser.cjs
+          ENERGY_TEST_URL=http://127.0.0.1:8766/ node tests/test_atlas_gem_pipelines_browser.cjs
   live:
     if: github.event_name == 'workflow_dispatch' || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-24.04
