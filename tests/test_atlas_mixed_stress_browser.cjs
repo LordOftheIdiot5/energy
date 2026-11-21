@@ -47,7 +47,7 @@ async function captureHeap(cdp){
    await page.evaluate(([x,y,z])=>{
     const m=window.NordlEnergyAtlas.getMap();m.jumpTo({center:[x,y],zoom:z,bearing:0,pitch:0});
    },[lng,lat,zoom]);
-   await page.waitForTimeout(180);
+   await page.waitForTimeout(450);
    const state=await page.evaluate(()=>{
     const el=document.querySelector('#atlasMap'),m=window.NordlEnergyAtlas.getMap();
     return {center:[m.getCenter().lng,m.getCenter().lat],zoom:m.getZoom(),
@@ -70,6 +70,8 @@ async function captureHeap(cdp){
    console.log('V90.6g4b camera',width,name,JSON.stringify({requested:[lng,lat,zoom],actual:state.center,zoom:state.zoom,markers:[state.ukMarkers,state.usMarkers,state.naceiMarkers]}));
    assert.ok(wrapDistance(state.center[0],lng)<2,'Camera crossed to wrong longitude at '+name+': got '+state.center[0]+' wanted '+lng);
    assert.ok(state.ukMarkers>=0&&state.usMarkers>=0&&state.naceiMarkers>=0);
+   if(name==='western-dateline'||name==='eastern-dateline')
+    assert.equal(state.ukMarkers,0,'Stale UK marker bins leaked into dateline view: '+JSON.stringify(state));
    assert.ok(state.ukMarkers+state.usMarkers+state.naceiMarkers<1500,'Unbounded DOM marker generation '+name);
    if(name==='continental-us'||name==='north-america')assert.ok(state.usMarkers>0&&state.naceiMarkers>0,'US and NACEI should be visible together');
    if(name==='britain')assert.ok(state.ukMarkers>0,'UK projects should reappear on country view');
