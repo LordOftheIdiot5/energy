@@ -35,7 +35,7 @@ class Bucket {
 class DB {
   constructor() { this.lock = null; this.rows = new Map(); this.failInsert = false; this.calls = []; }
   prepare(sql) {
-    return { bind: (...values) => ({
+    const make = (...values) => ({
       run: async () => {
         this.calls.push(["run", sql, values]);
         if (sql.startsWith("INSERT OR IGNORE INTO writer_lock")) {
@@ -75,7 +75,8 @@ class DB {
         if (!sql.startsWith("SELECT dataset, release")) throw new Error("Unexpected SQL all");
         return { success: true, results: [...this.rows.values()] };
       },
-    }) };
+    });
+    return { bind: (...values) => make(...values), all: async () => make().all() };
   }
 }
 const setup = (enabled = true) => ({
