@@ -700,8 +700,28 @@ function placeHints() {
 window.addEventListener("resize", placeHints);
 
 let snapshotLoading=false;
+function showSnapshotFailure(message) {
+  const bar=$("staleBar");
+  bar.textContent=message+" ";
+  const retry=document.createElement("button");
+  retry.type="button";
+  retry.className="en-button";
+  retry.textContent="Retry snapshot";
+  retry.addEventListener("click", refreshPublished);
+  bar.append(retry);
+  if (!DATA) {
+    const official=document.createElement("a");
+    official.href="https://www.nordpoolgroup.com/";
+    official.rel="noopener noreferrer";
+    official.textContent="Official power prices";
+    bar.append(" · ",official);
+  }
+  bar.classList.add("show");
+}
 function refreshPublished(){if(snapshotLoading)return;snapshotLoading=true;
-fetch("data/energy.json?cb=" + Date.now(),{cache:"no-cache"})
+const controller=new AbortController();
+const deadline=setTimeout(()=>controller.abort(),12000);
+fetch("data/energy.json?cb=" + Date.now(),{cache:"no-cache",signal:controller.signal})
   .then(r => r.ok ? r.json() : Promise.reject(r.status))
   .then(d => {
     const gb=d.marketIndex||(d.europe||[]).find(x=>x.zone==="GB");
@@ -723,15 +743,14 @@ fetch("data/energy.json?cb=" + Date.now(),{cache:"no-cache"})
     placeHints();
   })
   .catch(e => {
-    if(DATA){renderStamp(DATA);$("staleBar").textContent="Refresh failed. Showing last successful published snapshot from "+DATA.generated+"."; $("staleBar").classList.add("show");return;}
+    if(DATA){renderStamp(DATA);showSnapshotFailure("Refresh failed or timed out. Showing the last successful snapshot from "+DATA.generated+".");return;}
     $("stamp").textContent = "could not load data";
     $("staleBar").dataset.state="unavailable";
-    $("staleBar").textContent = "Energy data could not be loaded. No current values are available.";
-    $("staleBar").classList.add("show");
+    showSnapshotFailure("Energy snapshot unavailable or timed out. No current values can be verified. Retry or consult the official source.");
     window.dispatchEvent(new Event("energy:unavailable"));
     $("stamp").classList.add("stale");
     console.error("energy.json", e);
-  }).finally(()=>{snapshotLoading=false;});}
+  }).finally(()=>{clearTimeout(deadline);snapshotLoading=false;});}
 refreshPublished();setInterval(()=>{if(!document.hidden)refreshPublished();},300000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)refreshPublished();});
 </script>
 <script src="daily-monitor.js?v=903b" defer></script><script src="visual-terminal.js?v=905a" defer></script>
