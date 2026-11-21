@@ -1,8 +1,6 @@
 # V90.6g3 — private infrastructure source-vintage ledger
 
-Status: **first implementation / local and CI research only**. This is not a running
-Cloudflare R2/D1 archive or proof that 2026 GEM LNG data have been obtained.
-It adds no website endpoints, new rows, licence approvals or public layers.
+Status: **private local ledger and disabled Cloudflare R2/D1 adapter implemented and tested**, including real local workerd/Miniflare compatibility. Neither is a running Cloudflare account archive; new 2026 GEM LNG data have not been obtained. No public endpoints, added source rows or rights approvals. See [private Cloudflare deployment gates](../deploy/cloudflare-history/README.md) and the [current execution checkpoint](../WORKPLAN.md).
 
 ## Purpose
 
@@ -51,7 +49,9 @@ metadata, rows) Python API will admit a future LNG package only after official
 download, package checksum, source-ID/geometry validation and source-specific rights
 review. A new source remains review-required until that happens.
 
-## Future private R2/D1 production gate — NOT IMPLEMENTED
+## Cloudflare R2/D1 provisioning and recovery gate — code staged, account deployment pending
+
+The Worker under deploy/cloudflare-history already implements guarded immutable primary/backup R2 writes and the D1 index for the pinned reviewed GEM November 2025 baseline, with two real-local-runtime acceptance checks. **Actual R2 buckets, remote D1 migration, original upstream package storage, private scheduled imports and backup restoration are not provisioned or proven.** The remaining steps are:
 
 1. Create a private R2 bucket for **original upstream bytes** and immutable revision
    objects, retaining checksum, attribution, vintage and source-specific licence.
