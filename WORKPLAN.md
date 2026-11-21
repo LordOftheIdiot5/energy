@@ -99,6 +99,14 @@ Avoid summing these counts as unique assets: datasets can overlap, and records a
 - **Next unblocked work:** measured time/frame/device memory on actual hardware and long-duration map stress; assess WRI vector + water interactivity, which remain separate source/projection budgets. PR #70 can be closed as **superseded (not merged)** after this verified replacement; it contains older CI and intentionally omitted 150ms delayed asset search. V90.6g4 broad device/GPU audit is **not fully complete**, and no physical-device FPS/VRAM improvement can be claimed from headless JS scan counts alone.
 - **Still gated:** Remote private Cloudflare R2/D1 resource provisioning/migrations and restore test; newer GEM LNG publisher extract/rights; source-rights/commercial-readiness approval outside the reviewed public layers.
 
+## 2026-11-21 V90.6g4e in-progress checkpoint — sustained Atlas stress
+
+**In progress — not yet passed or merged.** [Draft PR #112](https://github.com/LordOftheIdiot5/energy/pull/112) adds a separate browser stress workflow and [test/limits specification](docs/V90.6g4e-ATLAS-SUSTAINED-STRESS.md). The proposed validation runs 72 camera movements and six GPU on/off recovery cycles per 1440/1024/390 CSS-px viewport on rights-approved WRI 2021 and GDW data, sampling GC-normalized V8 heap, browser animation pacing, vector byte ranges, source requests and visible fallback. [Initial PR workflow](https://github.com/LordOftheIdiot5/energy/actions/runs/44959335638) must finish before recording measured results. This is a headless SwiftShader CI stress test, **not** actual device GPU FPS, VRAM or a proof of leak freedom.
+
+- **Production remains V90.6g4d** until an actual new release passes its deployment and live tests. Test-only PR #112 itself has no production rendering changes.
+- **Release gate:** review quantitative output and any failures, pass original render/GDW regressions, update this checkpoint with the actual PR/run outcome. Preserve all sources and rights.
+- **Still separate:** physical-device/profile tracing, longer background/foreground soak, remote private Cloudflare R2/D1 activation/restore, newer GEM LNG source-specific permissions.
+
 ## Next work in priority order
 
 - [x] **V91-P0 — Visitor-first data visibility and fallback acceptance (2026-11-21 triage).** Before adding another low-priority atlas layer, verify *rendered* Energy home/monitor at 390/1440 CSS px under normal, slow and failed source requests; measure whether any `Loading published energy data…`, price/NO3, reservoir or Fingrid placeholder stays unresolved. Make the latest already-authorized observation or specific dated unavailable reason useful in the first fold, with its zone, unit, source date and next action; never generate fake values. Check no broken map/base navigation, add browser regression and a real production smoke. This is a **quality gate and time-boxed P0 investigation**, not licence approval, a new version stream or cancellation of the source/archive queue. Long-term specifics: [V91 visitor-quality assessment](docs/ENERGY-MASTER-ROADMAP-V91.md#2026-11-21-visitor-quality-assessment--align-external-review-to-existing-phases).
@@ -118,7 +126,7 @@ Avoid summing these counts as unique assets: datasets can overlap, and records a
 
 ### Parallel maintenance / unresolved branches
 
-- [ ] Review older open rendering/atlas PRs [#68](https://github.com/LordOftheIdiot5/energy/pull/68), [#69](https://github.com/LordOftheIdiot5/energy/pull/69) and [#70](https://github.com/LordOftheIdiot5/energy/pull/70) against current `main`. Rebase/close only after checking their actual changes and redundant regressions; **do not blindly merge**.
+- [ ] Review remaining older rendering/atlas PRs [#68](https://github.com/LordOftheIdiot5/energy/pull/68) and [#69](https://github.com/LordOftheIdiot5/energy/pull/69) against current `main`. [#70](https://github.com/LordOftheIdiot5/energy/pull/70) was reviewed, selectively superseded by #110 and closed without merging. Rebase/close others only after checking actual changes and redundant regressions.
 - [ ] Recheck outstanding research/licence PRs and data collection failures before marking them resolved. Preserve rights restrictions for day-ahead market, third-party financial and electricity network data.
 - [ ] Verify watchdog Telegram notifications and GitHub dispatch independently when a genuine error occurs; avoid manufacturing production faults to trigger alerts.
 - [ ] Continue official-source freshness and archival QA; retain last-known values with timestamps, never silently invent live values.
