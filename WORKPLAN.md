@@ -1,9 +1,9 @@
 # Nordl Energy — current workplan and handoff
 
-**Canonical next-work checkpoint:** 2026-11-21 (Europe/Oslo).  
+**Canonical next-work checkpoint:** 2026-11-23 (Europe/Oslo).  
 **Production:** https://energy.nordl.dev/  
 **Repository:** https://github.com/LordOftheIdiot5/energy  
-**Latest production-verified feature release:** [PR #110](https://github.com/LordOftheIdiot5/energy/pull/110), commit `e11d3351ac3e6056ce8a99a8868032b8910e1225`. Automated Fetch is checked separately; validate future collectors and source timestamps before making freshness claims.  
+**Latest production-verified runtime feature release:** [PR #110](https://github.com/LordOftheIdiot5/energy/pull/110), commit `e11d3351ac3e6056ce8a99a8868032b8910e1225`. **Latest production-verified test-only checkpoint:** [PR #112](https://github.com/LordOftheIdiot5/energy/pull/112), merged `c19aaa0ef727e440fa3c9ab86e6f57fe7b1f4667`. Automated Fetch is checked separately; validate future collectors and source timestamps before making freshness claims.  
 **Broader product roadmap:** [docs/ENERGY-MASTER-ROADMAP-V91.md](docs/ENERGY-MASTER-ROADMAP-V91.md).  
 **Detailed global atlas architecture and source gates:** [docs/GLOBAL-INFRASTRUCTURE-ATLAS.md](docs/GLOBAL-INFRASTRUCTURE-ATLAS.md).
 
@@ -99,13 +99,14 @@ Avoid summing these counts as unique assets: datasets can overlap, and records a
 - **Next unblocked work:** measured time/frame/device memory on actual hardware and long-duration map stress; assess WRI vector + water interactivity, which remain separate source/projection budgets. PR #70 can be closed as **superseded (not merged)** after this verified replacement; it contains older CI and intentionally omitted 150ms delayed asset search. V90.6g4 broad device/GPU audit is **not fully complete**, and no physical-device FPS/VRAM improvement can be claimed from headless JS scan counts alone.
 - **Still gated:** Remote private Cloudflare R2/D1 resource provisioning/migrations and restore test; newer GEM LNG publisher extract/rights; source-rights/commercial-readiness approval outside the reviewed public layers.
 
-## 2026-11-21 V90.6g4e in-progress checkpoint — sustained Atlas stress
+## 2026-11-23 V90.6g4e checkpoint — sustained Atlas stress evidence
 
-**In progress — not yet passed or merged.** [Draft PR #112](https://github.com/LordOftheIdiot5/energy/pull/112) adds a separate browser stress workflow and [test/limits specification](docs/V90.6g4e-ATLAS-SUSTAINED-STRESS.md). The proposed validation runs 72 camera movements and six GPU on/off recovery cycles per 1440/1024/390 CSS-px viewport on rights-approved WRI 2021 and GDW data, sampling GC-normalized V8 heap, browser animation pacing, vector byte ranges, source requests and visible fallback. [Initial PR workflow](https://github.com/LordOftheIdiot5/energy/actions/runs/44959335638) must finish before recording measured results. This is a headless SwiftShader CI stress test, **not** actual device GPU FPS, VRAM or a proof of leak freedom.
+**CI, merge, Pages deployment and seven live checks passed.** [PR #112](https://github.com/LordOftheIdiot5/energy/pull/112) merged as `c19aaa0ef727e440fa3c9ab86e6f57fe7b1f4667`, without changing runtime JS, source data or licences. The [latest sustained browser CI](https://github.com/LordOftheIdiot5/energy/actions/runs/44959411427) passed, including the previous V90.6g4d render budget and GDW browser regressions; the [private vintage ledger](https://github.com/LordOftheIdiot5/energy/actions/runs/44959411594) and [local archive adapter](https://github.com/LordOftheIdiot5/energy/actions/runs/44959411554) also passed. Test artifacts include raw JSON and screenshots.
 
-- **Production remains V90.6g4d** until an actual new release passes its deployment and live tests. Test-only PR #112 itself has no production rendering changes.
-- **Release gate:** review quantitative output and any failures, pass original render/GDW regressions, update this checkpoint with the actual PR/run outcome. Preserve all sources and rights.
-- **Still separate:** physical-device/profile tracing, longer background/foreground soak, remote private Cloudflare R2/D1 activation/restore, newer GEM LNG source-specific permissions.
+- **Observed test coverage:** 1440/1024/390 CSS px, 72 camera changes and six GPU-to-standard-to-GPU recovery cycles per width (216 camera changes, 18 GPU recovery cycles). The reviewed WRI 2021 archive (34,936 source IDs) and independently approved GDW archive (41,145 barrier source records) stayed available. No browser exceptions, unexpected ODbL requests or overflow; WRI archive reused across toggles.
+- **Measured post-GC V8 heap initial/final MiB:** **35.5→38.8 / 31.7→36.5 / 32.5→35.0**, respectively. No test exceeded the deliberate 96 MiB heap-growth alarm. **p95 rAF was ~16.8ms, but p99 ranged 150–183ms with worse individual outliers** during the software-rendering test. Not physical mobile FPS, GPU VRAM or proof of leak freedom. [Full report and limits](docs/V90.6g4e-ATLAS-SUSTAINED-STRESS.md).
+- **Production verified:** [Pages deployment](https://github.com/LordOftheIdiot5/energy/actions/runs/45269151320) **passed** on merged `c19aaa0`; **all seven post-deploy checks passed**: [visitor](https://github.com/LordOftheIdiot5/energy/actions/runs/45269573382), [production map](https://github.com/LordOftheIdiot5/energy/actions/runs/45269573350), [atlas delivery](https://github.com/LordOftheIdiot5/energy/actions/runs/45269573370), [GEM](https://github.com/LordOftheIdiot5/energy/actions/runs/45269573265), [NACEI](https://github.com/LordOftheIdiot5/energy/actions/runs/45269573448), [UK REPD](https://github.com/LordOftheIdiot5/energy/actions/runs/45269573345), [US EIA](https://github.com/LordOftheIdiot5/energy/actions/runs/45269573679). This validates existing website/source continuity after a test-only merge, not physical-device performance or activation of new source rights, Worker storage or commercial services.
+- **Next:** physical-device GPU/memory and interaction latency profiling, water-layer mobile UX audit, plus operational private Cloudflare R2/D1 provisioning when authorized (remote backup-restore and alerting still not done). Newer GEM LNG remains source/licence gated; no rights change.
 
 ## Next work in priority order
 
