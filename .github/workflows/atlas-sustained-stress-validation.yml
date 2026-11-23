@@ -1,0 +1,58 @@
+name: V90.6g4e Atlas sustained stress and heap sampling
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - tests/test_atlas_sustained_stress_browser.cjs
+      - tests/test_atlas_render_budget_browser.cjs
+      - .github/workflows/atlas-sustained-stress-validation.yml
+      - docs/V90.6g4e-ATLAS-SUSTAINED-STRESS.md
+      - atlas-gpu.js
+      - global-atlas.js
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  sustained-atlas:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 28
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Source and JavaScript safety checks
+        run: |
+          node --check tests/test_atlas_sustained_stress_browser.cjs
+          node --check tests/test_atlas_render_budget_browser.cjs
+          node --check atlas-gpu.js
+          node --check global-atlas.js
+          node tests/test_atlas.cjs
+          python -m unittest discover -s tests -p test_atlas_delivery.py -v
+      - name: Build exact allowlisted public site
+        run: python scripts/build_public_site.py --out /tmp/energy-public
+      - uses: ./.github/actions/stage-atlas-tiles
+        with:
+          public-dir: /tmp/energy-public
+      - name: Install pinned browser dependencies
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1 pmtiles@4.5.0
+          npx playwright install chromium
+      - name: Long-duration stress, short-budget regression and dam continuity on three viewports
+        env:
+          ATLAS_PUBLIC_DIR: /tmp/energy-public
+          ENERGY_TEST_URL: http://127.0.0.1:8766/
+        run: |
+          set -euo pipefail
+          python -m http.server 8766 --bind 127.0.0.1 --directory /tmp/energy-public >/tmp/atlas-stress-http.log 2>&1 &
+          node tests/test_atlas_sustained_stress_browser.cjs
+          node tests/test_atlas_render_budget_browser.cjs
+          node tests/test_atlas_gdw_browser.cjs
+      - name: Upload quantitative JSON and map captures
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: atlas-v90g4e-sustained-stress
+          path: /tmp/atlas-v90g4e-stress/
+          if-no-files-found: warn
+          retention-days: 14
