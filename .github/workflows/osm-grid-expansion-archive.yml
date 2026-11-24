@@ -1,0 +1,94 @@
+name: Reviewed OSM grid expansion archive
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - scripts/osm_grid_expansion_archive.py
+      - scripts/osm_grid_publication.py
+      - tests/test_osm_grid_expansion_archive.py
+      - .github/workflows/osm-grid-expansion-archive.yml
+  push:
+    branches: [main]
+    paths:
+      - scripts/osm_grid_expansion_archive.py
+      - .github/workflows/osm-grid-expansion-archive.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: grid-expansion-archive-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v7
+      - run: python -m unittest discover -s tests -p 'test_osm_grid*.py' -v
+      - name: Replay exact reviewed artifact cohort
+        run: |
+          set -euo pipefail
+          incoming="$RUNNER_TEMP/grid-reviewed"
+          mkdir -p "$incoming"
+          for region in AL EE FO LV; do
+            gh run download 45322295671 -n "grid-expansion-$region" -D "$incoming"
+          done
+          python scripts/osm_grid_expansion_archive.py --incoming "$incoming" --root "$RUNNER_TEMP/grid-retained"
+          python scripts/build_public_site.py --out "$RUNNER_TEMP/public"
+          test ! -e "$RUNNER_TEMP/public/data/osm-grid-expansion-reviewed"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          root=Path(os.environ["RUNNER_TEMP"])/"public/data/osm-grid-odbl"
+          assert {e["region"] for e in json.loads((root/"index-v1.json").read_text())["datasets"]}=={"IS","LU"}
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: reviewed-grid-cohort
+          path: ${{ runner.temp }}/grid-retained/
+          if-no-files-found: error
+  retain:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: review
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v4
+        with:
+          name: reviewed-grid-cohort
+          path: ${{ runner.temp }}/reviewed
+      - name: Verify archive bytes and retain separate cohort
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json,os,sys
+          from pathlib import Path
+          sys.path.insert(0,"scripts")
+          from osm_grid_expansion_archive import archive,REVIEWED
+          from osm_grid_publication import name
+          source=Path(os.environ["RUNNER_TEMP"])/"reviewed"
+          incoming=Path(os.environ["RUNNER_TEMP"])/"incoming";incoming.mkdir()
+          for region,(sha,_) in REVIEWED.items():
+              raw=(source/region/(sha+".json")).read_bytes()
+              assert hashlib.sha256(raw).hexdigest()==sha
+              (incoming/name(region)).write_bytes(raw)
+          archive(incoming,Path("data/osm-grid-expansion-reviewed"))
+          PY
+          git config user.name energy-grid-archive
+          git config user.email actions@github.com
+          git add -- data/osm-grid-expansion-reviewed/
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Retain reviewed ODbL expansion cohort separately from atlas"
+          for attempt in 1 2 3; do
+            git fetch origin main
+            if ! git rebase origin/main; then git rebase --abort; exit 1; fi
+            if git push origin HEAD:main; then exit 0; fi
+            sleep 3
+          done
+          exit 1
