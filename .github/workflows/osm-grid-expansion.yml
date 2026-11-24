@@ -1,0 +1,32 @@
+name: OSM regional grid expansion pilot
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - scripts/osm_grid_expansion.py
+      - scripts/osm_extract_sources.py
+      - scripts/osm_grid_pilot.py
+      - tests/test_osm_grid_expansion.py
+      - .github/workflows/osm-grid-expansion.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  pilot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        region: [EE, LV, FO, AL]
+    steps:
+      - uses: actions/checkout@v7
+      - run: python -m pip install 'osmium>=4,<5' 'shapely>=2,<3'
+      - run: python -m unittest discover -s tests -p 'test_osm_grid*.py' -v
+      - name: Collect independent bounded regional source
+        run: python -u scripts/osm_grid_expansion.py --region ${{ matrix.region }} --out "$RUNNER_TEMP/grid-expansion"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: grid-expansion-${{ matrix.region }}
+          path: ${{ runner.temp }}/grid-expansion/
+          if-no-files-found: error

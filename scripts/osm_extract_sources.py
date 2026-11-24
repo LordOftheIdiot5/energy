@@ -7,15 +7,19 @@ SOURCES={
  "LU":[("Geofabrik","https://download.geofabrik.de/europe/luxembourg-latest.osm.pbf"),("OpenStreetMap France","https://download.openstreetmap.fr/extracts/europe/luxembourg.osm.pbf")],
 }
 CAP=150_000_000
+# Explicit single-provider exception: BBBike Latvia listed 151 MB (2026-11-24 review).
+# Do not expand any other region/provider or retry access/size denials.
+PROVIDER_CAPS={("LV","BBBike","https://data.bbbike.org/osm/pbf/region/europe/latvia.osm.pbf"):175_000_000}
 # DNS/connect/timeout/transient network failures; never retry HTTP access denials via alternative routes.
 TRANSPORT={5,6,7,18,28,52,55,56}
-def download(region,root,run=subprocess.run,*,sleep=time.sleep):
+def download(region,root,run=subprocess.run,*,sleep=time.sleep,sources=None):
     root=Path(root);p=root/"source.osm.pbf";headers=root/"headers.txt"
     failures=[]
-    for provider,url in SOURCES[region]:
+    for provider,url in (SOURCES if sources is None else sources)[region]:
+        cap=PROVIDER_CAPS.get((region,provider,url),CAP)
         for attempt in range(2):
             p.unlink(missing_ok=True);headers.unlink(missing_ok=True)
-            result=run(["curl","--fail","--location","--proto","=https","--proto-redir","=https","--retry","0","--connect-timeout","12","--max-time","150","--max-filesize",str(CAP),"--user-agent","Nordl Energy (https://energy.nordl.dev/)","--dump-header",str(headers),"--output",str(p),url],check=False)
+            result=run(["curl","--fail","--location","--proto","=https","--proto-redir","=https","--retry","0","--connect-timeout","12","--max-time","150","--max-filesize",str(cap),"--user-agent","Nordl Energy (https://energy.nordl.dev/)","--dump-header",str(headers),"--output",str(p),url],check=False)
             if not result.returncode:break
             if result.returncode not in TRANSPORT:raise RuntimeError(f"{provider} download failed with code {result.returncode}; no provider fallback for this error")
             failures.append(f"{provider}: transport error {result.returncode} (attempt {attempt+1}/2)")
@@ -26,7 +30,7 @@ def download(region,root,run=subprocess.run,*,sleep=time.sleep):
         with p.open("rb") as src:
             while chunk:=src.read(1024*1024):
                 size+=len(chunk)
-                if size>CAP:raise ValueError("Source exceeds byte limit")
+                if size>cap:raise ValueError("Source exceeds byte limit")
                 h.update(chunk)
         if size<1024:raise ValueError("Invalid PBF source size")
         modified=next((line.split(":",1)[1].strip() for line in reversed(headers.read_text(errors="replace").splitlines()) if line.lower().startswith("last-modified:")),None)
