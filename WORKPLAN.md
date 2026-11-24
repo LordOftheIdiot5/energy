@@ -162,3 +162,7 @@ Avoid summing these counts as unique assets: datasets can overlap, and records a
 
 > Open `WORKPLAN.md` in `LordOftheIdiot5/energy`, verify the latest PRs/Actions/live site against it, then perform the first unblocked task. Preserve the roadmap, data-source rights and existing functionality; finish with actual test evidence and update `WORKPLAN.md`.
 
+
+### 2026-11-24 — Regional acquisition recovery checkpoint
+- #115 merged 89cdeb70f20326d82d53b50f020b75c90f7b4bc0; IS/LU acquisition workflow 45304235118 passed both jobs. #116 artifact indexing-delay correction merged 9c88db4e3ca0986d404b932724dcdff1735c9e6c; Pages deployment 45305982282 passed.
+- Older regional expansion #68 reconciled with current main at 5b188ee9fbd33576a78caeb252ec69e83b69b627, with regression additions 46be6de9e175e2bbf4fb730edfeaeb39b724e72c. Retains bounded two attempts per provider, partial-file/header cleanup and fail-closed HTTP/size rules for EE/LV/FO/AL; keeps IS/LU cohort separate. Historical LV connection failure motivated retry. New regional test/acquisition results pending; no new source admitted or published. Do not merge before tests and actual artifacts review.
