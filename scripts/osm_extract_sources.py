@@ -1,5 +1,5 @@
 """Bounded public regional OSM extracts. Provider fallback is for transport failures only."""
-import hashlib,subprocess
+import hashlib,subprocess,time
 from pathlib import Path
 from urllib.parse import urlsplit
 SOURCES={
@@ -9,16 +9,19 @@ SOURCES={
 CAP=150_000_000
 # DNS/connect/timeout/transient network failures; never retry HTTP access denials via alternative routes.
 TRANSPORT={5,6,7,18,28,52,55,56}
-def download(region,root,run=subprocess.run):
+def download(region,root,run=subprocess.run,*,sleep=time.sleep):
     root=Path(root);p=root/"source.osm.pbf";headers=root/"headers.txt"
     failures=[]
     for provider,url in SOURCES[region]:
-        p.unlink(missing_ok=True);headers.unlink(missing_ok=True)
-        result=run(["curl","--fail","--location","--proto","=https","--proto-redir","=https","--retry","0","--connect-timeout","12","--max-time","150","--max-filesize",str(CAP),"--user-agent","Nordl Energy (https://energy.nordl.dev/)","--dump-header",str(headers),"--output",str(p),url],check=False)
-        if result.returncode:
+        for attempt in range(2):
+            p.unlink(missing_ok=True);headers.unlink(missing_ok=True)
+            result=run(["curl","--fail","--location","--proto","=https","--proto-redir","=https","--retry","0","--connect-timeout","12","--max-time","150","--max-filesize",str(CAP),"--user-agent","Nordl Energy (https://energy.nordl.dev/)","--dump-header",str(headers),"--output",str(p),url],check=False)
+            if not result.returncode:break
             if result.returncode not in TRANSPORT:raise RuntimeError(f"{provider} download failed with code {result.returncode}; no provider fallback for this error")
-            failures.append(f"{provider}: transport error {result.returncode}")
-            print(failures[-1],flush=True);continue
+            failures.append(f"{provider}: transport error {result.returncode} (attempt {attempt+1}/2)")
+            print(failures[-1],flush=True)
+            if attempt==0:sleep(2)
+        if result.returncode:continue
         h=hashlib.sha256();size=0
         with p.open("rb") as src:
             while chunk:=src.read(1024*1024):
