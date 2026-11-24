@@ -95,6 +95,8 @@ def stage(root,out):
     stage_gdw(root/"data"/"gdw",out/"data"/"gdw")
     from osm_grid_publication import stage_grid
     stage_grid(root/"data"/"osm-grid-odbl",out/"data"/"osm-grid-odbl")
+    from osm_grid_expansion_publication import stage_expansion
+    stage_expansion(root/"data"/"osm-grid-expansion-reviewed",out/"data"/"osm-grid-expansion")
     # Verified generator units are exposed through four on-demand inventories.
     # The 40,048-row source archive itself is not copied into the public artifact.
     from nacei_publication import validate as validate_nacei

@@ -2,10 +2,10 @@
 (()=>{'use strict';
 const $=id=>document.getElementById(id),host=$('atlasMap'),toggle=$('globalGrid');if(!host||!toggle)return;
 const LIC='https://opendatacommons.org/licenses/odbl/1-0/',DIR='data/osm-grid-odbl/',SRC='nordl-regional-grid';
-const regions={IS:'Iceland',LU:'Luxembourg'},labels={substation:'Substation',overhead_line:'Overhead power line',underground_power_cable:'Underground power cable',underwater_power_cable:'Underwater power cable',power_cable_unspecified:'Other power cable'};
+const regions={IS:'Iceland',LU:'Luxembourg',EE:'Estonia',LV:'Latvia',FO:'Faroe Islands',AL:'Albania'},baseline=['IS','LU'],expansion=['EE','LV','FO','AL'],extraDir='data/osm-grid-expansion/',bounds={IS:[[-25,63],[-13,67]],LU:[[5.65,49.42],[6.55,50.22]],EE:[[21,57.4],[28.3,60]],LV:[[20.8,55.5],[28.4,58.2]],FO:[[-7.8,61.2],[-6,62.6]],AL:[[19,39.5],[21.2,43]]},labels={substation:'Substation',overhead_line:'Overhead power line',underground_power_cable:'Underground power cable',underwater_power_cable:'Underwater power cable',power_cable_unspecified:'Other power cable'};
 const cats=Object.keys(labels).filter(k=>k!=='substation'),layers=cats.map(k=>'nordl-grid-'+k).concat('nordl-grid-substation');
 const E=(t,v)=>{const e=document.createElement(t);if(v!==undefined)e.textContent=String(v);return e;};
-let map=null,active=false,loading=false,docs=null,failed=false,rows=[],popup=null;
+let map=null,active=false,loading=false,docs=null,failed=false,rows=[],popup=null,version=0,loadedGroup='',pendingGroup='';
 const key=r=>r.region+'|'+r.id,name=r=>r.name||labels[r.category],voltage=r=>r.voltage_v.length?r.voltage_v.map(v=>(v/1000)+' kV').join(' / '):'Voltage not supplied';
 function visible(){return active&&map&&toggle.checked&&docs&&!host.hidden;}
 function close(){popup?.remove();popup=null;}
@@ -20,11 +20,26 @@ map.addLayer({id:'nordl-grid-substation',source:SRC,type:'circle',minzoom:2,filt
 catch(e){remove();$('globalGridStatus').textContent='Grid rendering unavailable; existing map retained';}}
 function tally(){if(!visible()){host.dataset.gridRendered='0';return;}if(!map.getSource(SRC)){render();return;}host.dataset.gridRendered=String(map.queryRenderedFeatures({layers}).length);}
 function update(){const region=$('globalGridRegion').value,cat=$('globalGridCategory').value,min=Number($('globalGridVoltage').value),q=$('globalGridFind').value.trim().toLowerCase();rows=toggle.checked?(docs||[]).flatMap(d=>d.rows.map(r=>({...r,region:d.region,retrieved:d.retrieved,extract_provider:d.extract_provider}))).filter(r=>(!region||r.region===region)&&(!cat||r.category===cat)&&(!min||r.voltage_v.some(v=>v>=min))&&(!q||[name(r),r.id].some(v=>v.toLowerCase().includes(q)))):[];host.dataset.gridRecords=String(rows.length);const list=$('globalGridResults');list.replaceChildren(Object.assign(E('option','Choose grid record'),{value:''}));for(const r of rows.slice(0,200))list.append(Object.assign(E('option',name(r)+' · '+regions[r.region]+' · '+voltage(r)),{value:key(r)}));$('globalGridStatus').textContent=!toggle.checked?'Grid layer off':loading?'Loading regional archive…':failed?'Archive unavailable; toggle to retry':docs?rows.length.toLocaleString()+' matching source records · zoom 2+ to display · first 200 in list':'Archive not loaded';close();render();}
-async function load(){if(!toggle.checked){$('globalGridInspector').hidden=true;update();return;}if(docs||loading){update();return;}loading=true;failed=false;update();try{const index=await window.NordlData.json(DIR+'index-v1.json');if(index.schema_version!==1||index.license!==LIC||!Array.isArray(index.datasets)||index.datasets.length!==2||new Set(index.datasets.map(e=>e.region)).size!==2)throw Error('Invalid index');docs=await Promise.all(index.datasets.map(async e=>{if(!Object.hasOwn(regions,e.region)||e.path!==e.region.toLowerCase()+'-grid-pilot.json'||e.license!==LIC)throw Error('Unapproved region');const x=await window.NordlData.json(DIR+e.path);if(x.region!==e.region||x.license!==LIC||x.source_sha256!==e.source_sha256||!Array.isArray(x.rows)||x.rows.length!==e.source_records||new Set(x.rows.map(r=>r.id)).size!==x.rows.length||x.rows.some(r=>!Object.hasOwn(labels,r.category)||!r.source_object.startsWith('https://www.openstreetmap.org/')||!Array.isArray(r.voltage_v)))throw Error('Invalid grid archive');return x;}));}catch(e){failed=true;}finally{loading=false;update();}}
+async function load(){
+ const selected=$('globalGridRegion').value,group=expansion.includes(selected)?selected:'baseline';
+ if(!toggle.checked){version++;loading=false;pendingGroup='';$('globalGridInspector').hidden=true;update();return;}
+ if(docs&&loadedGroup===group){update();return;}
+ if(loading&&pendingGroup===group){update();return;}
+ const request=++version;pendingGroup=group;loading=true;failed=false;docs=null;loadedGroup='';$('globalGridInspector').hidden=true;update();
+ try{
+  const dir=group==='baseline'?DIR:extraDir,expected=group==='baseline'?baseline:expansion;
+  const index=await window.NordlData.json(dir+'index-v1.json');
+  if(index.schema_version!==1||index.license!==LIC||!Array.isArray(index.datasets)||index.datasets.length!==expected.length||new Set(index.datasets.map(e=>e.region)).size!==expected.length||index.datasets.some(e=>!expected.includes(e.region)||e.path!==e.region.toLowerCase()+'-grid-pilot.json'||e.license!==LIC||!Number.isInteger(e.source_records)||e.source_records<1||e.source_records>100000))throw Error('Invalid index');
+  const next=await Promise.all(index.datasets.filter(e=>group==='baseline'||e.region===group).map(async e=>{const x=await window.NordlData.json(dir+e.path);if(x.region!==e.region||x.license!==LIC||x.source_sha256!==e.source_sha256||!Array.isArray(x.rows)||x.rows.length!==e.source_records||new Set(x.rows.map(r=>r.id)).size!==x.rows.length||x.rows.some(r=>!Object.hasOwn(labels,r.category)||!r.source_object.startsWith('https://www.openstreetmap.org/')||!Array.isArray(r.voltage_v)))throw Error('Invalid grid archive');return x;}));
+  if(request!==version)return;
+  docs=next;loadedGroup=group;
+ }catch(e){if(request===version)failed=true;}
+ finally{if(request===version){loading=false;pendingGroup='';update();}}
+}
 function click(e){if(!visible()||!map.getLayer(layers[0])||e.originalEvent?.target?.closest?.('button,.maplibregl-popup,.atlas-flow-line'))return;const p=e.point,found=new Set(map.queryRenderedFeatures([[p.x-10,p.y-10],[p.x+10,p.y+10]],{layers}).map(f=>f.properties.key)),hits=rows.filter(r=>found.has(key(r)));if(!hits.length)return;if(hits.length===1){inspect(hits[0]);return;}close();const box=E('div');box.className='atlas-nearby-list';box.append(E('strong','Choose nearby electrical network record'));for(const r of hits.slice(0,20)){const b=E('button',name(r)+' · '+voltage(r));b.type='button';b.onclick=()=>{inspect(r);close();};box.append(b);}popup=new window.maplibregl.Popup({maxWidth:'300px'}).setLngLat(e.lngLat).setDOMContent(box).addTo(map);}
 function attach(m,on){if(m!==map){map?.off('click',click);map?.off('idle',tally);remove();map=m;map?.on('click',click);map?.on('idle',tally);}active=on;update();}
-toggle.addEventListener('change',load);for(const id of ['globalGridRegion','globalGridCategory','globalGridVoltage','globalGridFind'])$(id).addEventListener(id==='globalGridFind'?'input':'change',update);
+toggle.addEventListener('change',load);$('globalGridRegion').addEventListener('change',load);for(const id of ['globalGridCategory','globalGridVoltage','globalGridFind'])$(id).addEventListener(id==='globalGridFind'?'input':'change',update);
 $('globalGridResults').addEventListener('change',()=>inspect(rows.find(r=>key(r)===$('globalGridResults').value),true));
-for(const region of Object.keys(regions))$('gridView'+region).addEventListener('click',()=>{$('globalGridRegion').value=region;update();if(map&&active)map.fitBounds(region==='IS'?[[-25,63],[-13,67]]:[[5.65,49.42],[6.55,50.22]],{padding:40,duration:0,maxZoom:9});});
+for(const region of Object.keys(regions))$('gridView'+region).addEventListener('click',()=>{$('globalGridRegion').value=region;void load();if(map&&active)map.fitBounds(bounds[region],{padding:40,duration:0,maxZoom:9});});
 window.NordlRegionalGrid={attach,getMap:()=>map,getBounds:()=>window.NordlEnergyAtlas?.extent(rows.map(r=>r.geometry?.coordinates))||null};
 })();
