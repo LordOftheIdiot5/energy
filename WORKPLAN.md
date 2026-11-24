@@ -1,5 +1,9 @@
 # Nordl Energy — current workplan and handoff
 
+## Nordl master program — N01–N20
+The [canonical Nordl master plan](https://github.com/LordOftheIdiot5/stockwatch/blob/main/docs/NORDL-MASTER-PLAN.md) coordinates this specialist roadmap with the other platforms (initial review: [PR #228](https://github.com/LordOftheIdiot5/stockwatch/pull/228)). Read it at every handoff. Preserve all local priorities, numbering, source rights and release gates. Map work to master N IDs; report measured progress and blockers back to the master plan after verified release. N07 maps to energy change/pressure analysis and V90.7 forecast laboratory; N10 maps to asset ownership and V90.8; N14 requires historical forecast vintages and out-of-sample validation.
+
+
 **Canonical next-work checkpoint:** 2026-11-23 (Europe/Oslo).  
 **Production:** https://energy.nordl.dev/  
 **Repository:** https://github.com/LordOftheIdiot5/energy  
