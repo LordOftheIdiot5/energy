@@ -7,7 +7,9 @@ EXPANSION={"EE":[("Geofabrik","https://download.geofabrik.de/europe/estonia-late
 # Independently listed public extracts, tried only on transport failures.
 EXPANSION["EE"].append(("BBBike","https://data.bbbike.org/osm/pbf/region/europe/estonia.osm.pbf"))
 EXPANSION["AL"].append(("BBBike","https://data.bbbike.org/osm/pbf/region/europe/albania.osm.pbf"))
-# Latvia BBBike listing exceeds our current cap; keep the primary source.
+EXPANSION["FO"].append(("BBBike","https://data.bbbike.org/osm/pbf/region/europe/faroe-islands.osm.pbf"))
+EXPANSION["LV"].append(("BBBike","https://data.bbbike.org/osm/pbf/region/europe/latvia.osm.pbf"))
+# Only the exact Latvia BBBike fallback has a reviewed bounded exception.
 if __name__=="__main__":
     p=argparse.ArgumentParser();p.add_argument("--region",choices=EXPANSION,required=True);p.add_argument("--out",type=Path,required=True);a=p.parse_args()
     collect(a.region,a.out,sources=EXPANSION)

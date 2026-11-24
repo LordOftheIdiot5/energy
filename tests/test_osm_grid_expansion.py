@@ -50,3 +50,18 @@ class ExpansionTests(unittest.TestCase):
                 with self.assertRaises(RuntimeError):
                     download("EE",t,runner,sources=EXPANSION,sleep=lambda _:None)
                 self.assertEqual(calls,[EXPANSION["EE"][0][1]])
+
+    def test_fallback_limits_are_exact_provider_scoped(self):
+        for region,expected in (("LV",175_000_000),("FO",150_000_000)):
+            with self.subTest(region=region),tempfile.TemporaryDirectory() as t:
+                calls=[]
+                def runner(args,check):
+                    calls.append((args[-1],int(args[args.index("--max-filesize")+1])))
+                    if len(calls)<=2:
+                        return subprocess.CompletedProcess(args,7)
+                    Path(args[args.index("--output")+1]).write_bytes(b"x"*1024)
+                    Path(args[args.index("--dump-header")+1]).write_text("Last-Modified: fixture")
+                    return subprocess.CompletedProcess(args,0)
+                _,meta=download(region,t,runner,sources=EXPANSION,sleep=lambda _:None)
+                self.assertEqual(calls,[(EXPANSION[region][0][1],150_000_000)]*2+[(EXPANSION[region][1][1],expected)])
+                self.assertEqual(meta["extract_provider"],"BBBike")
