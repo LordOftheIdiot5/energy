@@ -18,3 +18,35 @@ class ExpansionTests(unittest.TestCase):
             self.assertEqual(meta["extract_provider"],"Geofabrik")
             self.assertEqual(meta["source_bytes"],1024)
             self.assertEqual(set(SOURCES),{"IS","LU"})
+
+    def test_latvia_recovers_same_provider_after_partial_download(self):
+        with tempfile.TemporaryDirectory() as t:
+            calls=[];delays=[]
+            def runner(args,check):
+                calls.append(args[-1])
+                output=Path(args[args.index("--output")+1])
+                headers=Path(args[args.index("--dump-header")+1])
+                self.assertFalse(output.exists())
+                self.assertFalse(headers.exists())
+                if len(calls)==1:
+                    output.write_bytes(b"partial")
+                    headers.write_text("stale header")
+                    return subprocess.CompletedProcess(args,7)
+                output.write_bytes(b"x"*1024)
+                headers.write_text("Last-Modified: current")
+                return subprocess.CompletedProcess(args,0)
+            _,meta=download("LV",t,runner,sources=EXPANSION,sleep=delays.append)
+            self.assertEqual(calls,[EXPANSION["LV"][0][1]]*2)
+            self.assertEqual(delays,[2])
+            self.assertEqual(meta["source_last_modified"],"current")
+
+    def test_expansion_denial_and_size_limit_never_switch_provider(self):
+        for code in (22,63):
+            with self.subTest(code=code),tempfile.TemporaryDirectory() as t:
+                calls=[]
+                def runner(args,check):
+                    calls.append(args[-1])
+                    return subprocess.CompletedProcess(args,code)
+                with self.assertRaises(RuntimeError):
+                    download("EE",t,runner,sources=EXPANSION,sleep=lambda _:None)
+                self.assertEqual(calls,[EXPANSION["EE"][0][1]])
