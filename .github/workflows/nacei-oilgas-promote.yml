@@ -1,0 +1,57 @@
+name: NACEI 2017 oil and gas data promotion
+on:
+  pull_request:
+    branches: [main]
+    paths: [.github/workflows/nacei-oilgas-promote.yml]
+  push:
+    branches: [main]
+    paths: [.github/workflows/nacei-oilgas-promote.yml]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: nacei-historical-data-promotion
+  cancel-in-progress: false
+jobs:
+  project-and-stage:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - run: python -m unittest discover -s tests -p test_audit_nacei_oilgas.py -v
+      - name: Normalize only verified official historical features
+        run: |
+          python scripts/audit_nacei_oilgas.py --out data/nacei-oilgas-2017-v1.json
+          python - <<'PY'
+          import json
+          from collections import Counter
+          d=json.load(open('data/nacei-oilgas-2017-v1.json'))
+          expected={'gas_processing':1278,'lng_terminals':15,'refineries':168}
+          assert d['source_period']=='2017-08'
+          assert d['rights']=='free and unrestricted with acknowledgement (NACEI)'
+          for kind,count in expected.items():
+              assert d['layers'][kind]['source_rows']==count
+              assert d['layers'][kind]['mapped_rows']==count
+              assert len(d['rows'][kind])==count
+              assert len({r['id'] for r in d['rows'][kind]})==count
+          assert d['layers']['refineries']['excluded']['facility_name_not_reported']==141
+          assert all(r['status']=='Status not reported in historic source' for rows in d['rows'].values() for r in rows)
+          print('NACEI 2017 source projection valid:',sum(expected.values()),expected)
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nacei-2017-reviewed-projection
+          path: data/nacei-oilgas-2017-v1.json
+          retention-days: 14
+      - name: Stage source-pinned historical review branch; never auto-publish
+        if: github.event_name != 'pull_request'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git switch -c data/nacei-oilgas-2017
+          git add data/nacei-oilgas-2017-v1.json
+          git commit -m 'Data: NACEI August 2017 historical oil and gas facility reference (1,461)'
+          git push origin HEAD:refs/heads/data/nacei-oilgas-2017

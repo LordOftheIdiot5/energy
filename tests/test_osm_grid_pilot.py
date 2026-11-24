@@ -28,12 +28,12 @@ class ExtractFallbackTests(unittest.TestCase):
             calls=[]
             def runner(args,check):
                 calls.append(args[-1])
-                if len(calls)==1:return subprocess.CompletedProcess(args,7)
+                if len(calls)<=2:return subprocess.CompletedProcess(args,7)
                 Path(args[args.index("--output")+1]).write_bytes(b"x"*1024)
                 Path(args[args.index("--dump-header")+1]).write_text("Last-Modified: test")
                 return subprocess.CompletedProcess(args,0)
-            p,m=download("IS",tmp,runner)
-            self.assertEqual(calls,[u for _,u in SOURCES["IS"]])
+            p,m=download("IS",tmp,runner,sleep=lambda _:None)
+            self.assertEqual(calls,[SOURCES["IS"][0][1],SOURCES["IS"][0][1],SOURCES["IS"][1][1]])
             self.assertEqual(m["extract_provider"],"BBBike")
             self.assertEqual(m["source_bytes"],1024)
     def test_denial_not_retried(self):
@@ -45,3 +45,19 @@ class ExtractFallbackTests(unittest.TestCase):
                 calls.append(args[-1]);return subprocess.CompletedProcess(args,22)
             with self.assertRaises(RuntimeError):download("LU",tmp,runner)
             self.assertEqual(len(calls),1)
+
+    def test_same_provider_recovery(self):
+        import tempfile,subprocess
+        from osm_extract_sources import download,SOURCES
+        with tempfile.TemporaryDirectory() as tmp:
+            calls=[]; delays=[]
+            def runner(args,check):
+                calls.append(args[-1])
+                if len(calls)==1:return subprocess.CompletedProcess(args,7)
+                Path(args[args.index("--output")+1]).write_bytes(b"x"*1024)
+                Path(args[args.index("--dump-header")+1]).write_text("Last-Modified: test")
+                return subprocess.CompletedProcess(args,0)
+            _,meta=download("IS",tmp,runner,sleep=delays.append)
+            self.assertEqual(calls,[SOURCES["IS"][0][1]]*2)
+            self.assertEqual(delays,[2])
+            self.assertEqual(meta["extract_provider"],"Geofabrik")

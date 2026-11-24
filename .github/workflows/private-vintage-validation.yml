@@ -1,0 +1,49 @@
+name: V90.6g3 private vintage ledger validation
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - scripts/private_asset_history.py
+      - tests/test_private_asset_history.py
+      - docs/PRIVATE-VINTAGE-LEDGER.md
+      - .github/workflows/private-vintage-validation.yml
+      - WORKPLAN.md
+      - .gitignore
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  private-ledger:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Compile and test source versioning with real reviewed GEM baseline
+        run: |
+          python -m py_compile scripts/private_asset_history.py tests/test_private_asset_history.py
+          python -m unittest discover -s tests -p 'test_private_asset_history.py' -v
+      - name: Verify exact existing GEM release, private restore, and idempotence
+        run: |
+          set -euo pipefail
+          PRIVATE="$RUNNER_TEMP/energy-private-vintages"
+          RESTORE="$RUNNER_TEMP/energy-private-restore"
+          python scripts/private_asset_history.py bootstrap-gem --archive "$PRIVATE"
+          python scripts/private_asset_history.py bootstrap-gem --archive "$PRIVATE"
+          python scripts/private_asset_history.py verify --archive "$PRIVATE"
+          python scripts/private_asset_history.py restore --archive "$PRIVATE" --target "$RESTORE"
+          python scripts/private_asset_history.py verify --archive "$RESTORE"
+          test -f "$PRIVATE/ledger-v1.json"
+          test "$(find "$PRIVATE/objects" -type f -name '*.json' | wc -l)" -eq 1
+      - name: Build production allowlisted public artifact and assert archive exclusion
+        run: |
+          set -euo pipefail
+          OUT="$RUNNER_TEMP/energy-public"
+          python scripts/build_public_site.py --out "$OUT"
+          test ! -e "$OUT/ledger-v1.json"
+          test ! -e "$OUT/data/.private-vintages"
+          test ! -d "$OUT/objects"
+          test ! -f "$OUT/scripts/private_asset_history.py"
+          echo "Public artifact excludes private vintage objects and script."

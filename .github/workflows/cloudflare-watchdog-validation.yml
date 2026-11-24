@@ -1,0 +1,26 @@
+name: Independent watchdog validation
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'deploy/cloudflare-watchdog/**'
+      - .github/workflows/cloudflare-watchdog-validation.yml
+      - .github/workflows/fetch.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - run: node --test deploy/cloudflare-watchdog/worker.test.mjs
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install exact deployment Wrangler (includes Miniflare/workerd)
+        run: npm install --no-save --no-package-lock wrangler@4.164.0
+      - name: Workerd runtime integration (no real secrets or external calls)
+        run: node --test deploy/cloudflare-watchdog/worker.runtime.test.mjs
+      - run: python -m unittest discover -s tests -p test_freshness_guard.py -v

@@ -1,0 +1,29 @@
+# TEMPLATE ONLY. Do not deploy until BOTH private R2 buckets and D1 are provisioned,
+# the binding IDs have been verified, the D1 migration applied and recovery tested.
+# Copy to wrangler.toml locally; never commit actual account IDs/credentials.
+name = "nordl-energy-private-history"
+main = "worker.mjs"
+compatibility_date = "2026-11-21"
+workers_dev = false
+preview_urls = false
+
+[vars]
+# Must remain false until the private bucket and D1 schema are verified.
+IMPORT_ENABLED = "false"
+
+[triggers]
+crons = ["31 3 * * *"]
+
+[[r2_buckets]]
+binding = "ARCHIVE"
+bucket_name = "nordl-energy-history-private"
+
+[[r2_buckets]]
+binding = "ARCHIVE_BACKUP"
+bucket_name = "nordl-energy-history-private-backup"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "nordl-energy-history-index"
+database_id = "REPLACE_WITH_REAL_D1_DATABASE_UUID"
+migrations_dir = "migrations"

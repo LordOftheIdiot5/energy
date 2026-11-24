@@ -1,0 +1,50 @@
+name: UK REPD public atlas validation
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - data/uk-repd-projects-v1.json
+      - atlas-uk-projects.js
+      - energy-atlas.js
+      - energy-pro.css
+      - index.html
+      - scripts/build_public_site.py
+      - tests/test_atlas_uk_projects.cjs
+      - tests/test_uk_repd_publish.py
+      - tests/test_atlas_uk_projects_browser.cjs
+      - .github/workflows/uk-repd-public-atlas.yml
+  workflow_dispatch:
+  workflow_run:
+    workflows: [Deploy]
+    types: [completed]
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  verify:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - run: node --check atlas-uk-projects.js && node --check energy-atlas.js && node tests/test_atlas_uk_projects.cjs
+      - run: python -m unittest discover -s tests -p test_uk_repd_publish.py -v
+      - run: python scripts/build_public_site.py --out "$RUNNER_TEMP/energy-public"
+      - run: npm install --no-save --no-package-lock playwright@1.56.1 && npx playwright install chromium
+      - run: |
+          python -m http.server 8766 --bind 127.0.0.1 --directory "$RUNNER_TEMP/energy-public" >/tmp/energy-uk-repd.log 2>&1 &
+          ENERGY_TEST_URL=http://127.0.0.1:8766/ node tests/test_atlas_uk_projects_browser.cjs
+
+  live-verify:
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+      - run: npm install --no-save --no-package-lock playwright@1.56.1 && npx playwright install chromium
+      - name: Verify actual UK project counts, rendering, filters, and coexistence on production
+        env:
+          ENERGY_TEST_URL: https://energy.nordl.dev/
+        run: node tests/test_atlas_uk_projects_browser.cjs

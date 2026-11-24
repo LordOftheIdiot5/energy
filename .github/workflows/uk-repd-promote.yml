@@ -1,0 +1,61 @@
+name: UK REPD verified data promotion
+on:
+  pull_request:
+    branches: [main]
+    paths: [.github/workflows/uk-repd-promote.yml]
+  push:
+    branches: [main]
+    paths: [.github/workflows/uk-repd-promote.yml]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: uk-repd-promote
+  cancel-in-progress: false
+jobs:
+  verify-and-stage:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - run: python -m unittest discover -s tests -p test_uk_repd_import.py -v
+      - run: pip install pyproj==3.7.2
+      - name: Download pinned official October 2026 source
+        run: |
+          curl --fail --location --silent --show-error --retry 2 --max-time 90 \
+            'https://assets.publishing.service.gov.uk/media/6af42ff0a4004bdbe54e54a5/REPD_Publication_Q3_2026.csv' \
+            --output /tmp/uk-repd.csv
+          printf '%s  %s\n' '48e76c49f33a1090e78108d1ea9bfe689b35963ea3be1bb4f6516d038a5ff862' /tmp/uk-repd.csv | sha256sum --check
+      - name: Validate and normalize without inventing locations
+        run: |
+          mkdir -p data
+          python scripts/import_uk_repd.py --source-csv /tmp/uk-repd.csv --out data/uk-repd-projects-v1.json --minimum 14000
+          python - <<'PY'
+          import json
+          d=json.load(open('data/uk-repd-projects-v1.json'))
+          assert d['release']=='2026-10'
+          assert d['counts']['source_records']==14968
+          assert d['counts']['mapped_records']==14388
+          assert d['counts']['duplicate_source_rows']==1
+          assert d['source_sha256']=='48e76c49f33a1090e78108d1ea9bfe689b35963ea3be1bb4f6516d038a5ff862'
+          assert len({r['id'] for r in d['rows']})==14388
+          print('Exact source and normalized data approved:',d['counts'])
+          PY
+      - name: Upload review artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: uk-repd-verified-data
+          path: data/uk-repd-projects-v1.json
+          retention-days: 14
+      - name: Stage immutable reviewed source projection in a dedicated branch
+        if: github.event_name != 'pull_request'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git switch -c data/uk-repd-202610
+          git add data/uk-repd-projects-v1.json
+          git commit -m 'Data: UK REPD October 2026 licensed project projection (14,388)'
+          git push origin HEAD:refs/heads/data/uk-repd-202610

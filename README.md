@@ -1,5 +1,8 @@
 # energy.nordl.dev
 
+**Development handoff:** [WORKPLAN.md](WORKPLAN.md) is the authoritative current checkpoint and next-task list. [AGENTS.md](AGENTS.md) tells coding agents to read and update it before and after work. Long-range roadmap: [docs/ENERGY-MASTER-ROADMAP-V91.md](docs/ENERGY-MASTER-ROADMAP-V91.md).
+
+
 What sets the price of energy in the Nordics, and why.
 
 ## What it shows

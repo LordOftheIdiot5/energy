@@ -78,3 +78,45 @@ body[data-theme=light] #atlasInfrastructureFocus{color:#126364}
 .atlas-nearby-list{display:grid;gap:6px;max-height:250px;overflow:auto;color:#172536;padding:6px 1px}.atlas-nearby-list button{min-height:40px;background:#edf5f9;color:#132936;border:1px solid #8da6b5;border-radius:5px;padding:7px;text-align:left;font:12px/1.4 system-ui;cursor:pointer}.atlas-nearby-list button:focus-visible{outline:3px solid #167b84}.atlas-inspect-action{display:inline-block;margin:8px 0 0 12px;min-height:36px;padding:6px 12px}
 
 #atlasMap .atlas-gdw-marker{position:absolute;display:grid;place-items:center;box-sizing:border-box;min-width:24px;height:23px;padding:2px 5px;border-radius:7px;background:#123f57;color:#dff6ff;border:1px solid #6fd4ed;font:700 10px/1 system-ui;cursor:pointer;z-index:4}#atlasMap .atlas-gdw-marker.single{border-radius:50%;font-size:17px}#atlasMap .atlas-gdw-marker:after{content:'';position:absolute;inset:-8px;border-radius:inherit}#atlasMap .atlas-gdw-marker:focus-visible{outline:3px solid white;outline-offset:2px}#globalGdwInspector a{font-size:12px}body[data-workspace=energyMap] #energyMap .global-atlas-workspace:has(#globalGdw:checked):not(:has(#globalMarketOverlay:checked)) #mapInfo{display:none}
+
+.grid-layer-legend{font-size:11px;border-left:2px solid #deb969;padding-left:8px}#globalGridInspector a{font-size:12px}body[data-workspace=energyMap] #energyMap .global-atlas-workspace:has(#globalGrid:checked):not(:has(#globalMarketOverlay:checked)) #mapInfo{display:none}
+
+/* Retained snapshots: contextual status below KPIs, not a page-wide alarm. */
+#staleBar[data-state=retained].show{background:transparent;border:0;border-radius:0;padding:4px 0;margin:6px 0;color:var(--muted);font-size:12px;box-shadow:none}#staleBar[data-state=retained].show:before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:#dca84c;margin-right:7px;vertical-align:middle}
+
+/* UK REPD OGL project layer — distinct from Norwegian licences and historical plant data. */
+#atlasMap .atlas-uk-project-marker{position:absolute;box-sizing:border-box;display:grid;place-items:center;color:#fff;background:#7354a5;border:2px solid #e7d6ff;border-radius:50%;min-width:18px;height:18px;padding:0;cursor:pointer;box-shadow:0 1px 6px #0009;font:700 11px/1 system-ui;z-index:5}
+#atlasMap .atlas-uk-project-marker.cluster{min-width:33px;height:33px;padding:2px 6px;background:#63478c}
+#atlasMap .atlas-uk-project-marker:after{content:'';position:absolute;inset:-8px;border-radius:50%}
+#atlasMap .atlas-uk-project-marker.selected{border-color:#fff;box-shadow:0 0 0 3px #c6a3ef,0 2px 7px #0009}
+#atlasMap .atlas-uk-project-marker:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.atlas-uk-view{min-height:36px;border:1px solid #a48cc8;background:var(--panel-lit);color:var(--ink);padding:7px 11px;border-radius:7px;font:600 12px var(--sans);cursor:pointer}
+#ukProjectInspector p{overflow-wrap:anywhere}#ukProjectInspector a{color:var(--accent);font-size:12px}
+
+/* V90.6f4: EIA status-aware generator unit markers, distinct from UK projects. */
+#atlasMap .atlas-us-generator-marker{position:absolute;box-sizing:border-box;display:grid;place-items:center;min-width:17px;height:17px;padding:0;color:#fff;background:var(--us-color,#b9782d);border:2px solid #f9e6bd;border-radius:50%;cursor:pointer;box-shadow:0 1px 6px #0009;font:700 11px/1 system-ui;z-index:6}
+#atlasMap .atlas-us-generator-marker.cluster{min-width:34px;height:34px;padding:2px 5px}
+#atlasMap .atlas-us-generator-marker:after{content:'';position:absolute;inset:-8px;border-radius:inherit}
+#atlasMap .atlas-us-generator-marker.selected{box-shadow:0 0 0 3px #fff9,0 2px 8px #0009}
+#atlasMap .atlas-us-generator-marker:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.atlas-us-view{min-height:36px;border:1px solid #c89245;border-radius:7px;background:var(--panel-lit);padding:7px 11px;color:var(--ink);font:600 12px var(--sans);cursor:pointer}
+#usGeneratorInventory{background:var(--panel-lit);color:var(--ink);border:1px solid var(--line);border-radius:7px;min-height:36px;padding:6px;font:600 12px var(--sans)}
+#usGeneratorInspector p{overflow-wrap:anywhere}#usGeneratorInspector a{color:var(--accent);font-size:12px}
+@media(max-width:600px){#usGeneratorInventory{max-width:100%;width:100%}}
+
+/* August 2017 NACEI reference-only gas and oil facilities. */
+#atlasMap .atlas-nacei-marker{position:absolute;box-sizing:border-box;display:grid;place-items:center;min-width:18px;height:18px;padding:0;background:var(--nacei-color,#c39d54);border:2px solid #fff1cf;color:#152029;border-radius:50%;cursor:pointer;box-shadow:0 1px 6px #0008;font:700 11px/1 system-ui;z-index:7}
+#atlasMap .atlas-nacei-marker.cluster{min-width:33px;height:33px;padding:2px 6px}
+#atlasMap .atlas-nacei-marker:after{content:'';position:absolute;inset:-8px;border-radius:inherit}
+#atlasMap .atlas-nacei-marker.selected{outline:3px solid #fff;outline-offset:2px}
+#atlasMap .atlas-nacei-marker:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.atlas-nacei-view{min-height:36px;border:1px solid #b69b60;border-radius:7px;background:var(--panel-lit);color:var(--ink);padding:7px 11px;font:600 12px var(--sans);cursor:pointer}
+#naceiKind{background:var(--panel-lit);color:var(--ink);border:1px solid var(--line);border-radius:7px;min-height:36px;padding:6px;font:600 12px var(--sans)}
+#naceiInspector p{overflow-wrap:anywhere}
+@media(max-width:600px){#naceiKind{max-width:100%;width:100%}}
+
+/* GEM CC BY 4.0, 2025 public GeoJSON routes and inspection controls */
+.atlas-gem-view{min-height:36px;border:1px solid #58bba9;border-radius:7px;background:var(--panel-lit);color:var(--ink);padding:7px 11px;font:600 12px var(--sans);cursor:pointer}
+#gemStatus{background:var(--panel-lit);color:var(--ink);border:1px solid var(--line);border-radius:7px;min-height:36px;padding:6px;font:600 12px var(--sans)}
+#gemPipelineInspector p{overflow-wrap:anywhere}#gemPipelineInspector a{color:var(--accent);font-size:12px}
+@media(max-width:600px){#gemStatus{max-width:100%;width:100%}}

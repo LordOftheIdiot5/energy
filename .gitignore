@@ -1,3 +1,12 @@
 __pycache__/
 *.pyc
 .DS_Store
+
+# Never commit private source vintages or backups
+.private-vintages/
+.energy-private-history/
+private-source-archive/
+
+# Never commit live Cloudflare binding IDs, local private envelopes or archives
+deploy/cloudflare-history/wrangler.toml
+*.private-inbox.json

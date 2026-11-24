@@ -1,0 +1,42 @@
+name: US EIA-860M official workbook schema audit
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - scripts/audit_eia860m.py
+      - tests/test_audit_eia860m.py
+      - .github/workflows/us-eia860m-audit.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - run: python -m unittest discover -s tests -p test_audit_eia860m.py -v
+      - name: Retrieve current official EIA-860M workbook
+        run: |
+          curl --fail --location --silent --show-error --retry 2 --max-time 120 \
+            'https://www.eia.gov/electricity/data/eia860m/xls/september_generator2026.xlsx' \
+            --output /tmp/eia860m-september2026.xlsx
+      - name: Inspect primary source without uploading raw workbook
+        run: |
+          python scripts/audit_eia860m.py /tmp/eia860m-september2026.xlsx --out /tmp/eia860m/schema.json
+          python - <<'PY'
+          import json
+          doc=json.load(open('/tmp/eia860m/schema.json'))
+          assert doc['release']=='2026-09'
+          assert len(doc['sheets'])>=2
+          print('US generator tabs',','.join(s['title'] for s in doc['sheets']))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: us-eia860m-schema-review
+          path: /tmp/eia860m/schema.json
+          retention-days: 14
