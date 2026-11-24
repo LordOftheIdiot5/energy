@@ -3,7 +3,7 @@ import argparse,hashlib,json,math,re,shutil
 from collections import Counter
 from datetime import datetime
 from pathlib import Path
-from osm_extract_sources import SOURCES,CAP
+from osm_extract_sources import SOURCES,CAP,PROVIDER_CAPS
 from osm_datacentres import LICENSE
 META={"schema_version","provider","region","source","extract_provider","source_sha256","source_last_modified","source_bytes","retrieved","license","attribution","source_records","category_counts","rejected_objects","notice","rows"}
 FIELDS={"id","category","name","voltage_v","geometry","source_object"}
@@ -12,12 +12,13 @@ def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def name(region):return region.lower()+"-grid-pilot.json"
 def point(p):
     return isinstance(p,list) and len(p)==2 and all(type(v) in (int,float) and math.isfinite(v) for v in p) and abs(p[0])<=180 and abs(p[1])<=90
-def validate(p,region):
+def validate(p,region,*,sources=None):
+    sources=SOURCES if sources is None else sources
     p=Path(p)
     if p.is_symlink() or not p.is_file() or p.stat().st_size>25_000_000:raise ValueError("Missing or oversized grid source")
     x=json.loads(p.read_text(encoding="utf-8"))
-    if set(x)!=META or x["schema_version"]!=1 or x["provider"]!="osm" or x["region"]!=region or (x["extract_provider"],x["source"]) not in SOURCES[region] or x["license"]!=LICENSE:raise ValueError("Unapproved grid provenance")
-    if x["attribution"]!="© OpenStreetMap contributors; "+x["extract_provider"]+" regional extract; selected and normalized by Nordl" or not re.fullmatch(r"[a-f0-9]{64}",x["source_sha256"]) or type(x["source_bytes"]) is not int or not 1024<=x["source_bytes"]<=CAP or datetime.fromisoformat(x["retrieved"]).tzinfo is None:raise ValueError("Invalid archive evidence")
+    if set(x)!=META or x["schema_version"]!=1 or x["provider"]!="osm" or x["region"]!=region or (x["extract_provider"],x["source"]) not in sources[region] or x["license"]!=LICENSE:raise ValueError("Unapproved grid provenance")
+    if x["attribution"]!="© OpenStreetMap contributors; "+x["extract_provider"]+" regional extract; selected and normalized by Nordl" or not re.fullmatch(r"[a-f0-9]{64}",x["source_sha256"]) or type(x["source_bytes"]) is not int or not 1024<=x["source_bytes"]<=PROVIDER_CAPS.get((region,x['extract_provider'],x['source']),CAP) or datetime.fromisoformat(x["retrieved"]).tzinfo is None:raise ValueError("Invalid archive evidence")
     if not isinstance(x["notice"],str) or not x["notice"].strip() or not isinstance(x["rows"],list) or not 1<=len(x["rows"])<=100000 or len(x["rows"])!=x["source_records"]:raise ValueError("Invalid archive count")
     ids=set();counts=Counter()
     for r in x["rows"]:
