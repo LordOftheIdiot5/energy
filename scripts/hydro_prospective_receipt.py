@@ -3,6 +3,7 @@ Local research only; no weather forecast, public prediction or remote archive.
 """
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
 import argparse
 import hashlib
 import json
@@ -11,6 +12,7 @@ from hydro_validation import model, monday
 
 ZONES = ("NO1", "NO2", "NO3", "NO4", "NO5")
 ROOT = Path(__file__).resolve().parents[1]
+OSLO = ZoneInfo("Europe/Oslo")
 
 def utc(value):
     dt = datetime.fromisoformat(value.replace("Z", "+00:00"))
@@ -38,15 +40,16 @@ def build(raw, now):
         seen.add(key)
         if row.get("snapshot_generated") and utc(row["snapshot_generated"]) > now:
             raise ValueError("future source vintage")
-        if day.replace(tzinfo=timezone.utc) + timedelta(days=7) > now:
+        if (day + timedelta(days=7)).replace(tzinfo=OSLO).astimezone(timezone.utc) > now:
             raise ValueError("source contains unfinished observation week")
         groups[zone].append(row)
     origins = [max(rows, key=monday) for rows in groups.values() if rows]
     if len(origins) != len(ZONES) or len({monday(r) for r in origins}) != 1:
         raise ValueError("missing or inconsistent latest zone periods")
-    origin = monday(origins[0]).replace(tzinfo=timezone.utc)
-    target = origin + timedelta(days=7)
-    cutoff = target + timedelta(days=7)
+    origin = monday(origins[0])
+    target_local = (origin + timedelta(days=7)).replace(tzinfo=OSLO)
+    target = target_local.astimezone(timezone.utc)
+    cutoff = (target_local + timedelta(days=7)).astimezone(timezone.utc)
     if not target <= now < cutoff:
         raise ValueError("target week already ended or not yet begun")
     rows_out = []
@@ -65,17 +68,17 @@ def build(raw, now):
                          "source_retrieved_at": last["snapshot_generated"],
                          "seasonal_pct": values[0], "low_pct": values[1], "high_pct": values[2],
                          "persistence_pct": last["fill_pct"]})
-    year, week, _ = target.isocalendar()
+    year, week, _ = target_local.isocalendar()
     return {"schema_version": 1, "method": "seasonal_change_baseline_v1",
             "scope": "within_target_week_prospective_research",
             "issued_at": now.isoformat(), "origin_week": origin.date().isoformat(),
             "target_iso_year": year, "target_iso_week": week,
-            "target_week_start_utc": target.isoformat(), "target_week_end_exclusive_utc": cutoff.isoformat(),
+            "week_timezone": "Europe/Oslo", "target_week_start_utc": target.isoformat(), "target_week_end_exclusive_utc": cutoff.isoformat(),
             "lead_hours_to_week_end": (cutoff - now).total_seconds()/3600,
             "source": SOURCE, "source_sha256": hashlib.sha256(raw).hexdigest(),
             "model_sha256": hashlib.sha256((Path(__file__).with_name("hydro_validation.py")).read_bytes()).hexdigest(),
             "zones": rows_out, "weather_inputs": False, "operational_forecast_approved": False,
-            "notice": "Research baseline issued during target week, before its UTC end; not a full-week-ahead weather forecast. Historical revisions and actual NVE publication timing require separate evaluation."}
+            "notice": "Research baseline issued during target week, before its Norwegian local-time end; not a full-week-ahead weather forecast. Historical revisions and actual NVE publication timing require separate evaluation."}
 
 def freeze(output, receipt):
     output = Path(output).resolve()
