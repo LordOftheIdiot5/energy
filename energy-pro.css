@@ -120,3 +120,6 @@ body[data-theme=light] #atlasInfrastructureFocus{color:#126364}
 #gemStatus{background:var(--panel-lit);color:var(--ink);border:1px solid var(--line);border-radius:7px;min-height:36px;padding:6px;font:600 12px var(--sans)}
 #gemPipelineInspector p{overflow-wrap:anywhere}#gemPipelineInspector a{color:var(--accent);font-size:12px}
 @media(max-width:600px){#gemStatus{max-width:100%;width:100%}}
+
+/* V90.6g4: compact water symbols at world scale; accessible hit area retained. */
+#atlasMap .atlas-gdw-marker.compact{width:var(--gdw-size,10px);min-width:0;height:var(--gdw-size,10px);padding:0;border-radius:50%;background:#67c9efaa;border:1px solid #164f77;box-shadow:none}#atlasMap .atlas-gdw-marker.compact:after{inset:-9px}#atlasMap .atlas-gdw-marker.compact:hover{outline:2px solid #d4f4ff}
