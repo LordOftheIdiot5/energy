@@ -1,0 +1,35 @@
+name: N42b hydro prospective receipt validation
+on:
+  pull_request:
+    paths:
+      - scripts/hydro_prospective_receipt.py
+      - tests/test_hydro_prospective_receipt.py
+      - .github/workflows/hydro-prospective-validation.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - run: python -m unittest discover -s tests -v
+      - name: Inspect actual source readiness without storing a forecast
+        run: |
+          python - <<'PY'
+          import sys
+          from datetime import datetime, timezone
+          from pathlib import Path
+          sys.path.insert(0, "scripts")
+          from hydro_prospective_receipt import build
+          try:
+              r = build(Path("data/hydro-v1.json").read_bytes(), datetime.now(timezone.utc))
+          except ValueError as e:
+              print("Actual source not eligible for issue:", e)
+          else:
+              print("Actual source eligible:", r["target_iso_year"], r["target_iso_week"], "zones:", len(r["zones"]), "lead hours:", round(r["lead_hours_to_week_end"], 1))
+          PY
